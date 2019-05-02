@@ -1,5 +1,7 @@
 import functools
 import re
+import base64
+import zlib
 
 from pathlib import Path
 
@@ -9,7 +11,6 @@ import pytiled_parser.objects as objects
 import pytiled_parser.utilities as utilities
 
 import xml.etree.ElementTree as etree
-
 
 def _decode_base64_data(data_text, compression, layer_width):
     tile_grid: List[List[int]] = [[]]
