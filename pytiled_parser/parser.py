@@ -329,7 +329,7 @@ def _parse_tiles(tile_element_list: List[etree.Element]
         # if this is None, then the Tile is part of a spritesheet
         tile_image = None
         tile_image_element = tile_element.find('./image')
-        if tile_image_element:
+        if tile_image_element is not None:
             tile_image = _parse_image_element(tile_image_element)
 
         object_group = None
