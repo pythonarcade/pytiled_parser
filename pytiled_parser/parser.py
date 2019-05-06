@@ -193,7 +193,7 @@ def _parse_layer_type(layer_element: etree.Element) -> objects.LayerType:
     #     return _parse_layer_group(layer_element, layer_type_object)
 
 
-def _parse_objects(objects: List[etree.Element]) -> List[objects.Object]:
+def _parse_objects(object_elements: List[etree.Element]) -> List[objects.Object]:
     """
     """
     tiled_objects: List[objects.Object] = []
@@ -216,7 +216,7 @@ def _parse_objects(objects: List[etree.Element]) -> List[objects.Object]:
         except KeyError:
             height = 0
 
-        object.size = objects.OrderedPair(width, height)
+        object.size = objects.Size(width, height)
 
         try:
             object.opacity = round(
