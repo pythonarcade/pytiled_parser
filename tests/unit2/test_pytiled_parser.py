@@ -15,7 +15,8 @@ def test_map_simple():
     """
     TMX with a very simple spritesheet tile set and some properties.
     """
-    map = pytiled_parser.parse_tile_map(Path("../test_data/test_map_simple.tmx"))
+    map = pytiled_parser.parse_tile_map(
+        Path("../test_data/test_map_simple.tmx"))
 
     # map
     # unsure how to get paths to compare propperly

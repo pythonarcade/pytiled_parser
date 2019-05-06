@@ -1,16 +1,18 @@
 import functools
-import re
 import base64
+import gzip
+import re
 import zlib
 
 from pathlib import Path
 
-from typing import *
+from typing import Dict, List, Optional, Union
 
 import pytiled_parser.objects as objects
 import pytiled_parser.utilities as utilities
 
 import xml.etree.ElementTree as etree
+
 
 def _decode_base64_data(data_text, compression, layer_width):
     tile_grid: List[List[int]] = [[]]
@@ -47,8 +49,7 @@ def _decode_base64_data(data_text, compression, layer_width):
 
 
 def _decode_csv_layer(data_text):
-    """
-    Decodes csv encoded layer data.
+    """Decodes csv encoded layer data.
 
     Credit:
     """
@@ -69,8 +70,7 @@ def _decode_csv_layer(data_text):
 
 def _decode_data(element: etree.Element, layer_width: int, encoding: str,
                  compression: Optional[str]) -> List[List[int]]:
-    """
-    Decodes data or chunk data.
+    """Decodes data or chunk data.
 
     Args:
         :element (Element): Element to have text decoded.
@@ -105,8 +105,7 @@ def _decode_data(element: etree.Element, layer_width: int, encoding: str,
 
 def _parse_data(element: etree.Element,
                 layer_width: int) -> objects.LayerData:
-    """
-    Parses layer data.
+    """Parses layer data.
 
     Will parse CSV, base64, gzip-base64, or zlip-base64 encoded data.
 
@@ -143,9 +142,7 @@ def _parse_data(element: etree.Element,
 
 def _parse_layer(element: etree.Element,
                  layer_type: objects.LayerType) -> objects.Layer:
-    """
-    Parse layer element given.
-    """
+    """Parse layer element given."""
     width = int(element.attrib['width'])
     height = int(element.attrib['height'])
     size = objects.OrderedPair(width, height)
@@ -159,9 +156,7 @@ def _parse_layer(element: etree.Element,
 
 
 def _parse_layer_type(layer_element: etree.Element) -> objects.LayerType:
-    """
-    Parse layer type element given.
-    """
+    """Parse layer type element given."""
     id = int(layer_element.attrib['id'])
 
     name = layer_element.attrib['name']
@@ -198,13 +193,10 @@ def _parse_layer_type(layer_element: etree.Element) -> objects.LayerType:
     #     return _parse_layer_group(layer_element, layer_type_object)
 
 
-def _parse_object_group(element: etree.Element,
-                        layer_type: objects.LayerType) -> objects.ObjectGroup:
+def _parse_objects(objects: List[etree.Element]) -> List[objects.Object]:
     """
-    Parse object group element given.
     """
-    object_elements = element.findall('./object')
-    tile_objects: List[objects.Object] = []
+    tiled_objects: List[objects.Object] = []
 
     for object_element in object_elements:
         id = int(object_element.attrib['id'])
@@ -246,9 +238,21 @@ def _parse_object_group(element: etree.Element,
         if properties_element is not None:
             object.properties = _parse_properties_element(properties_element)
 
-        tile_objects.append(object)
+        tiled_objects.append(object)
 
-    object_group = objects.ObjectGroup(tile_objects, **layer_type.__dict__)
+    return tiled_objects
+
+
+def _parse_object_group(element: etree.Element,
+                        layer_type: objects.LayerType) -> objects.ObjectGroup:
+    """Parse the objectgroup element given.
+
+    Args:
+        layer_type (objects.LayerType):
+    """
+    tiled_objects = _parse_objects(element.findall('./object'))
+
+    object_group = objects.ObjectGroup(tiled_objects, **layer_type.__dict__)
     try:
         color = utilities.parse_color(element.attrib['color'])
     except KeyError:
@@ -265,8 +269,7 @@ def _parse_object_group(element: etree.Element,
 @functools.lru_cache()
 def _parse_external_tile_set(parent_dir: Path, tile_set_element: etree.Element
                             ) -> objects.TileSet:
-    """
-    Parses an external tile set.
+    """Parses an external tile set.
 
     Caches the results to speed up subsequent instances.
     """
@@ -276,17 +279,21 @@ def _parse_external_tile_set(parent_dir: Path, tile_set_element: etree.Element
     return _parse_tile_set(tile_set_tree)
 
 
+def _parse_hitboxes(element: etree.Element) -> List[objects.Object]:
+    return _parse_objects(element.findall('./object'))
+
+
 def _parse_tiles(tile_element_list: List[etree.Element]
                 ) -> Dict[int, objects.Tile]:
     tiles: Dict[int, objects.Tile] = {}
     for tile_element in tile_element_list:
-        # id is not optional
+        #id is not optional
         id = int(tile_element.attrib['id'])
 
-        # optional attributes
-        type = None
+        #optional attributes
+        tile_type = None
         try:
-            type = tile_element.attrib['type']
+            tile_type = tile_element.attrib['type']
         except KeyError:
             pass
 
@@ -296,15 +303,15 @@ def _parse_tiles(tile_element_list: List[etree.Element]
         except KeyError:
             pass
         else:
-            # an attempt to explain how terrains are handled is below.
-            # 'terrain' attribute is a comma seperated list of 4 values,
-            # each is either an integer or blank
+            #below is an attempt to explain how terrains are handled.
+            #'terrain' attribute is a comma seperated list of 4 values,
+            #each is either an integer or blank
 
-            # convert to list of values
+            #convert to list of values
             terrain_list_attrib = re.split(',', tile_terrain_attrib)
-            # terrain_list is list of indexes of Tileset.terrain_types
+            #terrain_list is list of indexes of Tileset.terrain_types
             terrain_list: List[Optional[int]] = []
-            # each index in terrain_list_attrib reffers to a corner
+            #each index in terrain_list_attrib reffers to a corner
             for corner in terrain_list_attrib:
                 if corner == '':
                     terrain_list.append(None)
@@ -312,7 +319,7 @@ def _parse_tiles(tile_element_list: List[etree.Element]
                     terrain_list.append(int(corner))
             tile_terrain = objects.TileTerrain(*terrain_list)
 
-        # tile element optional sub-elements
+        #tile element optional sub-elements
         animation: Optional[List[objects.Frame]] = None
         tile_animation_element = tile_element.find('./animation')
         if tile_animation_element:
@@ -332,21 +339,19 @@ def _parse_tiles(tile_element_list: List[etree.Element]
         if tile_image_element is not None:
             tile_image = _parse_image_element(tile_image_element)
 
-        object_group = None
-        tile_object_group_element = tile_element.find('./objectgroup')
-        if tile_object_group_element:
-            ### FIXME: why did they do this :(
-            pass
+        hitboxes = None
+        tile_hitboxes_element = tile_element.find('./objectgroup')
+        if tile_hitboxes_element is not None:
+            hitboxes = _parse_hitboxes(tile_hitboxes_element)
 
-        tiles[id] = objects.Tile(id, type, tile_terrain, animation,
-                                 tile_image, object_group)
+        tiles[id] = objects.Tile(id, tile_type, tile_terrain, animation,
+                                 tile_image, hitboxes)
 
     return tiles
 
 
 def _parse_image_element(image_element: etree.Element) -> objects.Image:
-    """
-    Parse image element given.
+    """Parse image element given.
 
     Returns:
         :Color: Color in Arcade's preffered format.
@@ -361,15 +366,14 @@ def _parse_image_element(image_element: etree.Element) -> objects.Image:
 
     width = int(image_element.attrib['width'])
     height = int(image_element.attrib['height'])
-    size = objects.OrderedPair(width, height)
+    size = objects.Size(width, height)
 
     return objects.Image(source, size, trans)
 
 
 def _parse_properties_element(properties_element: etree.Element
                              ) -> objects.Properties:
-    """
-    Adds Tiled property to Properties dict.
+    """Adds Tiled property to Properties dict.
 
     Args:
         :name (str): Name of property.

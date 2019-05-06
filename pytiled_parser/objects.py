@@ -11,30 +11,23 @@ from pathlib import Path
 
 import xml.etree.ElementTree as etree
 
-from typing import *  # pylint: disable=W0401
+from typing import NamedTuple, Union, Optional, List, Dict
 
 
 class EncodingError(Exception):
-    """
-    Tmx layer encoding is of an unknown type.
-    """
+    """Tmx layer encoding is of an unknown type."""
 
 
 class TileNotFoundError(Exception):
-    """
-    Tile not found in tileset.
-    """
+    """Tile not found in tileset."""
 
 
 class ImageNotFoundError(Exception):
-    """
-    Image not found.
-    """
+    """Image not found."""
 
 
 class Color(NamedTuple):
-    """
-    Color object.
+    """Color object.
 
     Attributes:
         :red (int): Red, between 1 and 255.
@@ -49,15 +42,25 @@ class Color(NamedTuple):
 
 
 class OrderedPair(NamedTuple):
-    """
-    OrderedPair NamedTuple.
+    """OrderedPair NamedTuple.
 
     Attributes:
-        :x (Union[int, float]): X coordinate.
-        :y (Union[int, float]): Y coordinate.
+        x (Union[int, float]): X coordinate.
+        y (Union[int, float]): Y coordinate.
     """
     x: Union[int, float]
     y: Union[int, float]
+
+
+class Size(NamedTuple):
+    """Size NamedTuple.
+
+    Attributes:
+        width (Union[int, float]): The width of the object.
+        size (Union[int, float]): The height of the object.
+    """
+    width: Union[int, float]
+    height: Union[int, float]
 
 
 class Template:
@@ -102,7 +105,7 @@ class Image(NamedTuple):
         :height (Optional[str]): The image height in pixels (optional).
     """
     source: str
-    size: OrderedPair
+    size: Size
     trans: Optional[Color]
 
 
@@ -222,7 +225,7 @@ Either a 2 dimensional array of integers representing the global tile IDs
 
 @dataclasses.dataclass
 class _LayerBase:
-    size: OrderedPair
+    size: Size
     data: LayerData
 
 
@@ -234,7 +237,7 @@ class Layer(LayerType, _LayerBase):
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#layer
 
     Attributes:
-        :size (OrderedPair): The width of the layer in tiles. Always the same
+        :size (Size): The width of the layer in tiles. Always the same
             as the map width for not infitite maps.
         :data (LayerData): Either an 2 dimensional array of integers
             representing the global tile IDs for the map layer, or a list of
@@ -250,7 +253,7 @@ class _ObjectBase:
 
 @dataclasses.dataclass
 class _ObjectDefaults:
-    size: OrderedPair = OrderedPair(0, 0)
+    size: Size = Size(0, 0)
     rotation: int = 0
     opacity: int = 0xFF
 
@@ -266,15 +269,15 @@ class Object(_ObjectDefaults, _ObjectBase):
     """
     ObjectGroup Object.
 
-    See: \
-    https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
+    See:
+        https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
 
     Args:
         :id (int): Unique ID of the object. Each object that is placed on a
             map gets a unique id. Even if an object was deleted, no object
             gets the same ID.
         :location (OrderedPair): The location of the object in pixels.
-        :size (OrderedPair): The width of the object in pixels
+        :size (Size): The width of the object in pixels
             (default: (0, 0)).
         :rotation (int): The rotation of the object in degrees clockwise
             (default: 0).
@@ -355,8 +358,8 @@ class PolylineObject(Object, _PointsObjectBase):
     """
     Polyline defined by a set of connections between points.
 
-    See: \
-https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polyline
+    See:
+        https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polyline
 
     Attributes:
         :points (List[Tuple[int, int]]): List of coordinates relative to \
@@ -444,10 +447,12 @@ https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
     """
 
 
+@dataclasses.dataclass
 class _LayerGroupBase(_LayerTypeBase):
     layers: Optional[List[LayerType]]
 
 
+@dataclasses.dataclass
 class LayerGroup(LayerType):
     """
     Layer Group.
@@ -461,6 +466,12 @@ class LayerGroup(LayerType):
 
     Attributes:
 
+    """
+
+
+@dataclasses.dataclass
+class Hitbox:
+    """Group of hitboxes for
     """
 
 
@@ -482,7 +493,7 @@ class Tile:
     terrain: Optional[TileTerrain]
     animation: Optional[List[Frame]]
     image: Optional[Image]
-    hit_box: Optional[List[Object]]
+    hitboxes: Optional[List[Object]]
 
 
 @dataclasses.dataclass
@@ -492,7 +503,7 @@ class TileSet:
 
     Args:
         :name (str): The name of this tileset.
-        :max_tile_size (OrderedPair): The maximum size of a tile in this
+        :max_tile_size (Size): The maximum size of a tile in this
             tile set in pixels.
         :spacing (int): The spacing in pixels between the tiles in this
             tileset (applies to the tileset image).
@@ -516,7 +527,7 @@ class TileSet:
         :tiles (Optional[Dict[int, Tile]]): Dict of Tile objects by Tile.id.
     """
     name: str
-    max_tile_size: OrderedPair
+    max_tile_size: Size
     spacing: Optional[int]
     margin: Optional[int]
     tile_count: Optional[int]
@@ -527,6 +538,9 @@ class TileSet:
     image: Optional[Image]
     terrain_types: Optional[List[Terrain]]
     tiles: Optional[Dict[int, Tile]]
+
+
+TileSetDict = Dict[int, TileSet]
 
 
 @dataclasses.dataclass
@@ -548,8 +562,8 @@ class TileMap:
             rendered. Valid values are right-down, right-up, left-down and
             left-up. In all cases, the map is drawn row-by-row. (only
             supported for orthogonal maps at the moment)
-        :map_size (OrderedPair): The map width in tiles.
-        :tile_size (OrderedPair): The width of a tile.
+        :map_size (Size): The map width in tiles.
+        :tile_size (Size): The width of a tile.
         :infinite (bool): If the map is infinite or not.
         :hexsidelength (int): Only for hexagonal maps. Determines the width or
             height (depending on the staggered axis) of the tile’s edge, in
@@ -563,8 +577,8 @@ class TileMap:
         :nextlayerid (int): Stores the next available ID for new layers.
         :nextobjectid (int): Stores the next available ID for new objects.
         :tile_sets (dict[str, TileSet]): Dict of tile sets used
-            in this map. Key is the source for external tile sets or the name
-            for embedded ones. The value is a TileSet object.
+            in this map. Key is the first GID for the tile set. The value
+            is a TileSet object.
         :layers List[LayerType]: List of layer objects by draw order.
     """
     parent_dir: Path
@@ -573,13 +587,13 @@ class TileMap:
     tiled_version: str
     orientation: str
     render_order: str
-    map_size: OrderedPair
-    tile_size: OrderedPair
+    map_size: Size
+    tile_size: Size
     infinite: bool
     next_layer_id: int
     next_object_id: int
 
-    tile_sets: Dict[int, TileSet]
+    tile_sets: TileSetDict
     layers: List[LayerType]
 
     hex_side_length: Optional[int] = None
@@ -607,5 +621,3 @@ class TileMap:
 [22:23] == markb1 [~mbiggers@45.36.35.206] has quit [Ping timeout: 245 seconds]
 [22:23] <__m4ch1n3__> !py3 max(i for i in  [1, 10, 100] if i < 242)
 '''
-
-#buffer
