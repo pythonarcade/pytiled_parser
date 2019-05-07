@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="8" height="6" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+ <properties>
+  <property name="bool property - false" type="bool" value="false"/>
+  <property name="bool property - true" type="bool" value="true"/>
+  <property name="color property" type="color" value="#ff49fcff"/>
+  <property name="file property" type="file" value="../../../../../../../../var/log/syslog"/>
+  <property name="float property" type="float" value="1.23456789"/>
+  <property name="int property" type="int" value="13"/>
+  <property name="string property" value="Hello, World!!"/>
+ </properties>
+ <tileset firstgid="1" source="tile_set_image_hitboxes.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="8" height="6">
+  <data encoding="csv">
+1,2,3,4,5,6,7,8,
+9,10,11,12,13,14,15,16,
+17,18,19,20,21,22,23,24,
+25,26,27,28,29,30,31,32,
+33,34,35,36,37,38,39,40,
+41,42,43,44,45,46,47,48
+</data>
+ </layer>
+</map>

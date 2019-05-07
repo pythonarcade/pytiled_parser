@@ -35,6 +35,7 @@ class Color(NamedTuple):
         :blue (int): Blue, between 1 and 255.
         :alpha (int): Alpha, between 1 and 255.
     """
+
     red: int
     green: int
     blue: int
@@ -48,6 +49,7 @@ class OrderedPair(NamedTuple):
         x (Union[int, float]): X coordinate.
         y (Union[int, float]): Y coordinate.
     """
+
     x: Union[int, float]
     y: Union[int, float]
 
@@ -59,6 +61,7 @@ class Size(NamedTuple):
         width (Union[int, float]): The width of the object.
         size (Union[int, float]): The height of the object.
     """
+
     width: Union[int, float]
     height: Union[int, float]
 
@@ -83,13 +86,15 @@ class Chunk:
         :layer_data (List[List(int)]): The global tile IDs in chunky
             according to row.
     """
+
     location: OrderedPair
     width: int
     height: int
     chunk_data: List[List[int]]
 
 
-class Image(NamedTuple):
+@dataclasses.dataclass
+class Image:
     """
     Image object.
 
@@ -104,9 +109,10 @@ class Image(NamedTuple):
             (optional, used for tile index correction when the image changes).
         :height (Optional[str]): The image height in pixels (optional).
     """
+
     source: str
-    size: Size
-    trans: Optional[Color]
+    size: Optional[Size] = None
+    trans: Optional[Color] = None
 
 
 Properties = Dict[str, Union[int, float, Color, Path, str]]
@@ -120,6 +126,7 @@ class Grid(NamedTuple):
         determines how tile overlays for terrain and collision information
         are rendered.
     """
+
     orientation: str
     width: int
     height: int
@@ -134,6 +141,7 @@ class Terrain(NamedTuple):
         :tile (int): The local tile-id of the tile that represents the
             terrain visually.
     """
+
     name: str
     tile: int
 
@@ -150,6 +158,7 @@ class Frame(NamedTuple):
         :duration (int): How long in milliseconds this frame should be
             displayed before advancing to the next frame.
     """
+
     tile_id: int
     duration: int
 
@@ -168,6 +177,7 @@ class TileTerrain:
         :bottom_left (Optional[int]): Bottom left terrain type.
         :bottom_right (Optional[int]): Bottom right terrain type.
     """
+
     top_left: Optional[int] = None
     top_right: Optional[int] = None
     bottom_left: Optional[int] = None
@@ -246,13 +256,13 @@ class Layer(LayerType, _LayerBase):
 
 
 @dataclasses.dataclass
-class _ObjectBase:
+class _TiledObjectBase:
     id: int
     location: OrderedPair
 
 
 @dataclasses.dataclass
-class _ObjectDefaults:
+class _TiledObjectDefaults:
     size: Size = Size(0, 0)
     rotation: int = 0
     opacity: int = 0xFF
@@ -265,9 +275,9 @@ class _ObjectDefaults:
 
 
 @dataclasses.dataclass
-class Object(_ObjectDefaults, _ObjectBase):
+class TiledObject(_TiledObjectDefaults, _TiledObjectBase):
     """
-    ObjectGroup Object.
+    TiledObjectGroup object.
 
     See:
         https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
@@ -284,14 +294,14 @@ class Object(_ObjectDefaults, _ObjectBase):
         :opacity (int): The opacity of the object. (default: 255)
         :name (Optional[str]): The name of the object.
         :type (Optional[str]): The type of the object.
-        :properties (Properties): The properties of the Object.
+        :properties (Properties): The properties of the TiledObject.
         :template Optional[Template]: A reference to a Template object
             FIXME
     """
 
 
 @dataclasses.dataclass
-class RectangleObject(Object):
+class RectangleObject(TiledObject):
     """
     Rectangle shape defined by a point, width, and height.
 
@@ -302,7 +312,7 @@ class RectangleObject(Object):
 
 
 @dataclasses.dataclass
-class ElipseObject(Object):
+class ElipseObject(TiledObject):
     """
     Elipse shape defined by a point, width, and height.
 
@@ -311,7 +321,7 @@ class ElipseObject(Object):
 
 
 @dataclasses.dataclass
-class PointObject(Object):
+class PointObject(TiledObject):
     """
     Point defined by a point (x,y).
 
@@ -320,12 +330,12 @@ class PointObject(Object):
 
 
 @dataclasses.dataclass
-class _TileObjectBase(_ObjectBase):
+class _TileImageObjectBase(_TiledObjectBase):
     gid: int
 
 
 @dataclasses.dataclass
-class TileObject(Object, _TileObjectBase):
+class TileImageObject(TiledObject, _TileImageObjectBase):
     """
     Polygon shape defined by a set of connections between points.
 
@@ -337,12 +347,12 @@ class TileObject(Object, _TileObjectBase):
 
 
 @dataclasses.dataclass
-class _PointsObjectBase(_ObjectBase):
+class _PointsObjectBase(_TiledObjectBase):
     points: List[OrderedPair]
 
 
 @dataclasses.dataclass
-class PolygonObject(Object, _PointsObjectBase):
+class PolygonObject(TiledObject, _PointsObjectBase):
     """
     Polygon shape defined by a set of connections between points.
 
@@ -354,7 +364,7 @@ class PolygonObject(Object, _PointsObjectBase):
 
 
 @dataclasses.dataclass
-class PolylineObject(Object, _PointsObjectBase):
+class PolylineObject(TiledObject, _PointsObjectBase):
     """
     Polyline defined by a set of connections between points.
 
@@ -368,13 +378,13 @@ class PolylineObject(Object, _PointsObjectBase):
 
 
 @dataclasses.dataclass
-class _TextObjectBase(_ObjectBase):
+class _TextObjectBase(_TiledObjectBase):
     text: str
 
 
 @dataclasses.dataclass
-class _TextObjectDefaults(_ObjectDefaults):
-    font_family: str = 'sans-serif'
+class _TextObjectDefaults(_TiledObjectDefaults):
+    font_family: str = "sans-serif"
     font_size: int = 16
     wrap: bool = False
     color: Color = Color(0xFF, 0, 0, 0)
@@ -383,12 +393,12 @@ class _TextObjectDefaults(_ObjectDefaults):
     underline: bool = False
     strike_out: bool = False
     kerning: bool = False
-    horizontal_align: str = 'left'
-    vertical_align: str = 'top'
+    horizontal_align: str = "left"
+    vertical_align: str = "top"
 
 
 @dataclasses.dataclass
-class TextObject(Object, _TextObjectDefaults, _TextObjectBase):
+class TextObject(TiledObject, _TextObjectDefaults, _TextObjectBase):
     """
     Text object with associated settings.
 
@@ -414,19 +424,19 @@ class TextObject(Object, _TextObjectDefaults, _TextObjectBase):
 
 @dataclasses.dataclass
 class _ObjectGroupBase(_LayerTypeBase):
-    objects: List[Object]
+    objects: List[TiledObject]
 
 
 @dataclasses.dataclass
 class _ObjectGroupDefaults(_LayerTypeDefaults):
     color: Optional[Color] = None
-    draw_order: Optional[str] = 'topdown'
+    draw_order: Optional[str] = "topdown"
 
 
 @dataclasses.dataclass
 class ObjectGroup(LayerType, _ObjectGroupDefaults, _ObjectGroupBase):
     """
-    Object Group Object.
+    TiledObject Group Object.
 
     The object group is in fact a map layer, and is hence called \
     “object layer” in Tiled.
@@ -443,7 +453,8 @@ https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
             to 'topdown'. See:
             https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
             for more info.
-        :objects (Dict[int, Object]): Dict Object objects by Object.id.
+        :objects (Dict[int, TiledObject]): Dict TiledObject objects by
+            TiledObject.id.
     """
 
 
@@ -488,12 +499,13 @@ class Tile:
         :animation (List[Frame]): Each tile can have exactly one animation
             associated with it.
     """
+
     id: int
     type: Optional[str]
     terrain: Optional[TileTerrain]
     animation: Optional[List[Frame]]
     image: Optional[Image]
-    hitboxes: Optional[List[Object]]
+    hitboxes: Optional[List[TiledObject]]
 
 
 @dataclasses.dataclass
@@ -526,6 +538,7 @@ class TileSet:
             file.
         :tiles (Optional[Dict[int, Tile]]): Dict of Tile objects by Tile.id.
     """
+
     name: str
     max_tile_size: Size
     spacing: Optional[int]
@@ -581,6 +594,7 @@ class TileMap:
             is a TileSet object.
         :layers List[LayerType]: List of layer objects by draw order.
     """
+
     parent_dir: Path
 
     version: str
@@ -604,7 +618,7 @@ class TileMap:
     properties: Optional[Properties] = None
 
 
-'''
+"""
 [22:16] <__m4ch1n3__> i would "[i for i in int_list if i < littler_then_value]"
 [22:16] <__m4ch1n3__> it returns a list of integers below "littler_then_value"
 [22:17] <__m4ch1n3__> !py3 [i for i in [1,2,3,4,1,2,3,4] if i < 3]
@@ -620,4 +634,4 @@ class TileMap:
 [22:23] <codebot> __m4ch1n3__: 100
 [22:23] == markb1 [~mbiggers@45.36.35.206] has quit [Ping timeout: 245 seconds]
 [22:23] <__m4ch1n3__> !py3 max(i for i in  [1, 10, 100] if i < 242)
-'''
+"""
