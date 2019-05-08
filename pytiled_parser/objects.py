@@ -14,18 +14,6 @@ import xml.etree.ElementTree as etree
 from typing import NamedTuple, Union, Optional, List, Dict
 
 
-class EncodingError(Exception):
-    """Tmx layer encoding is of an unknown type."""
-
-
-class TileNotFoundError(Exception):
-    """Tile not found in tileset."""
-
-
-class ImageNotFoundError(Exception):
-    """Image not found."""
-
-
 class Color(NamedTuple):
     """Color object.
 
@@ -185,43 +173,34 @@ class TileTerrain:
 
 
 @dataclasses.dataclass
-class _LayerTypeBase:
-    id: int  # pylint: disable=C0103
-    name: str
-
-
-@dataclasses.dataclass
-class _LayerTypeDefaults:
-    offset: OrderedPair = OrderedPair(0, 0)
-    opacity: int = 0xFF
-
-    properties: Optional[Properties] = None
-
-
-@dataclasses.dataclass
-class LayerType(_LayerTypeDefaults, _LayerTypeBase):
-    """
-    Class that all layer classes inherit from.
-
-    Not to be directly used.
+class Layer:
+    """Class that all layers inherret from.
 
     Args:
-        :layer_element (etree.Element): Element to be parsed into a
-            LayerType object.
-
-    Attributes:
-        :id (int): Unique ID of the layer. Each layer that added to a map
-            gets a unique id. Even if a layer is deleted, no layer ever gets
-            the same ID.
-        :name (Optional[str):] The name of the layer object.
-        :offset (OrderedPair): Rendering offset of the layer object in
-            pixels. (default: (0, 0).
-        :opacity (int): Value between 0 and 255 to determine opacity. NOTE:
-            this value is converted from a float provided by Tiled, so some
-            precision is lost.
-        :properties (Optional[Properties]): Properties object for layer
-            object.
+        id: Unique ID of the layer. Each layer that added to a map gets a
+            unique id. Even if a layer is deleted, no layer ever gets the same
+            ID.
+        name: The name of the layer object.
+        tiled_objects: List of tiled_objects in the layer.
+        offset: Rendering offset of the layer object in pixels.
+        opacity: Decimal value between 0 and 1 to determine opacity. 1 is
+            completely opaque, 0 is completely transparent.
+        properties: Properties for the layer.
+        color: The color used to display the objects in this group.
+            FIXME: editor only?
+        draworder: Whether the objects are drawn according to the order of the
+            object elements in the object group element ('manual'), or sorted
+            by their y-coordinate ('topdown'). Defaults to 'topdown'. See:
+            https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
+            for more info.
     """
+
+    id: int
+    name: str
+
+    offset: Optional[OrderedPair]
+    opacity: Optional[float]
+    properties: Optional[Properties]
 
 
 LayerData = Union[List[List[int]], List[Chunk]]
@@ -234,25 +213,21 @@ Either a 2 dimensional array of integers representing the global tile IDs
 
 
 @dataclasses.dataclass
-class _LayerBase:
-    size: Size
-    data: LayerData
-
-
-@dataclasses.dataclass
-class Layer(LayerType, _LayerBase):
-    """
-    Map layer object.
+class TileLayer(Layer):
+    """Tile map layer containing tiles.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#layer
 
-    Attributes:
-        :size (Size): The width of the layer in tiles. Always the same
-            as the map width for not infitite maps.
-        :data (LayerData): Either an 2 dimensional array of integers
-            representing the global tile IDs for the map layer, or a list of
-            chunks for an infinite map.
+    Args:
+        size: The width of the layer in tiles. The same as the map width
+            unless map is infitite.
+        data: Either an 2 dimensional array of integers representing the
+            global tile IDs for the map layer, or a list of chunks for an
+            infinite map.
     """
+
+    size: Size
+    data: LayerData
 
 
 @dataclasses.dataclass
@@ -265,7 +240,7 @@ class _TiledObjectBase:
 class _TiledObjectDefaults:
     size: Size = Size(0, 0)
     rotation: int = 0
-    opacity: int = 0xFF
+    opacity: float = 1
 
     name: Optional[str] = None
     type: Optional[str] = None
@@ -277,7 +252,7 @@ class _TiledObjectDefaults:
 @dataclasses.dataclass
 class TiledObject(_TiledObjectDefaults, _TiledObjectBase):
     """
-    TiledObjectGroup object.
+    TiledObject object.
 
     See:
         https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
@@ -423,48 +398,36 @@ class TextObject(TiledObject, _TextObjectDefaults, _TextObjectBase):
 
 
 @dataclasses.dataclass
-class _ObjectGroupBase(_LayerTypeBase):
-    objects: List[TiledObject]
-
-
-@dataclasses.dataclass
-class _ObjectGroupDefaults(_LayerTypeDefaults):
-    color: Optional[Color] = None
-    draw_order: Optional[str] = "topdown"
-
-
-@dataclasses.dataclass
-class ObjectGroup(LayerType, _ObjectGroupDefaults, _ObjectGroupBase):
+class ObjectLayer(Layer):
     """
     TiledObject Group Object.
 
     The object group is in fact a map layer, and is hence called \
     “object layer” in Tiled.
 
-    See: \
-https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
+    See:
+    https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
 
-    Attributes:
-        :color (Optional[Color]): The color used to display the objects
-            in this group. FIXME: editor only?
-        :draworder (str): Whether the objects are drawn according to the
-            order of the object elements in the object group element
-            ('manual'), or sorted by their y-coordinate ('topdown'). Defaults
-            to 'topdown'. See:
+    Args:
+        tiled_objects: List of tiled_objects in the layer.
+        offset: Rendering offset of the layer object in pixels.
+        color: The color used to display the objects in this group.
+            FIXME: editor only?
+        draworder: Whether the objects are drawn according to the order of the
+            object elements in the object group element ('manual'), or sorted
+            by their y-coordinate ('topdown'). Defaults to 'topdown'. See:
             https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
             for more info.
-        :objects (Dict[int, TiledObject]): Dict TiledObject objects by
-            TiledObject.id.
     """
 
+    tiled_objects: List[TiledObject]
+
+    color: Optional[Color] = None
+    draw_order: Optional[str] = "topdown"
+
 
 @dataclasses.dataclass
-class _LayerGroupBase(_LayerTypeBase):
-    layers: Optional[List[LayerType]]
-
-
-@dataclasses.dataclass
-class LayerGroup(LayerType):
+class LayerGroup(Layer):
     """
     Layer Group.
 
@@ -478,6 +441,8 @@ class LayerGroup(LayerType):
     Attributes:
 
     """
+
+    layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
 
 
 @dataclasses.dataclass
@@ -608,7 +573,7 @@ class TileMap:
     next_object_id: int
 
     tile_sets: TileSetDict
-    layers: List[LayerType]
+    layers: List[Layer]
 
     hex_side_length: Optional[int] = None
     stagger_axis: Optional[int] = None

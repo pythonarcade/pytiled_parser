@@ -6,15 +6,16 @@ import zlib
 
 from pathlib import Path
 
-from typing import Dict, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union
+import xml.etree.ElementTree as etree
 
 import pytiled_parser.objects as objects
 import pytiled_parser.utilities as utilities
 
-import xml.etree.ElementTree as etree
 
-
-def _decode_base64_data(data_text, compression, layer_width):
+def _decode_base64_data(
+    data_text: str, compression: Optional[str], layer_width: int
+) -> List[List[int]]:
     tile_grid: List[List[int]] = [[]]
 
     unencoded_data = base64.b64decode(data_text)
@@ -48,13 +49,13 @@ def _decode_base64_data(data_text, compression, layer_width):
     return tile_grid
 
 
-def _decode_csv_layer(data_text):
+def _decode_csv_layer(data_text: str) -> List[List[int]]:
     """Decodes csv encoded layer data.
 
     Credit:
     """
     tile_grid = []
-    lines = data_text.split("\n")
+    lines: List[str] = data_text.split("\n")
     # remove erronious empty lists due to a newline being on both ends of text
     lines = lines[1:]
     lines = lines[:-1]
@@ -97,9 +98,9 @@ def _decode_data(
             raise ValueError("{compression} is not a valid compression type")
 
     try:
-        data_text = element.text  # type: ignore
+        data_text: str = element.text  # type: ignore
     except AttributeError:
-        raise AttributeError("{element} lacks layer data.")
+        raise AttributeError(f"{element} lacks layer data.")
 
     if encoding == "csv":
         return _decode_csv_layer(data_text)
@@ -107,7 +108,9 @@ def _decode_data(
     return _decode_base64_data(data_text, compression, layer_width)
 
 
-def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
+def _parse_data(
+    element: etree.Element, layer_width: int
+) -> objects.LayerData:
     """Parses layer data.
 
     Will parse CSV, base64, gzip-base64, or zlip-base64 encoded data.
@@ -145,65 +148,98 @@ def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
 
 
 def _parse_layer(
-    element: etree.Element, layer_type: objects.LayerType
-) -> objects.Layer:
-    """Parse layer element given."""
-    width = int(element.attrib["width"])
-    height = int(element.attrib["height"])
-    size = objects.OrderedPair(width, height)
-    data_element = element.find("./data")
-    if data_element is not None:
-        data: objects.LayerData = _parse_data(data_element, width)
-    else:
-        raise ValueError("{element} has no child data element.")
+    layer_element: etree.Element
+) -> Tuple[
+    int,
+    str,
+    Optional[objects.OrderedPair],
+    Optional[float],
+    Optional[objects.Properties],
+]:
+    """Parses all of the attributes for a Layer object.
 
-    return objects.Layer(size, data, **layer_type.__dict__)
+    Args:
+        layer_element: The layer element to be parsed.
 
+    Returns:
 
-def _parse_layer_type(layer_element: etree.Element) -> objects.LayerType:
-    """Parse layer type element given."""
+    """
     id = int(layer_element.attrib["id"])
 
     name = layer_element.attrib["name"]
 
-    layer_type_object = objects.LayerType(id, name)
+    offset: Optional[objects.OrderedPair]
+    offset_x_attrib = layer_element.attrib.get("offsetx")
+    offset_y_attrib = layer_element.attrib.get("offsety")
+    # If any offset is present, we need to return an OrderedPair
+    # Unknown if one of the offsets could be absent.
+    if any([offset_x_attrib, offset_y_attrib]):
+        if offset_x_attrib:
+            offset_x = float(offset_x_attrib)
+        else:
+            offset_x = 0.0
+        if offset_y_attrib:
+            offset_y = float(offset_y_attrib)
+        else:
+            offset_y = 0.0
 
-    try:
-        offset_x = float(layer_element.attrib["offsetx"])
-    except KeyError:
-        offset_x = 0
+        offset = objects.OrderedPair(offset_x, offset_y)
+    else:
+        offset = None
 
-    try:
-        offset_y = float(layer_element.attrib["offsety"])
-    except KeyError:
-        offset_y = 0
-    offset = objects.OrderedPair(offset_x, offset_y)
+    opacity: Optional[float]
+    opacity_attrib = layer_element.attrib.get("opacity")
+    if opacity_attrib:
+        opacity = float(opacity_attrib)
+    else:
+        opacity = None
 
-    try:
-        layer_type_object.opacity = round(
-            float(layer_element.attrib["opacity"]) * 255
-        )
-    except KeyError:
-        pass
-
+    properties: Optional[objects.Properties]
     properties_element = layer_element.find("./properties")
     if properties_element is not None:
-        layer_type_object.properties = _parse_properties_element(
-            properties_element
-        )
+        properties = _parse_properties_element(properties_element)
+    else:
+        properties = None
 
-    if layer_element.tag == "layer":
-        return _parse_layer(layer_element, layer_type_object)
-    elif layer_element.tag == "objectgroup":
-        return _parse_object_group(layer_element, layer_type_object)
-    # else:
-    #     return _parse_layer_group(layer_element, layer_type_object)
+    return id, name, offset, opacity, properties
+
+
+def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
+    """Parses tile layer element.
+
+    Args:
+        element: The layer element to be parsed.
+
+    Returns:
+        TileLayer: The tile layer object.
+    """
+    id, name, offset, opacity, properties = _parse_layer(element)
+
+    width = int(element.attrib["width"])
+    height = int(element.attrib["height"])
+    size = objects.Size(width, height)
+
+    data_element = element.find("./data")
+    if data_element is not None:
+        data: objects.LayerData = _parse_data(data_element, width)
+    else:
+        raise ValueError(f"{element} has no child data element.")
+
+    return objects.TileLayer(
+        id, name, offset, opacity, properties, size, data
+    )
 
 
 def _parse_objects(
     object_elements: List[etree.Element]
 ) -> List[objects.TiledObject]:
-    """
+    """Parses objects found in the 'objectgroup' element.
+
+    Args:
+        object_elements: List of object elements to be parsed.
+
+    Returns:
+        list: List of parsed tiled objects.
     """
     tiled_objects: List[objects.TiledObject] = []
 
@@ -213,7 +249,7 @@ def _parse_objects(
         location_y = float(object_element.attrib["y"])
         location = objects.OrderedPair(location_x, location_y)
 
-        object = objects.TiledObject(id, location)
+        tiled_object = objects.TiledObject(id, location)
 
         try:
             width = float(object_element.attrib["width"])
@@ -225,45 +261,57 @@ def _parse_objects(
         except KeyError:
             height = 0
 
-        object.size = objects.Size(width, height)
+        tiled_object.size = objects.Size(width, height)
 
         try:
-            object.opacity = round(
-                float(object_element.attrib["opacity"]) * 255
-            )
+            tiled_object.opacity = float(object_element.attrib["opacity"])
         except KeyError:
             pass
 
         try:
-            object.rotation = int(object_element.attrib["rotation"])
+            tiled_object.rotation = int(object_element.attrib["rotation"])
         except KeyError:
             pass
 
         try:
-            object.name = object_element.attrib["name"]
+            tiled_object.name = object_element.attrib["name"]
+        except KeyError:
+            pass
+
+        try:
+            tiled_object.type = object_element.attrib["type"]
         except KeyError:
             pass
 
         properties_element = object_element.find("./properties")
         if properties_element is not None:
-            object.properties = _parse_properties_element(properties_element)
+            tiled_object.properties = _parse_properties_element(
+                properties_element
+            )
 
-        tiled_objects.append(object)
+        tiled_objects.append(tiled_object)
 
     return tiled_objects
 
 
-def _parse_object_group(
-    element: etree.Element, layer_type: objects.LayerType
-) -> objects.ObjectGroup:
+def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     """Parse the objectgroup element given.
 
     Args:
         layer_type (objects.LayerType):
+        id: The id of the layer.
+        name: The name of the layer.
+        offset: The offset of the layer.
+        opacity: The opacity of the layer.
+        properties: The Properties object of the layer.
+
+    Returns:
+        ObjectLayer: The object layer object.
     """
+    id, name, offset, opacity, properties = _parse_layer(element)
+
     tiled_objects = _parse_objects(element.findall("./object"))
 
-    object_group = objects.ObjectGroup(tiled_objects, **layer_type.__dict__)
     try:
         color = utilities.parse_color(element.attrib["color"])
     except KeyError:
@@ -274,7 +322,85 @@ def _parse_object_group(
     except KeyError:
         pass
 
-    return object_group
+    return objects.ObjectLayer(
+        id,
+        name,
+        offset,
+        opacity,
+        properties,
+        tiled_objects,
+        color,
+        draw_order,
+    )
+
+
+def _parse_layer_group(element: etree.Element,) -> objects.LayerGroup:
+    """Parse the objectgroup element given.
+
+    Args:
+        layer_type (objects.LayerType):
+        id: The id of the layer.
+        name: The name of the layer.
+        offset: The offset of the layer.
+        opacity: The opacity of the layer.
+        properties: The Properties object of the layer.
+
+    Returns:
+        LayerGroup: The layer group object.
+    """
+    id, name, offset, opacity, properties = _parse_layer(element)
+
+    layers = _get_layers(element)
+
+    return objects.LayerGroup(id, name, offset, opacity, properties, layers)
+
+
+def _get_layer_parser(
+    layer_tag: str
+) -> Optional[Callable[[etree.Element], objects.Layer]]:
+    """Gets a the parser for the layer type specified.
+
+    Layer tags are 'layer' for a tile layer, 'objectgroup' for an object
+        layer, and 'group' for a layer group. If anything else is passed,
+        returns None.
+
+    Args:
+        layer_tag: Specifies the layer type to be parsed based on the element
+            tag.
+
+    Returns:
+        Callable: the function to be used to parse the layer.
+        None: The element is not a map layer.
+    """
+    if layer_tag == "layer":
+        return _parse_tile_layer
+    elif layer_tag == "objectgroup":
+        return _parse_object_layer
+    elif layer_tag == "group":
+        return _parse_layer_group
+    else:
+        return None
+
+
+def _get_layers(map_element: etree.Element) -> List[objects.Layer]:
+    """Parse layer type element given.
+
+    Retains draw order based on the returned lists index FIXME: confirm
+
+    Args:
+        map_element: The element containing the layer.
+
+    Returns:
+        List[Layer]: A list of the layers, ordered by draw order.
+            FIXME: confirm
+    """
+    layers: List[objects.Layer] = []
+    for element in map_element.findall("./"):
+        layer_parser = _get_layer_parser(element.tag)
+        if layer_parser:
+            layers.append(layer_parser(element))
+
+    return layers
 
 
 @functools.lru_cache()
@@ -283,7 +409,7 @@ def _parse_external_tile_set(
 ) -> objects.TileSet:
     """Parses an external tile set.
 
-    Caches the results to speed up subsequent instances.
+    Caches the results to speed up subsequent maps with identical tilesets.
     """
     source = Path(tile_set_element.attrib["source"])
     tile_set_tree = etree.parse(str(parent_dir / Path(source))).getroot()
@@ -292,6 +418,7 @@ def _parse_external_tile_set(
 
 
 def _parse_hitboxes(element: etree.Element) -> List[objects.TiledObject]:
+    """Parses all hitboxes for a given tile."""
     return _parse_objects(element.findall("./object"))
 
 
@@ -442,7 +569,7 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
     name = tile_set_element.attrib["name"]
     max_tile_width = int(tile_set_element.attrib["tilewidth"])
     max_tile_height = int(tile_set_element.attrib["tileheight"])
-    max_tile_size = objects.OrderedPair(max_tile_width, max_tile_height)
+    max_tile_size = objects.Size(max_tile_width, max_tile_height)
 
     spacing = None
     try:
@@ -521,7 +648,7 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
     )
 
 
-def parse_tile_map(tmx_file: Union[str, Path]):
+def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
     # setting up XML parsing
     map_tree = etree.parse(str(tmx_file))
     map_element = map_tree.getroot()
@@ -535,10 +662,10 @@ def parse_tile_map(tmx_file: Union[str, Path]):
     render_order = map_element.attrib["renderorder"]
     map_width = int(map_element.attrib["width"])
     map_height = int(map_element.attrib["height"])
-    map_size = objects.OrderedPair(map_width, map_height)
+    map_size = objects.Size(map_width, map_height)
     tile_width = int(map_element.attrib["tilewidth"])
     tile_height = int(map_element.attrib["tileheight"])
-    tile_size = objects.OrderedPair(tile_width, tile_height)
+    tile_size = objects.Size(tile_width, tile_height)
 
     infinite_attribute = map_element.attrib["infinite"]
     infinite = True if infinite_attribute == "true" else False
@@ -571,14 +698,7 @@ def parse_tile_map(tmx_file: Union[str, Path]):
                 parent_dir, tile_set_element
             )
 
-    # parse all layers
-    layers: List[objects.LayerType] = []
-    layer_tags = ["layer", "objectgroup", "group"]
-    for element in map_element.findall("./"):
-        if element.tag not in layer_tags:
-            # only layer_tags are layer elements
-            continue
-        layers.append(_parse_layer_type(element))
+    layers = _get_layers(map_element)
 
     tile_map = objects.TileMap(
         parent_dir,
