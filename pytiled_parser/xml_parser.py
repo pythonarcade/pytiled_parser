@@ -14,7 +14,7 @@ import pytiled_parser.utilities as utilities
 
 
 def _decode_base64_data(
-    data_text: str, compression: Optional[str], layer_width: int
+    data_text: str, layer_width: int, compression: Optional[str] = None
 ) -> List[List[int]]:
     tile_grid: List[List[int]] = [[]]
 
@@ -49,7 +49,7 @@ def _decode_base64_data(
     return tile_grid
 
 
-def _decode_csv_layer(data_text: str) -> List[List[int]]:
+def _decode_csv_data(data_text: str) -> List[List[int]]:
     """Decodes csv encoded layer data.
 
     Credit:
@@ -57,10 +57,10 @@ def _decode_csv_layer(data_text: str) -> List[List[int]]:
     tile_grid = []
     lines: List[str] = data_text.split("\n")
     # remove erronious empty lists due to a newline being on both ends of text
-    lines = lines[1:]
-    lines = lines[:-1]
+    lines = lines[1:-1]
     for line in lines:
         line_list = line.split(",")
+        # FIXME: what is this for?
         while "" in line_list:
             line_list.remove("")
         line_list_int = [int(item) for item in line_list]
@@ -103,7 +103,7 @@ def _decode_data(
         raise AttributeError(f"{element} lacks layer data.")
 
     if encoding == "csv":
-        return _decode_csv_layer(data_text)
+        return _decode_csv_data(data_text)
 
     return _decode_base64_data(data_text, compression, layer_width)
 
@@ -162,7 +162,7 @@ def _parse_layer(
         layer_element: The layer element to be parsed.
 
     Returns:
-
+        FIXME
     """
     id = int(layer_element.attrib["id"])
 
@@ -313,7 +313,7 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     tiled_objects = _parse_objects(element.findall("./object"))
 
     try:
-        color = utilities.parse_color(element.attrib["color"])
+        color = element.attrib["color"]
     except KeyError:
         pass
 
@@ -495,7 +495,7 @@ def _parse_image_element(image_element: etree.Element) -> objects.Image:
     """Parse image element given.
 
     Returns:
-        :Color: Color in Arcade's preffered format.
+        : Color in Arcade's preffered format.
     """
     image = objects.Image(image_element.attrib["source"])
 
@@ -506,7 +506,7 @@ def _parse_image_element(image_element: etree.Element) -> objects.Image:
         image.size = objects.Size(int(width_attrib), int(height_attrib))
 
     try:
-        image.trans = utilities.parse_color(image_element.attrib["trans"])
+        image.trans = image_element.attrib["trans"]
     except KeyError:
         pass
 
@@ -547,7 +547,7 @@ def _parse_properties_element(
         elif property_type == "float":
             properties[name] = float(value)
         elif property_type == "color":
-            properties[name] = utilities.parse_color(value)
+            properties[name] = value
         elif property_type == "file":
             properties[name] = Path(value)
         elif property_type == "bool":
@@ -731,11 +731,9 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
         pass
 
     try:
-        backgroundcolor = map_element.attrib["backgroundcolor"]
+        tile_map.background_color = map_element.attrib["backgroundcolor"]
     except KeyError:
         pass
-    else:
-        tile_map.background_color = utilities.parse_color(backgroundcolor)
 
     properties_element = map_tree.find("./properties")
     if properties_element is not None:

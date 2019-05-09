@@ -362,7 +362,7 @@ class _TextObjectDefaults(_TiledObjectDefaults):
     font_family: str = "sans-serif"
     font_size: int = 16
     wrap: bool = False
-    color: Color = Color(0xFF, 0, 0, 0)
+    color: str = "#000000"
     bold: bool = False
     italic: bool = False
     underline: bool = False
@@ -422,7 +422,7 @@ class ObjectLayer(Layer):
 
     tiled_objects: List[TiledObject]
 
-    color: Optional[Color] = None
+    color: Optional[str] = None
     draw_order: Optional[str] = "topdown"
 
 
@@ -578,7 +578,7 @@ class TileMap:
     hex_side_length: Optional[int] = None
     stagger_axis: Optional[int] = None
     stagger_index: Optional[int] = None
-    background_color: Optional[Color] = None
+    background_color: Optional[str] = None
 
     properties: Optional[Properties] = None
 
