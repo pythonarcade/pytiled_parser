@@ -11,30 +11,11 @@ from pathlib import Path
 
 import xml.etree.ElementTree as etree
 
-from typing import *  # pylint: disable=W0401
-
-
-class EncodingError(Exception):
-    """
-    Tmx layer encoding is of an unknown type.
-    """
-
-
-class TileNotFoundError(Exception):
-    """
-    Tile not found in tileset.
-    """
-
-
-class ImageNotFoundError(Exception):
-    """
-    Image not found.
-    """
+from typing import NamedTuple, Union, Optional, List, Dict
 
 
 class Color(NamedTuple):
-    """
-    Color object.
+    """Color object.
 
     Attributes:
         :red (int): Red, between 1 and 255.
@@ -42,6 +23,7 @@ class Color(NamedTuple):
         :blue (int): Blue, between 1 and 255.
         :alpha (int): Alpha, between 1 and 255.
     """
+
     red: int
     green: int
     blue: int
@@ -49,15 +31,27 @@ class Color(NamedTuple):
 
 
 class OrderedPair(NamedTuple):
-    """
-    OrderedPair NamedTuple.
+    """OrderedPair NamedTuple.
 
     Attributes:
-        :x (Union[int, float]): X coordinate.
-        :y (Union[int, float]): Y coordinate.
+        x (Union[int, float]): X coordinate.
+        y (Union[int, float]): Y coordinate.
     """
+
     x: Union[int, float]
     y: Union[int, float]
+
+
+class Size(NamedTuple):
+    """Size NamedTuple.
+
+    Attributes:
+        width (Union[int, float]): The width of the object.
+        size (Union[int, float]): The height of the object.
+    """
+
+    width: Union[int, float]
+    height: Union[int, float]
 
 
 class Template:
@@ -80,13 +74,15 @@ class Chunk:
         :layer_data (List[List(int)]): The global tile IDs in chunky
             according to row.
     """
+
     location: OrderedPair
     width: int
     height: int
     chunk_data: List[List[int]]
 
 
-class Image(NamedTuple):
+@dataclasses.dataclass
+class Image:
     """
     Image object.
 
@@ -101,9 +97,10 @@ class Image(NamedTuple):
             (optional, used for tile index correction when the image changes).
         :height (Optional[str]): The image height in pixels (optional).
     """
+
     source: str
-    size: OrderedPair
-    trans: Optional[Color]
+    size: Optional[Size] = None
+    trans: Optional[Color] = None
 
 
 Properties = Dict[str, Union[int, float, Color, Path, str]]
@@ -117,6 +114,7 @@ class Grid(NamedTuple):
         determines how tile overlays for terrain and collision information
         are rendered.
     """
+
     orientation: str
     width: int
     height: int
@@ -131,6 +129,7 @@ class Terrain(NamedTuple):
         :tile (int): The local tile-id of the tile that represents the
             terrain visually.
     """
+
     name: str
     tile: int
 
@@ -147,6 +146,7 @@ class Frame(NamedTuple):
         :duration (int): How long in milliseconds this frame should be
             displayed before advancing to the next frame.
     """
+
     tile_id: int
     duration: int
 
@@ -165,6 +165,7 @@ class TileTerrain:
         :bottom_left (Optional[int]): Bottom left terrain type.
         :bottom_right (Optional[int]): Bottom right terrain type.
     """
+
     top_left: Optional[int] = None
     top_right: Optional[int] = None
     bottom_left: Optional[int] = None
@@ -172,43 +173,34 @@ class TileTerrain:
 
 
 @dataclasses.dataclass
-class _LayerTypeBase:
-    id: int  # pylint: disable=C0103
-    name: str
-
-
-@dataclasses.dataclass
-class _LayerTypeDefaults:
-    offset: OrderedPair = OrderedPair(0, 0)
-    opacity: int = 0xFF
-
-    properties: Optional[Properties] = None
-
-
-@dataclasses.dataclass
-class LayerType(_LayerTypeDefaults, _LayerTypeBase):
-    """
-    Class that all layer classes inherit from.
-
-    Not to be directly used.
+class Layer:
+    """Class that all layers inherret from.
 
     Args:
-        :layer_element (etree.Element): Element to be parsed into a
-            LayerType object.
-
-    Attributes:
-        :id (int): Unique ID of the layer. Each layer that added to a map
-            gets a unique id. Even if a layer is deleted, no layer ever gets
-            the same ID.
-        :name (Optional[str):] The name of the layer object.
-        :offset (OrderedPair): Rendering offset of the layer object in
-            pixels. (default: (0, 0).
-        :opacity (int): Value between 0 and 255 to determine opacity. NOTE:
-            this value is converted from a float provided by Tiled, so some
-            precision is lost.
-        :properties (Optional[Properties]): Properties object for layer
-            object.
+        id: Unique ID of the layer. Each layer that added to a map gets a
+            unique id. Even if a layer is deleted, no layer ever gets the same
+            ID.
+        name: The name of the layer object.
+        tiled_objects: List of tiled_objects in the layer.
+        offset: Rendering offset of the layer object in pixels.
+        opacity: Decimal value between 0 and 1 to determine opacity. 1 is
+            completely opaque, 0 is completely transparent.
+        properties: Properties for the layer.
+        color: The color used to display the objects in this group.
+            FIXME: editor only?
+        draworder: Whether the objects are drawn according to the order of the
+            object elements in the object group element ('manual'), or sorted
+            by their y-coordinate ('topdown'). Defaults to 'topdown'. See:
+            https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
+            for more info.
     """
+
+    id: int
+    name: str
+
+    offset: Optional[OrderedPair]
+    opacity: Optional[float]
+    properties: Optional[Properties]
 
 
 LayerData = Union[List[List[int]], List[Chunk]]
@@ -221,38 +213,34 @@ Either a 2 dimensional array of integers representing the global tile IDs
 
 
 @dataclasses.dataclass
-class _LayerBase:
-    size: OrderedPair
+class TileLayer(Layer):
+    """Tile map layer containing tiles.
+
+    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#layer
+
+    Args:
+        size: The width of the layer in tiles. The same as the map width
+            unless map is infitite.
+        data: Either an 2 dimensional array of integers representing the
+            global tile IDs for the map layer, or a list of chunks for an
+            infinite map.
+    """
+
+    size: Size
     data: LayerData
 
 
 @dataclasses.dataclass
-class Layer(LayerType, _LayerBase):
-    """
-    Map layer object.
-
-    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#layer
-
-    Attributes:
-        :size (OrderedPair): The width of the layer in tiles. Always the same
-            as the map width for not infitite maps.
-        :data (LayerData): Either an 2 dimensional array of integers
-            representing the global tile IDs for the map layer, or a list of
-            chunks for an infinite map.
-    """
-
-
-@dataclasses.dataclass
-class _ObjectBase:
+class _TiledObjectBase:
     id: int
     location: OrderedPair
 
 
 @dataclasses.dataclass
-class _ObjectDefaults:
-    size: OrderedPair = OrderedPair(0, 0)
+class _TiledObjectDefaults:
+    size: Size = Size(0, 0)
     rotation: int = 0
-    opacity: int = 0xFF
+    opacity: float = 1
 
     name: Optional[str] = None
     type: Optional[str] = None
@@ -262,33 +250,33 @@ class _ObjectDefaults:
 
 
 @dataclasses.dataclass
-class Object(_ObjectDefaults, _ObjectBase):
+class TiledObject(_TiledObjectDefaults, _TiledObjectBase):
     """
-    ObjectGroup Object.
+    TiledObject object.
 
-    See: \
-    https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
+    See:
+        https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
 
     Args:
         :id (int): Unique ID of the object. Each object that is placed on a
             map gets a unique id. Even if an object was deleted, no object
             gets the same ID.
         :location (OrderedPair): The location of the object in pixels.
-        :size (OrderedPair): The width of the object in pixels
+        :size (Size): The width of the object in pixels
             (default: (0, 0)).
         :rotation (int): The rotation of the object in degrees clockwise
             (default: 0).
         :opacity (int): The opacity of the object. (default: 255)
         :name (Optional[str]): The name of the object.
         :type (Optional[str]): The type of the object.
-        :properties (Properties): The properties of the Object.
+        :properties (Properties): The properties of the TiledObject.
         :template Optional[Template]: A reference to a Template object
             FIXME
     """
 
 
 @dataclasses.dataclass
-class RectangleObject(Object):
+class RectangleObject(TiledObject):
     """
     Rectangle shape defined by a point, width, and height.
 
@@ -299,7 +287,7 @@ class RectangleObject(Object):
 
 
 @dataclasses.dataclass
-class ElipseObject(Object):
+class ElipseObject(TiledObject):
     """
     Elipse shape defined by a point, width, and height.
 
@@ -308,7 +296,7 @@ class ElipseObject(Object):
 
 
 @dataclasses.dataclass
-class PointObject(Object):
+class PointObject(TiledObject):
     """
     Point defined by a point (x,y).
 
@@ -317,12 +305,12 @@ class PointObject(Object):
 
 
 @dataclasses.dataclass
-class _TileObjectBase(_ObjectBase):
+class _TileImageObjectBase(_TiledObjectBase):
     gid: int
 
 
 @dataclasses.dataclass
-class TileObject(Object, _TileObjectBase):
+class TileImageObject(TiledObject, _TileImageObjectBase):
     """
     Polygon shape defined by a set of connections between points.
 
@@ -334,12 +322,12 @@ class TileObject(Object, _TileObjectBase):
 
 
 @dataclasses.dataclass
-class _PointsObjectBase(_ObjectBase):
+class _PointsObjectBase(_TiledObjectBase):
     points: List[OrderedPair]
 
 
 @dataclasses.dataclass
-class PolygonObject(Object, _PointsObjectBase):
+class PolygonObject(TiledObject, _PointsObjectBase):
     """
     Polygon shape defined by a set of connections between points.
 
@@ -351,12 +339,12 @@ class PolygonObject(Object, _PointsObjectBase):
 
 
 @dataclasses.dataclass
-class PolylineObject(Object, _PointsObjectBase):
+class PolylineObject(TiledObject, _PointsObjectBase):
     """
     Polyline defined by a set of connections between points.
 
-    See: \
-https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polyline
+    See:
+        https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polyline
 
     Attributes:
         :points (List[Tuple[int, int]]): List of coordinates relative to \
@@ -365,27 +353,27 @@ https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polyline
 
 
 @dataclasses.dataclass
-class _TextObjectBase(_ObjectBase):
+class _TextObjectBase(_TiledObjectBase):
     text: str
 
 
 @dataclasses.dataclass
-class _TextObjectDefaults(_ObjectDefaults):
-    font_family: str = 'sans-serif'
+class _TextObjectDefaults(_TiledObjectDefaults):
+    font_family: str = "sans-serif"
     font_size: int = 16
     wrap: bool = False
-    color: Color = Color(0xFF, 0, 0, 0)
+    color: str = "#000000"
     bold: bool = False
     italic: bool = False
     underline: bool = False
     strike_out: bool = False
     kerning: bool = False
-    horizontal_align: str = 'left'
-    vertical_align: str = 'top'
+    horizontal_align: str = "left"
+    vertical_align: str = "top"
 
 
 @dataclasses.dataclass
-class TextObject(Object, _TextObjectDefaults, _TextObjectBase):
+class TextObject(TiledObject, _TextObjectDefaults, _TextObjectBase):
     """
     Text object with associated settings.
 
@@ -410,45 +398,36 @@ class TextObject(Object, _TextObjectDefaults, _TextObjectBase):
 
 
 @dataclasses.dataclass
-class _ObjectGroupBase(_LayerTypeBase):
-    objects: List[Object]
-
-
-@dataclasses.dataclass
-class _ObjectGroupDefaults(_LayerTypeDefaults):
-    color: Optional[Color] = None
-    draw_order: Optional[str] = 'topdown'
-
-
-@dataclasses.dataclass
-class ObjectGroup(LayerType, _ObjectGroupDefaults, _ObjectGroupBase):
+class ObjectLayer(Layer):
     """
-    Object Group Object.
+    TiledObject Group Object.
 
     The object group is in fact a map layer, and is hence called \
     “object layer” in Tiled.
 
-    See: \
-https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
+    See:
+    https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
 
-    Attributes:
-        :color (Optional[Color]): The color used to display the objects
-            in this group. FIXME: editor only?
-        :draworder (str): Whether the objects are drawn according to the
-            order of the object elements in the object group element
-            ('manual'), or sorted by their y-coordinate ('topdown'). Defaults
-            to 'topdown'. See:
+    Args:
+        tiled_objects: List of tiled_objects in the layer.
+        offset: Rendering offset of the layer object in pixels.
+        color: The color used to display the objects in this group.
+            FIXME: editor only?
+        draworder: Whether the objects are drawn according to the order of the
+            object elements in the object group element ('manual'), or sorted
+            by their y-coordinate ('topdown'). Defaults to 'topdown'. See:
             https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
             for more info.
-        :objects (Dict[int, Object]): Dict Object objects by Object.id.
     """
 
+    tiled_objects: List[TiledObject]
 
-class _LayerGroupBase(_LayerTypeBase):
-    layers: Optional[List[LayerType]]
+    color: Optional[str] = None
+    draw_order: Optional[str] = "topdown"
 
 
-class LayerGroup(LayerType):
+@dataclasses.dataclass
+class LayerGroup(Layer):
     """
     Layer Group.
 
@@ -461,6 +440,14 @@ class LayerGroup(LayerType):
 
     Attributes:
 
+    """
+
+    layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
+
+
+@dataclasses.dataclass
+class Hitbox:
+    """Group of hitboxes for
     """
 
 
@@ -477,12 +464,13 @@ class Tile:
         :animation (List[Frame]): Each tile can have exactly one animation
             associated with it.
     """
+
     id: int
     type: Optional[str]
     terrain: Optional[TileTerrain]
     animation: Optional[List[Frame]]
     image: Optional[Image]
-    hit_box: Optional[List[Object]]
+    hitboxes: Optional[List[TiledObject]]
 
 
 @dataclasses.dataclass
@@ -492,7 +480,7 @@ class TileSet:
 
     Args:
         :name (str): The name of this tileset.
-        :max_tile_size (OrderedPair): The maximum size of a tile in this
+        :max_tile_size (Size): The maximum size of a tile in this
             tile set in pixels.
         :spacing (int): The spacing in pixels between the tiles in this
             tileset (applies to the tileset image).
@@ -515,8 +503,9 @@ class TileSet:
             file.
         :tiles (Optional[Dict[int, Tile]]): Dict of Tile objects by Tile.id.
     """
+
     name: str
-    max_tile_size: OrderedPair
+    max_tile_size: Size
     spacing: Optional[int]
     margin: Optional[int]
     tile_count: Optional[int]
@@ -527,6 +516,9 @@ class TileSet:
     image: Optional[Image]
     terrain_types: Optional[List[Terrain]]
     tiles: Optional[Dict[int, Tile]]
+
+
+TileSetDict = Dict[int, TileSet]
 
 
 @dataclasses.dataclass
@@ -548,8 +540,8 @@ class TileMap:
             rendered. Valid values are right-down, right-up, left-down and
             left-up. In all cases, the map is drawn row-by-row. (only
             supported for orthogonal maps at the moment)
-        :map_size (OrderedPair): The map width in tiles.
-        :tile_size (OrderedPair): The width of a tile.
+        :map_size (Size): The map width in tiles.
+        :tile_size (Size): The width of a tile.
         :infinite (bool): If the map is infinite or not.
         :hexsidelength (int): Only for hexagonal maps. Determines the width or
             height (depending on the staggered axis) of the tile’s edge, in
@@ -563,34 +555,35 @@ class TileMap:
         :nextlayerid (int): Stores the next available ID for new layers.
         :nextobjectid (int): Stores the next available ID for new objects.
         :tile_sets (dict[str, TileSet]): Dict of tile sets used
-            in this map. Key is the source for external tile sets or the name
-            for embedded ones. The value is a TileSet object.
+            in this map. Key is the first GID for the tile set. The value
+            is a TileSet object.
         :layers List[LayerType]: List of layer objects by draw order.
     """
+
     parent_dir: Path
 
     version: str
     tiled_version: str
     orientation: str
     render_order: str
-    map_size: OrderedPair
-    tile_size: OrderedPair
+    map_size: Size
+    tile_size: Size
     infinite: bool
     next_layer_id: int
     next_object_id: int
 
-    tile_sets: Dict[int, TileSet]
-    layers: List[LayerType]
+    tile_sets: TileSetDict
+    layers: List[Layer]
 
     hex_side_length: Optional[int] = None
     stagger_axis: Optional[int] = None
     stagger_index: Optional[int] = None
-    background_color: Optional[Color] = None
+    background_color: Optional[str] = None
 
     properties: Optional[Properties] = None
 
 
-'''
+"""
 [22:16] <__m4ch1n3__> i would "[i for i in int_list if i < littler_then_value]"
 [22:16] <__m4ch1n3__> it returns a list of integers below "littler_then_value"
 [22:17] <__m4ch1n3__> !py3 [i for i in [1,2,3,4,1,2,3,4] if i < 3]
@@ -606,6 +599,4 @@ class TileMap:
 [22:23] <codebot> __m4ch1n3__: 100
 [22:23] == markb1 [~mbiggers@45.36.35.206] has quit [Ping timeout: 245 seconds]
 [22:23] <__m4ch1n3__> !py3 max(i for i in  [1, 10, 100] if i < 242)
-'''
-
-#buffer
+"""

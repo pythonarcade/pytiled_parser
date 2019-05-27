@@ -9,7 +9,7 @@ def parse_color(color: str) -> objects.Color:
         :Color: Color object in the format that Arcade understands.
     """
     # strip initial '#' character
-    if not len(color) % 2 == 0:  # pylint: disable=C2001
+    if not len(color) % 2 == 0:
         color = color[1:]
 
     if len(color) == 6:
@@ -25,3 +25,21 @@ def parse_color(color: str) -> objects.Color:
         blue = int(color[6:8], 16)
 
     return objects.Color(red, green, blue, alpha)
+
+
+def get_tile_by_gid(tile_sets: objects.TileSetDict, gid: int) -> objects.Tile:
+    """Gets Tile from a global tile ID.
+
+    Args:
+        tile_sets (objects.TileSetDict): TileSetDict from TileMap.
+        gid (int): Global tile ID of the tile to be returned.
+
+    Returns:
+        objects.Tile: The Tile object reffered to by the global tile ID.
+    """
+    for tileset_key, tileset in tile_sets.items():
+        for tile_key, tile in tileset.tiles.items():
+            tile_gid = tile.id + tileset_key
+            if tile_gid == gid:
+                return tile
+    return None
