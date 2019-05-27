@@ -105,7 +105,7 @@ def _decode_data(
     if encoding == "csv":
         return _decode_csv_data(data_text)
 
-    return _decode_base64_data(data_text, compression, layer_width)
+    return _decode_base64_data(data_text, layer_width, compression)
 
 
 def _parse_data(
