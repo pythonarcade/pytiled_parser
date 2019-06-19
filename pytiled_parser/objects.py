@@ -42,6 +42,18 @@ class OrderedPair(NamedTuple):
     y: Union[int, float]
 
 
+class Property(NamedTuple):
+    """OrderedPair NamedTuple.
+
+    Attributes:
+        name str: Name of property
+        value str: Value of property
+    """
+
+    name: str
+    value: str
+
+
 class Size(NamedTuple):
     """Size NamedTuple.
 
@@ -471,6 +483,7 @@ class Tile:
     animation: Optional[List[Frame]]
     image: Optional[Image]
     hitboxes: Optional[List[TiledObject]]
+    properties: Optional[List[Property]]
 
 
 @dataclasses.dataclass

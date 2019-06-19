@@ -451,7 +451,7 @@ def _parse_tiles(
             terrain_list_attrib = re.split(",", tile_terrain_attrib)
             # terrain_list is list of indexes of Tileset.terrain_types
             terrain_list: List[Optional[int]] = []
-            # each index in terrain_list_attrib reffers to a corner
+            # each index in terrain_list_attrib refers to a corner
             for corner in terrain_list_attrib:
                 if corner == "":
                     terrain_list.append(None)
@@ -460,13 +460,25 @@ def _parse_tiles(
             tile_terrain = objects.TileTerrain(*terrain_list)
 
         # tile element optional sub-elements
+        properties: Optional[List[objects.Property]] = None
+        tile_properties_element = tile_element.find("./properties")
+        if tile_properties_element:
+            properties = []
+            property_list = tile_properties_element.findall("./property")
+            for property in property_list:
+                name = property.attrib["name"]
+                value = property.attrib["value"]
+                obj = objects.Property(name, value)
+                properties.append(obj)
+
+        # tile element optional sub-elements
         animation: Optional[List[objects.Frame]] = None
         tile_animation_element = tile_element.find("./animation")
         if tile_animation_element:
             animation = []
             frames = tile_animation_element.findall("./frame")
             for frame in frames:
-                # tileid reffers to the Tile.id of the animation frame
+                # tileid refers to the Tile.id of the animation frame
                 tile_id = int(frame.attrib["tileid"])
                 # duration is in MS. Should perhaps be converted to seconds.
                 # FIXME: make decision
@@ -485,7 +497,7 @@ def _parse_tiles(
             hitboxes = _parse_hitboxes(tile_hitboxes_element)
 
         tiles[id] = objects.Tile(
-            id, tile_type, tile_terrain, animation, tile_image, hitboxes
+            id, tile_type, tile_terrain, animation, tile_image, hitboxes, properties
         )
 
     return tiles
@@ -495,7 +507,7 @@ def _parse_image_element(image_element: etree.Element) -> objects.Image:
     """Parse image element given.
 
     Returns:
-        : Color in Arcade's preffered format.
+        : Color in Arcade's preferred format.
     """
     image = objects.Image(image_element.attrib["source"])
 
