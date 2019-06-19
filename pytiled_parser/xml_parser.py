@@ -164,7 +164,7 @@ def _parse_layer(
     Returns:
         FIXME
     """
-    id = int(layer_element.attrib["id"])
+    id_ = int(layer_element.attrib["id"])
 
     name = layer_element.attrib["name"]
 
@@ -201,7 +201,7 @@ def _parse_layer(
     else:
         properties = None
 
-    return id, name, offset, opacity, properties
+    return id_, name, offset, opacity, properties
 
 
 def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
@@ -213,7 +213,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
     Returns:
         TileLayer: The tile layer object.
     """
-    id, name, offset, opacity, properties = _parse_layer(element)
+    id_, name, offset, opacity, properties = _parse_layer(element)
 
     width = int(element.attrib["width"])
     height = int(element.attrib["height"])
@@ -226,7 +226,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
         raise ValueError(f"{element} has no child data element.")
 
     return objects.TileLayer(
-        id, name, offset, opacity, properties, size, data
+        id_, name, offset, opacity, properties, size, data
     )
 
 
@@ -244,12 +244,12 @@ def _parse_objects(
     tiled_objects: List[objects.TiledObject] = []
 
     for object_element in object_elements:
-        id = int(object_element.attrib["id"])
+        id_ = int(object_element.attrib["id"])
         location_x = float(object_element.attrib["x"])
         location_y = float(object_element.attrib["y"])
         location = objects.OrderedPair(location_x, location_y)
 
-        tiled_object = objects.TiledObject(id, location)
+        tiled_object = objects.TiledObject(id_, location)
 
         try:
             width = float(object_element.attrib["width"])
@@ -308,22 +308,24 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     Returns:
         ObjectLayer: The object layer object.
     """
-    id, name, offset, opacity, properties = _parse_layer(element)
+    id_, name, offset, opacity, properties = _parse_layer(element)
 
     tiled_objects = _parse_objects(element.findall("./object"))
 
+    color = None
     try:
         color = element.attrib["color"]
     except KeyError:
         pass
 
+    draw_order = None
     try:
         draw_order = element.attrib["draworder"]
     except KeyError:
         pass
 
     return objects.ObjectLayer(
-        id,
+        id_,
         name,
         offset,
         opacity,
@@ -348,11 +350,11 @@ def _parse_layer_group(element: etree.Element,) -> objects.LayerGroup:
     Returns:
         LayerGroup: The layer group object.
     """
-    id, name, offset, opacity, properties = _parse_layer(element)
+    id_, name, offset, opacity, properties = _parse_layer(element)
 
     layers = _get_layers(element)
 
-    return objects.LayerGroup(id, name, offset, opacity, properties, layers)
+    return objects.LayerGroup(id_, name, offset, opacity, properties, layers)
 
 
 def _get_layer_parser(
@@ -417,7 +419,7 @@ def _parse_external_tile_set(
     return _parse_tile_set(tile_set_tree)
 
 
-def _parse_points(point_string: str) ->List[objects.OrderedPair]:
+def _parse_points(point_string: str) -> List[objects.OrderedPair]:
     str_pairs = point_string.split(" ")
 
     points = []
@@ -433,11 +435,13 @@ def _parse_points(point_string: str) ->List[objects.OrderedPair]:
 def _parse_hitboxes(element: etree.Element) -> List[objects.TiledObject]:
     """Parses all hitboxes for a given tile."""
     hitbox_elements = element.findall("./object")
+
+    hitboxes = []
     for hitbox_element in hitbox_elements:
 
-        id = None
+        id_ = None
         if "id" in hitbox_element.attrib:
-            id = hitbox_element.attrib["id"]
+            id_ = hitbox_element.attrib["id"]
 
         x = None
         if "x" in hitbox_element.attrib:
@@ -474,12 +478,10 @@ def _parse_hitboxes(element: etree.Element) -> List[objects.TiledObject]:
             hitbox_type = "Polyline"
             points = _parse_points(child[0].attrib["points"])
 
+        hitbox = objects.Hitbox(id_, x, y, width, height, hitbox_type, points)
+        hitboxes.append(hitbox)
 
-        hitbox = objects.Hitbox(id, x, y, width, height, hitbox_type, points)
-
-        print(hitbox)
-
-    return _parse_objects(element.findall("./object"))
+    return hitboxes
 
 
 def _parse_tiles(
@@ -488,7 +490,7 @@ def _parse_tiles(
     tiles: Dict[int, objects.Tile] = {}
     for tile_element in tile_element_list:
         # id is not optional
-        id = int(tile_element.attrib["id"])
+        id_ = int(tile_element.attrib["id"])
 
         # optional attributes
         tile_type = None
@@ -504,7 +506,7 @@ def _parse_tiles(
             pass
         else:
             # below is an attempt to explain how terrains are handled.
-            #'terrain' attribute is a comma seperated list of 4 values,
+            # 'terrain' attribute is a comma seperated list of 4 values,
             # each is either an integer or blank
 
             # convert to list of values
@@ -525,9 +527,9 @@ def _parse_tiles(
         if tile_properties_element:
             properties = []
             property_list = tile_properties_element.findall("./property")
-            for property in property_list:
-                name = property.attrib["name"]
-                value = property.attrib["value"]
+            for property_ in property_list:
+                name = property_.attrib["name"]
+                value = property_.attrib["value"]
                 obj = objects.Property(name, value)
                 properties.append(obj)
 
@@ -556,8 +558,8 @@ def _parse_tiles(
         if tile_hitboxes_element is not None:
             hitboxes = _parse_hitboxes(tile_hitboxes_element)
 
-        tiles[id] = objects.Tile(
-            id, tile_type, tile_terrain, animation, tile_image, hitboxes, properties
+        tiles[id_] = objects.Tile(
+            id_, tile_type, tile_terrain, animation, tile_image, hitboxes, properties
         )
 
     return tiles
