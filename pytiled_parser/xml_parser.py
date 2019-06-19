@@ -56,7 +56,7 @@ def _decode_csv_data(data_text: str) -> List[List[int]]:
     """
     tile_grid = []
     lines: List[str] = data_text.split("\n")
-    # remove erronious empty lists due to a newline being on both ends of text
+    # remove erroneous empty lists due to a newline being on both ends of text
     lines = lines[1:-1]
     for line in lines:
         line_list = line.split(",")
@@ -417,8 +417,68 @@ def _parse_external_tile_set(
     return _parse_tile_set(tile_set_tree)
 
 
+def _parse_points(point_string: str) ->List[objects.OrderedPair]:
+    str_pairs = point_string.split(" ")
+
+    points = []
+    for str_pair in str_pairs:
+        xys = str_pair.split(",")
+        x = float(xys[0])
+        y = float(xys[1])
+        points.append((x, y))
+
+    return points
+
+
 def _parse_hitboxes(element: etree.Element) -> List[objects.TiledObject]:
     """Parses all hitboxes for a given tile."""
+    hitbox_elements = element.findall("./object")
+    for hitbox_element in hitbox_elements:
+
+        id = None
+        if "id" in hitbox_element.attrib:
+            id = hitbox_element.attrib["id"]
+
+        x = None
+        if "x" in hitbox_element.attrib:
+            x = float(hitbox_element.attrib["x"])
+
+        y = None
+        if "y" in hitbox_element.attrib:
+            y = float(hitbox_element.attrib["y"])
+
+        width = None
+        if "width" in hitbox_element.attrib:
+            width = float(hitbox_element.attrib["width"])
+
+        height = None
+        if "height" in hitbox_element.attrib:
+            height = float(hitbox_element.attrib["height"])
+
+        # Default to rectangle as the type
+        hitbox_type = "Rectangle"
+        points = None
+
+        child = hitbox_element.findall("polygon")
+        if child:
+            hitbox_type = "Polygon"
+            points = _parse_points(child[0].attrib["points"])
+        child = hitbox_element.findall("ellipse")
+        if child:
+            hitbox_type = "Ellipse"
+        child = hitbox_element.findall("point")
+        if child:
+            hitbox_type = "Point"
+        child = hitbox_element.findall("polyline")
+        if child:
+            hitbox_type = "Polyline"
+            points = _parse_points(child[0].attrib["points"])
+
+
+        hitbox = objects.Hitbox(id, x, y, width, height, hitbox_type, points)
+
+        print(hitbox)
+
     return _parse_objects(element.findall("./object"))
 
 

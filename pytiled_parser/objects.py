@@ -459,8 +459,16 @@ class LayerGroup(Layer):
 
 @dataclasses.dataclass
 class Hitbox:
-    """Group of hitboxes for
+    """ Hitbox
     """
+    id: int
+    x: int
+    y: int
+    width: int
+    height: int
+    hitbox_type: str
+    points: str
+
 
 
 @dataclasses.dataclass
@@ -482,7 +490,7 @@ class Tile:
     terrain: Optional[TileTerrain]
     animation: Optional[List[Frame]]
     image: Optional[Image]
-    hitboxes: Optional[List[TiledObject]]
+    hitboxes: Optional[List[Hitbox]]
     properties: Optional[List[Property]]
 
 
