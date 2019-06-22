@@ -559,7 +559,7 @@ def _parse_tiles(
             hitboxes = _parse_hitboxes(tile_hitboxes_element)
 
         tiles[id_] = objects.Tile(
-            id_, tile_type, tile_terrain, animation, tile_image, hitboxes, properties
+            id_, tile_type, tile_terrain, animation, tile_image, hitboxes, properties, tileset=None
         )
 
     return tiles
@@ -706,7 +706,7 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
     tile_element_list = tile_set_element.findall("./tile")
     tiles = _parse_tiles(tile_element_list)
 
-    return objects.TileSet(
+    tileset = objects.TileSet(
         name,
         max_tile_size,
         spacing,
@@ -720,6 +720,13 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
         terrain_types,
         tiles,
     )
+
+    # Go back and create a circular link so tiles know what tileset they are
+    # part of. Needed for animation.
+    for my_id, my_tile in tiles.items():
+        my_tile.tileset = tileset
+
+    return tileset
 
 
 def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:

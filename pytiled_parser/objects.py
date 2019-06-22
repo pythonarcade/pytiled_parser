@@ -470,6 +470,9 @@ class Hitbox:
     points: str
 
 
+class TileSet:
+    pass
+
 
 @dataclasses.dataclass
 class Tile:
@@ -492,6 +495,7 @@ class Tile:
     image: Optional[Image]
     hitboxes: Optional[List[Hitbox]]
     properties: Optional[List[Property]]
+    tileset: Optional[TileSet]
 
 
 @dataclasses.dataclass
