@@ -252,6 +252,11 @@ def _parse_objects(
         tiled_object = objects.TiledObject(id_, location)
 
         try:
+            tiled_object.gid = int(object_element.attrib["gid"])
+        except KeyError:
+            tiled_object.gid = None
+
+        try:
             width = float(object_element.attrib["width"])
         except KeyError:
             width = 0

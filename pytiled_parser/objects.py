@@ -250,6 +250,7 @@ class _TiledObjectBase:
 
 @dataclasses.dataclass
 class _TiledObjectDefaults:
+    gid: int = None
     size: Size = Size(0, 0)
     rotation: int = 0
     opacity: float = 1
