@@ -1,11 +1,9 @@
-import pytest
-
 import xml.etree.ElementTree as etree
-
 from contextlib import contextmanager
 from typing import Callable, List, Optional, Tuple
 
-from pytiled_parser import objects, xml_parser, utilities
+import pytest
+from pytiled_parser import objects, utilities, xml_parser
 
 
 @contextmanager
@@ -19,8 +17,7 @@ def _get_root_element(xml: str) -> etree.Element:
 
 layer_data = [
     (
-        '<layer id="1" name="Tile Layer 1" width="10" height="10">'
-        "</layer>",
+        '<layer id="1" name="Tile Layer 1" width="10" height="10">' "</layer>",
         (int(1), "Tile Layer 1", None, None, None),
     ),
     (
@@ -46,7 +43,7 @@ layer_data = [
 
 @pytest.mark.parametrize("xml,expected", layer_data)
 def test_parse_layer(xml, expected, monkeypatch):
-    def mockreturn(properties):
+    def mockreturn(*args):
         return "properties"
 
     monkeypatch.setattr(xml_parser, "_parse_properties_element", mockreturn)
@@ -160,11 +157,53 @@ data_base64 = [
 @pytest.mark.parametrize(
     "data_base64,width,compression,expected,raises", data_base64
 )
-def test_decode_base64_data(
-    data_base64, width, compression, expected, raises
-):
+def test_decode_base64_data(data_base64, width, compression, expected, raises):
     with raises:
         assert (
             xml_parser._decode_base64_data(data_base64, width, compression)
             == expected
         )
+
+
+# FIXME: use hypothesis for this
+def create_tile_set(qty_of_tiles):
+    tile_set = objects.TileSet(None, None)
+
+    if qty_of_tiles == 0:
+        return tile_set
+
+    tiles = {}
+
+    for tile_id in range(qty_of_tiles):
+        tiles[tile_id] = objects.Tile(tile_id)
+
+    tile_set.tiles = tiles
+
+    return tile_set
+
+
+tile_by_gid = [
+    (1, {1: create_tile_set(0)}, None),
+    (1, {1: create_tile_set(1)}, objects.Tile(0)),
+    (1, {1: create_tile_set(2)}, objects.Tile(0)),
+    (2, {1: create_tile_set(1)}, None),
+    (10, {1: create_tile_set(10)}, objects.Tile(9)),
+    (1, {1: create_tile_set(1), 2: create_tile_set(1)}, objects.Tile(0)),
+    (2, {1: create_tile_set(1), 2: create_tile_set(1)}, objects.Tile(0)),
+    (3, {1: create_tile_set(1), 2: create_tile_set(1)}, None),
+    (15, {1: create_tile_set(5), 6: create_tile_set(10)}, objects.Tile(9)),
+    (
+        20,
+        {
+            1: create_tile_set(5),
+            6: create_tile_set(10),
+            16: create_tile_set(10),
+        },
+        objects.Tile(4),
+    ),
+]
+
+
+@pytest.mark.parametrize("gid,tile_sets,expected", tile_by_gid)
+def test_get_tile_by_gid(gid, tile_sets, expected):
+    assert utilities.get_tile_by_gid(gid, tile_sets) == expected

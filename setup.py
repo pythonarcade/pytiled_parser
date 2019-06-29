@@ -1,6 +1,7 @@
-from os import path
 import sys
-from setuptools import setup
+from os import path
+
+from setuptools import setup  # type: ignore
 
 BUILD = 0
 VERSION = "0.0.1"
@@ -21,7 +22,7 @@ if __name__ == "__main__":
         license="MIT",
         url="https://github.com/Beefy-Swain/pytiled_parser",
         download_url="https://github.com/Beefy-Swain/pytiled_parser",
-        install_requires=["dataclasses"],
+        install_requires=["attrs"],
         packages=["pytiled_parser"],
         classifiers=[
             "Development Status :: 1 - Planning",

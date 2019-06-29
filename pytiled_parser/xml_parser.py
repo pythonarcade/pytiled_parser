@@ -1,13 +1,11 @@
-import functools
 import base64
+import functools
 import gzip
 import re
-import zlib
-
-from pathlib import Path
-
-from typing import Callable, Dict, List, Optional, Tuple, Union
 import xml.etree.ElementTree as etree
+import zlib
+from pathlib import Path
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import pytiled_parser.objects as objects
 import pytiled_parser.utilities as utilities
@@ -73,7 +71,7 @@ def _decode_data(
     element: etree.Element,
     layer_width: int,
     encoding: str,
-    compression: Optional[str],
+    compression: Optional[str] = None,
 ) -> List[List[int]]:
     """Decodes data or chunk data.
 
@@ -105,12 +103,10 @@ def _decode_data(
     if encoding == "csv":
         return _decode_csv_data(data_text)
 
-    return _decode_base64_data(data_text, compression, layer_width)
+    return _decode_base64_data(data_text, layer_width, compression)
 
 
-def _parse_data(
-    element: etree.Element, layer_width: int
-) -> objects.LayerData:
+def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
     """Parses layer data.
 
     Will parse CSV, base64, gzip-base64, or zlip-base64 encoded data.
@@ -226,7 +222,13 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
         raise ValueError(f"{element} has no child data element.")
 
     return objects.TileLayer(
-        id, name, offset, opacity, properties, size, data
+        id=id,
+        name=name,
+        offset=offset,
+        opacity=opacity,
+        properties=properties,
+        size=size,
+        data=data,
     )
 
 
@@ -249,7 +251,7 @@ def _parse_objects(
         location_y = float(object_element.attrib["y"])
         location = objects.OrderedPair(location_x, location_y)
 
-        tiled_object = objects.TiledObject(id, location)
+        tiled_object = objects.TiledObject(id=id, location=location)
 
         try:
             width = float(object_element.attrib["width"])
@@ -323,14 +325,14 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
         pass
 
     return objects.ObjectLayer(
-        id,
-        name,
-        offset,
-        opacity,
-        properties,
-        tiled_objects,
-        color,
-        draw_order,
+        id=id,
+        name=name,
+        offset=offset,
+        opacity=opacity,
+        properties=properties,
+        tiled_objects=tiled_objects,
+        color=color,
+        draw_order=draw_order,
     )
 
 
@@ -352,7 +354,14 @@ def _parse_layer_group(element: etree.Element,) -> objects.LayerGroup:
 
     layers = _get_layers(element)
 
-    return objects.LayerGroup(id, name, offset, opacity, properties, layers)
+    return objects.LayerGroup(
+        id=id,
+        name=name,
+        offset=offset,
+        opacity=opacity,
+        properties=properties,
+        layers=layers,
+    )
 
 
 def _get_layer_parser(
@@ -648,6 +657,37 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
     )
 
 
+def _get_tile_sets(
+    map_element: etree.Element, parent_dir: Path
+) -> objects.TileSetDict:
+    # parse all tilesets
+    tile_sets: objects.TileSetDict = {}
+    tile_set_element_list = map_element.findall("./tileset")
+    for tile_set_element in tile_set_element_list:
+        # tiled docs are ambiguous about the 'firstgid' attribute
+        # current understanding is for the purposes of mapping the layer
+        # data to the tile set data, add the 'firstgid' value to each
+        # tile 'id'; this means that the 'firstgid' is specific to each,
+        # tile set as they pertain to the map, not tile set specific as
+        # the tiled docs can make it seem
+        # 'firstgid' the key for each TileMap
+        first_gid = int(tile_set_element.attrib["firstgid"])
+        try:
+            # check if is an external TSX
+            source = tile_set_element.attrib["source"]
+        except KeyError:
+            # the tile set in embedded
+            name = tile_set_element.attrib["name"]
+            tile_sets[first_gid] = _parse_tile_set(tile_set_element)
+        else:
+            # tile set is external
+            tile_sets[first_gid] = _parse_external_tile_set(
+                parent_dir, tile_set_element
+            )
+
+    return tile_sets
+
+
 def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
     # setting up XML parsing
     map_tree = etree.parse(str(tmx_file))
@@ -660,9 +700,11 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
     tiled_version = map_element.attrib["tiledversion"]
     orientation = map_element.attrib["orientation"]
     render_order = map_element.attrib["renderorder"]
+
     map_width = int(map_element.attrib["width"])
     map_height = int(map_element.attrib["height"])
     map_size = objects.Size(map_width, map_height)
+
     tile_width = int(map_element.attrib["tilewidth"])
     tile_height = int(map_element.attrib["tileheight"])
     tile_size = objects.Size(tile_width, tile_height)
@@ -673,30 +715,7 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
     next_layer_id = int(map_element.attrib["nextlayerid"])
     next_object_id = int(map_element.attrib["nextobjectid"])
 
-    # parse all tilesets
-    tile_sets: Dict[int, objects.TileSet] = {}
-    tile_set_element_list = map_element.findall("./tileset")
-    for tile_set_element in tile_set_element_list:
-        # tiled docs are ambiguous about the 'firstgid' attribute
-        # current understanding is for the purposes of mapping the layer
-        # data to the tile set data, add the 'firstgid' value to each
-        # tile 'id'; this means that the 'firstgid' is specific to each,
-        # tile set as they pertain to the map, not tile set specific as
-        # the tiled docs can make it seem
-        # 'firstgid' is saved beside each TileMap
-        firstgid = int(tile_set_element.attrib["firstgid"])
-        try:
-            # check if is an external TSX
-            source = tile_set_element.attrib["source"]
-        except KeyError:
-            # the tile set in embedded
-            name = tile_set_element.attrib["name"]
-            tile_sets[firstgid] = _parse_tile_set(tile_set_element)
-        else:
-            # tile set is external
-            tile_sets[firstgid] = _parse_external_tile_set(
-                parent_dir, tile_set_element
-            )
+    tile_sets = _get_tile_sets(map_element, parent_dir)
 
     layers = _get_layers(map_element)
 

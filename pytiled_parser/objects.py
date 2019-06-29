@@ -2,16 +2,15 @@
 pytiled_parser objects for Tiled maps.
 """
 
-import dataclasses
+
 import functools
 import re
-
+import xml.etree.ElementTree as etree
 from collections import OrderedDict
 from pathlib import Path
+from typing import Dict, List, NamedTuple, Optional, Union
 
-import xml.etree.ElementTree as etree
-
-from typing import NamedTuple, Union, Optional, List, Dict
+import attr
 
 
 class Color(NamedTuple):
@@ -60,7 +59,7 @@ class Template:
     """
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True)
 class Chunk:
     """
     Chunk object for infinite maps.
@@ -81,7 +80,7 @@ class Chunk:
     chunk_data: List[List[int]]
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True)
 class Image:
     """
     Image object.
@@ -100,7 +99,7 @@ class Image:
 
     source: str
     size: Optional[Size] = None
-    trans: Optional[Color] = None
+    trans: Optional[str] = None
 
 
 Properties = Dict[str, Union[int, float, Color, Path, str]]
@@ -151,7 +150,7 @@ class Frame(NamedTuple):
     duration: int
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True)
 class TileTerrain:
     """
     Defines each corner of a tile by Terrain index in
@@ -172,7 +171,7 @@ class TileTerrain:
     bottom_right: Optional[int] = None
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True, kw_only=True)
 class Layer:
     """Class that all layers inherret from.
 
@@ -212,7 +211,7 @@ Either a 2 dimensional array of integers representing the global tile IDs
 """
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True, kw_only=True)
 class TileLayer(Layer):
     """Tile map layer containing tiles.
 
@@ -230,27 +229,8 @@ class TileLayer(Layer):
     data: LayerData
 
 
-@dataclasses.dataclass
-class _TiledObjectBase:
-    id: int
-    location: OrderedPair
-
-
-@dataclasses.dataclass
-class _TiledObjectDefaults:
-    size: Size = Size(0, 0)
-    rotation: int = 0
-    opacity: float = 1
-
-    name: Optional[str] = None
-    type: Optional[str] = None
-
-    properties: Optional[Properties] = None
-    template: Optional[Template] = None
-
-
-@dataclasses.dataclass
-class TiledObject(_TiledObjectDefaults, _TiledObjectBase):
+@attr.s(auto_attribs=True, kw_only=True)
+class TiledObject:
     """
     TiledObject object.
 
@@ -274,8 +254,21 @@ class TiledObject(_TiledObjectDefaults, _TiledObjectBase):
             FIXME
     """
 
+    id: int
+    location: OrderedPair
 
-@dataclasses.dataclass
+    size: Size = Size(0, 0)
+    rotation: int = 0
+    opacity: float = 1
+
+    name: Optional[str] = None
+    type: Optional[str] = None
+
+    properties: Optional[Properties] = None
+    template: Optional[Template] = None
+
+
+@attr.s()
 class RectangleObject(TiledObject):
     """
     Rectangle shape defined by a point, width, and height.
@@ -286,7 +279,7 @@ class RectangleObject(TiledObject):
     """
 
 
-@dataclasses.dataclass
+@attr.s()
 class ElipseObject(TiledObject):
     """
     Elipse shape defined by a point, width, and height.
@@ -295,7 +288,7 @@ class ElipseObject(TiledObject):
     """
 
 
-@dataclasses.dataclass
+@attr.s()
 class PointObject(TiledObject):
     """
     Point defined by a point (x,y).
@@ -304,13 +297,8 @@ class PointObject(TiledObject):
     """
 
 
-@dataclasses.dataclass
-class _TileImageObjectBase(_TiledObjectBase):
-    gid: int
-
-
-@dataclasses.dataclass
-class TileImageObject(TiledObject, _TileImageObjectBase):
+@attr.s(auto_attribs=True, kw_only=True)
+class TileImageObject(TiledObject):
     """
     Polygon shape defined by a set of connections between points.
 
@@ -320,14 +308,11 @@ class TileImageObject(TiledObject, _TileImageObjectBase):
         :gid (int): Refference to a global tile id.
     """
 
-
-@dataclasses.dataclass
-class _PointsObjectBase(_TiledObjectBase):
-    points: List[OrderedPair]
+    gid: int
 
 
-@dataclasses.dataclass
-class PolygonObject(TiledObject, _PointsObjectBase):
+@attr.s(auto_attribs=True, kw_only=True)
+class PolygonObject(TiledObject):
     """
     Polygon shape defined by a set of connections between points.
 
@@ -337,9 +322,11 @@ class PolygonObject(TiledObject, _PointsObjectBase):
         :points (List[OrderedPair])
     """
 
+    points: List[OrderedPair]
 
-@dataclasses.dataclass
-class PolylineObject(TiledObject, _PointsObjectBase):
+
+@attr.s(auto_attribs=True, kw_only=True)
+class PolylineObject(TiledObject):
     """
     Polyline defined by a set of connections between points.
 
@@ -351,29 +338,11 @@ class PolylineObject(TiledObject, _PointsObjectBase):
         the location of the object.
     """
 
-
-@dataclasses.dataclass
-class _TextObjectBase(_TiledObjectBase):
-    text: str
+    points: List[OrderedPair]
 
 
-@dataclasses.dataclass
-class _TextObjectDefaults(_TiledObjectDefaults):
-    font_family: str = "sans-serif"
-    font_size: int = 16
-    wrap: bool = False
-    color: str = "#000000"
-    bold: bool = False
-    italic: bool = False
-    underline: bool = False
-    strike_out: bool = False
-    kerning: bool = False
-    horizontal_align: str = "left"
-    vertical_align: str = "top"
-
-
-@dataclasses.dataclass
-class TextObject(TiledObject, _TextObjectDefaults, _TextObjectBase):
+@attr.s(auto_attribs=True, kw_only=True)
+class TextObject(TiledObject):
     """
     Text object with associated settings.
 
@@ -396,8 +365,21 @@ class TextObject(TiledObject, _TextObjectDefaults, _TextObjectBase):
         :vertical_align (str): Vertical alignment of the text (defalt: "top")
     """
 
+    text: str
+    font_family: str = "sans-serif"
+    font_size: int = 16
+    wrap: bool = False
+    color: str = "#000000"
+    bold: bool = False
+    italic: bool = False
+    underline: bool = False
+    strike_out: bool = False
+    kerning: bool = False
+    horizontal_align: str = "left"
+    vertical_align: str = "top"
 
-@dataclasses.dataclass
+
+@attr.s(auto_attribs=True, kw_only=True)
 class ObjectLayer(Layer):
     """
     TiledObject Group Object.
@@ -426,7 +408,7 @@ class ObjectLayer(Layer):
     draw_order: Optional[str] = "topdown"
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True, kw_only=True)
 class LayerGroup(Layer):
     """
     Layer Group.
@@ -445,13 +427,13 @@ class LayerGroup(Layer):
     layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True)
 class Hitbox:
-    """Group of hitboxes for
+    """Group of hitboxes for FIXME
     """
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True)
 class Tile:
     """
     Individual tile object.
@@ -466,14 +448,15 @@ class Tile:
     """
 
     id: int
-    type: Optional[str]
-    terrain: Optional[TileTerrain]
-    animation: Optional[List[Frame]]
-    image: Optional[Image]
-    hitboxes: Optional[List[TiledObject]]
+
+    type: Optional[str] = None
+    terrain: Optional[TileTerrain] = None
+    animation: Optional[List[Frame]] = None
+    image: Optional[Image] = None
+    hitboxes: Optional[List[TiledObject]] = None
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True)
 class TileSet:
     """
     Object for storing a TSX with all associated collision data.
@@ -506,22 +489,23 @@ class TileSet:
 
     name: str
     max_tile_size: Size
-    spacing: Optional[int]
-    margin: Optional[int]
-    tile_count: Optional[int]
-    columns: Optional[int]
-    tile_offset: Optional[OrderedPair]
-    grid: Optional[Grid]
-    properties: Optional[Properties]
-    image: Optional[Image]
-    terrain_types: Optional[List[Terrain]]
-    tiles: Optional[Dict[int, Tile]]
+
+    spacing: Optional[int] = None
+    margin: Optional[int] = None
+    tile_count: Optional[int] = None
+    columns: Optional[int] = None
+    tile_offset: Optional[OrderedPair] = None
+    grid: Optional[Grid] = None
+    properties: Optional[Properties] = None
+    image: Optional[Image] = None
+    terrain_types: Optional[List[Terrain]] = None
+    tiles: Optional[Dict[int, Tile]] = None
 
 
 TileSetDict = Dict[int, TileSet]
 
 
-@dataclasses.dataclass
+@attr.s(auto_attribs=True)
 class TileMap:
     """
     Object for storing a TMX with all associated layers and properties.
@@ -569,7 +553,7 @@ class TileMap:
     map_size: Size
     tile_size: Size
     infinite: bool
-    next_layer_id: int
+    next_layer_id: Optional[int]
     next_object_id: int
 
     tile_sets: TileSetDict
@@ -581,22 +565,3 @@ class TileMap:
     background_color: Optional[str] = None
 
     properties: Optional[Properties] = None
-
-
-"""
-[22:16] <__m4ch1n3__> i would "[i for i in int_list if i < littler_then_value]"
-[22:16] <__m4ch1n3__> it returns a list of integers below "littler_then_value"
-[22:17] <__m4ch1n3__> !py3 [i for i in [1,2,3,4,1,2,3,4] if i < 3]
-[22:17] <codebot> __m4ch1n3__: [1, 2, 1, 2]
-[22:17] <__m4ch1n3__> !py3 [i for i in [1,2,3,4,1,2,3,4] if i < 4]
-[22:17] <codebot> __m4ch1n3__: [1, 2, 3, 1, 2, 3]
-[22:22] <__m4ch1n3__> !py3 max([i for i in [1,2,3,4,1,2,3,4] if i < 4])
-[22:22] <codebot> __m4ch1n3__: 3
-[22:22] <__m4ch1n3__> max(...) would return the maximum of resulting list
-[22:23] <__m4ch1n3__> !py3 max([i for i in  [1, 10, 100] if i < 20])
-[22:23] <codebot> __m4ch1n3__: 10
-[22:23] <__m4ch1n3__> !py3 max([i for i in  [1, 10, 100] if i < 242])
-[22:23] <codebot> __m4ch1n3__: 100
-[22:23] == markb1 [~mbiggers@45.36.35.206] has quit [Ping timeout: 245 seconds]
-[22:23] <__m4ch1n3__> !py3 max(i for i in  [1, 10, 100] if i < 242)
-"""
