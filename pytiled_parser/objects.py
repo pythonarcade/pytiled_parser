@@ -2,7 +2,6 @@
 pytiled_parser objects for Tiled maps.
 """
 
-
 import functools
 import re
 import xml.etree.ElementTree as etree
@@ -39,6 +38,18 @@ class OrderedPair(NamedTuple):
 
     x: Union[int, float]
     y: Union[int, float]
+
+
+class Property(NamedTuple):
+    """OrderedPair NamedTuple.
+
+    Attributes:
+        name str: Name of property
+        value str: Value of property
+    """
+
+    name: str
+    value: str
 
 
 class Size(NamedTuple):
@@ -194,7 +205,7 @@ class Layer:
             for more info.
     """
 
-    id: int
+    id_: int
     name: str
 
     offset: Optional[OrderedPair]
@@ -238,9 +249,10 @@ class TiledObject:
         https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
 
     Args:
-        :id (int): Unique ID of the object. Each object that is placed on a
+        :id_ (int): Unique ID of the object. Each object that is placed on a
             map gets a unique id. Even if an object was deleted, no object
             gets the same ID.
+        :gid (Optional[int]): Global tiled object ID
         :location (OrderedPair): The location of the object in pixels.
         :size (Size): The width of the object in pixels
             (default: (0, 0)).
@@ -250,13 +262,13 @@ class TiledObject:
         :name (Optional[str]): The name of the object.
         :type (Optional[str]): The type of the object.
         :properties (Properties): The properties of the TiledObject.
-        :template Optional[Template]: A reference to a Template object
-            FIXME
+        :template Optional[Template]: A reference to a Template object FIXME
     """
 
-    id: int
-    location: OrderedPair
+    id_: int
+    gid: Optional[int] = None
 
+    location: OrderedPair
     size: Size = Size(0, 0)
     rotation: int = 0
     opacity: float = 1
@@ -428,35 +440,6 @@ class LayerGroup(Layer):
 
 
 @attr.s(auto_attribs=True)
-class Hitbox:
-    """Group of hitboxes for FIXME
-    """
-
-
-@attr.s(auto_attribs=True)
-class Tile:
-    """
-    Individual tile object.
-
-    Args:
-        :id (int): The local tile ID within its tileset.
-        :type (str): The type of the tile. Refers to an object type and is
-            used by tile objects.
-        :terrain (int): Defines the terrain type of each corner of the tile.
-        :animation (List[Frame]): Each tile can have exactly one animation
-            associated with it.
-    """
-
-    id: int
-
-    type: Optional[str] = None
-    terrain: Optional[TileTerrain] = None
-    animation: Optional[List[Frame]] = None
-    image: Optional[Image] = None
-    hitboxes: Optional[List[TiledObject]] = None
-
-
-@attr.s(auto_attribs=True)
 class TileSet:
     """
     Object for storing a TSX with all associated collision data.
@@ -499,10 +482,33 @@ class TileSet:
     properties: Optional[Properties] = None
     image: Optional[Image] = None
     terrain_types: Optional[List[Terrain]] = None
-    tiles: Optional[Dict[int, Tile]] = None
+    tiles: Optional[Dict[int, "Tile"]] = None
 
 
 TileSetDict = Dict[int, TileSet]
+
+
+@attr.s(auto_attribs=True, kw_only=True)
+class Tile:
+    """
+    Individual tile object.
+
+    Args:
+        :id (int): The local tile ID within its tileset.
+        :type (str): The type of the tile. Refers to an object type and is
+            used by tile objects.
+        :terrain (int): Defines the terrain type of each corner of the tile.
+        :animation (List[Frame]): Each tile can have exactly one animation
+            associated with it.
+    """
+
+    id_: int
+    type_: Optional[str] = None
+    terrain: Optional[TileTerrain] = None
+    animation: Optional[List[Frame]] = None
+    image: Optional[Image] = None
+    properties: Optional[List[Property]] = None
+    tileset: Optional[TileSet] = None
 
 
 @attr.s(auto_attribs=True)

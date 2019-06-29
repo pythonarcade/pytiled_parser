@@ -175,7 +175,7 @@ def create_tile_set(qty_of_tiles):
     tiles = {}
 
     for tile_id in range(qty_of_tiles):
-        tiles[tile_id] = objects.Tile(tile_id)
+        tiles[tile_id] = objects.Tile(id_=tile_id)
 
     tile_set.tiles = tiles
 
@@ -184,14 +184,14 @@ def create_tile_set(qty_of_tiles):
 
 tile_by_gid = [
     (1, {1: create_tile_set(0)}, None),
-    (1, {1: create_tile_set(1)}, objects.Tile(0)),
-    (1, {1: create_tile_set(2)}, objects.Tile(0)),
+    (1, {1: create_tile_set(1)}, objects.Tile(id_=0)),
+    (1, {1: create_tile_set(2)}, objects.Tile(id_=0)),
     (2, {1: create_tile_set(1)}, None),
-    (10, {1: create_tile_set(10)}, objects.Tile(9)),
-    (1, {1: create_tile_set(1), 2: create_tile_set(1)}, objects.Tile(0)),
-    (2, {1: create_tile_set(1), 2: create_tile_set(1)}, objects.Tile(0)),
+    (10, {1: create_tile_set(10)}, objects.Tile(id_=9)),
+    (1, {1: create_tile_set(1), 2: create_tile_set(1)}, objects.Tile(id_=0)),
+    (2, {1: create_tile_set(1), 2: create_tile_set(1)}, objects.Tile(id_=0)),
     (3, {1: create_tile_set(1), 2: create_tile_set(1)}, None),
-    (15, {1: create_tile_set(5), 6: create_tile_set(10)}, objects.Tile(9)),
+    (15, {1: create_tile_set(5), 6: create_tile_set(10)}, objects.Tile(id_=9)),
     (
         20,
         {
@@ -199,7 +199,7 @@ tile_by_gid = [
             6: create_tile_set(10),
             16: create_tile_set(10),
         },
-        objects.Tile(4),
+        objects.Tile(id_=4),
     ),
 ]
 

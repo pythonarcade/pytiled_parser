@@ -54,7 +54,7 @@ def _decode_csv_data(data_text: str) -> List[List[int]]:
     """
     tile_grid = []
     lines: List[str] = data_text.split("\n")
-    # remove erronious empty lists due to a newline being on both ends of text
+    # remove erroneous empty lists due to a newline being on both ends of text
     lines = lines[1:-1]
     for line in lines:
         line_list = line.split(",")
@@ -160,7 +160,7 @@ def _parse_layer(
     Returns:
         FIXME
     """
-    id = int(layer_element.attrib["id"])
+    id_ = int(layer_element.attrib["id"])
 
     name = layer_element.attrib["name"]
 
@@ -197,7 +197,7 @@ def _parse_layer(
     else:
         properties = None
 
-    return id, name, offset, opacity, properties
+    return id_, name, offset, opacity, properties
 
 
 def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
@@ -209,7 +209,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
     Returns:
         TileLayer: The tile layer object.
     """
-    id, name, offset, opacity, properties = _parse_layer(element)
+    id_, name, offset, opacity, properties = _parse_layer(element)
 
     width = int(element.attrib["width"])
     height = int(element.attrib["height"])
@@ -222,7 +222,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
         raise ValueError(f"{element} has no child data element.")
 
     return objects.TileLayer(
-        id=id,
+        id_=id_,
         name=name,
         offset=offset,
         opacity=opacity,
@@ -246,12 +246,17 @@ def _parse_objects(
     tiled_objects: List[objects.TiledObject] = []
 
     for object_element in object_elements:
-        id = int(object_element.attrib["id"])
+        id_ = int(object_element.attrib["id"])
         location_x = float(object_element.attrib["x"])
         location_y = float(object_element.attrib["y"])
         location = objects.OrderedPair(location_x, location_y)
 
-        tiled_object = objects.TiledObject(id=id, location=location)
+        tiled_object = objects.TiledObject(id_=id_, location=location)
+
+        try:
+            tiled_object.gid = int(object_element.attrib["gid"])
+        except KeyError:
+            tiled_object.gid = None
 
         try:
             width = float(object_element.attrib["width"])
@@ -310,22 +315,24 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     Returns:
         ObjectLayer: The object layer object.
     """
-    id, name, offset, opacity, properties = _parse_layer(element)
+    id_, name, offset, opacity, properties = _parse_layer(element)
 
     tiled_objects = _parse_objects(element.findall("./object"))
 
+    color = None
     try:
         color = element.attrib["color"]
     except KeyError:
         pass
 
+    draw_order = None
     try:
         draw_order = element.attrib["draworder"]
     except KeyError:
         pass
 
     return objects.ObjectLayer(
-        id=id,
+        id_=id_,
         name=name,
         offset=offset,
         opacity=opacity,
@@ -350,12 +357,12 @@ def _parse_layer_group(element: etree.Element,) -> objects.LayerGroup:
     Returns:
         LayerGroup: The layer group object.
     """
-    id, name, offset, opacity, properties = _parse_layer(element)
+    id_, name, offset, opacity, properties = _parse_layer(element)
 
     layers = _get_layers(element)
 
     return objects.LayerGroup(
-        id=id,
+        id_=id_,
         name=name,
         offset=offset,
         opacity=opacity,
@@ -426,23 +433,18 @@ def _parse_external_tile_set(
     return _parse_tile_set(tile_set_tree)
 
 
-def _parse_hitboxes(element: etree.Element) -> List[objects.TiledObject]:
-    """Parses all hitboxes for a given tile."""
-    return _parse_objects(element.findall("./object"))
-
-
 def _parse_tiles(
     tile_element_list: List[etree.Element]
 ) -> Dict[int, objects.Tile]:
     tiles: Dict[int, objects.Tile] = {}
     for tile_element in tile_element_list:
         # id is not optional
-        id = int(tile_element.attrib["id"])
+        id_ = int(tile_element.attrib["id"])
 
         # optional attributes
-        tile_type = None
+        _type = None
         try:
-            tile_type = tile_element.attrib["type"]
+            _type = tile_element.attrib["type"]
         except KeyError:
             pass
 
@@ -453,20 +455,32 @@ def _parse_tiles(
             pass
         else:
             # below is an attempt to explain how terrains are handled.
-            #'terrain' attribute is a comma seperated list of 4 values,
+            # 'terrain' attribute is a comma seperated list of 4 values,
             # each is either an integer or blank
 
             # convert to list of values
             terrain_list_attrib = re.split(",", tile_terrain_attrib)
             # terrain_list is list of indexes of Tileset.terrain_types
             terrain_list: List[Optional[int]] = []
-            # each index in terrain_list_attrib reffers to a corner
+            # each index in terrain_list_attrib refers to a corner
             for corner in terrain_list_attrib:
                 if corner == "":
                     terrain_list.append(None)
                 else:
                     terrain_list.append(int(corner))
-            tile_terrain = objects.TileTerrain(*terrain_list)
+            terrain = objects.TileTerrain(*terrain_list)
+
+        # tile element optional sub-elements
+        properties: Optional[List[objects.Property]] = None
+        tile_properties_element = tile_element.find("./properties")
+        if tile_properties_element:
+            properties = []
+            property_list = tile_properties_element.findall("./property")
+            for property_ in property_list:
+                name = property_.attrib["name"]
+                value = property_.attrib["value"]
+                obj = objects.Property(name, value)
+                properties.append(obj)
 
         # tile element optional sub-elements
         animation: Optional[List[objects.Frame]] = None
@@ -475,26 +489,27 @@ def _parse_tiles(
             animation = []
             frames = tile_animation_element.findall("./frame")
             for frame in frames:
-                # tileid reffers to the Tile.id of the animation frame
-                tile_id = int(frame.attrib["tileid"])
+                # tileid refers to the Tile.id of the animation frame
+                id_ = int(frame.attrib["tileid"])
                 # duration is in MS. Should perhaps be converted to seconds.
                 # FIXME: make decision
                 duration = int(frame.attrib["duration"])
-                animation.append(objects.Frame(tile_id, duration))
+                animation.append(objects.Frame(id_, duration))
 
         # if this is None, then the Tile is part of a spritesheet
-        tile_image = None
-        tile_image_element = tile_element.find("./image")
-        if tile_image_element is not None:
-            tile_image = _parse_image_element(tile_image_element)
+        image = None
+        image_element = tile_element.find("./image")
+        if image_element is not None:
+            image = _parse_image_element(image_element)
 
-        hitboxes = None
-        tile_hitboxes_element = tile_element.find("./objectgroup")
-        if tile_hitboxes_element is not None:
-            hitboxes = _parse_hitboxes(tile_hitboxes_element)
-
-        tiles[id] = objects.Tile(
-            id, tile_type, tile_terrain, animation, tile_image, hitboxes
+        tiles[id_] = objects.Tile(
+            id_=id_,
+            type_=_type,
+            terrain=terrain,
+            animation=animation,
+            image=image,
+            properties=properties,
+            tileset=None,
         )
 
     return tiles
@@ -504,7 +519,7 @@ def _parse_image_element(image_element: etree.Element) -> objects.Image:
     """Parse image element given.
 
     Returns:
-        : Color in Arcade's preffered format.
+        : Color in Arcade's preferred format.
     """
     image = objects.Image(image_element.attrib["source"])
 
@@ -641,7 +656,7 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
     tile_element_list = tile_set_element.findall("./tile")
     tiles = _parse_tiles(tile_element_list)
 
-    return objects.TileSet(
+    tileset = objects.TileSet(
         name,
         max_tile_size,
         spacing,
@@ -655,6 +670,13 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
         terrain_types,
         tiles,
     )
+
+    # Go back and create a circular link so tiles know what tileset they are
+    # part of. Needed for animation.
+    for my_id, my_tile in tiles.items():
+        my_tile.tileset = tileset
+
+    return tileset
 
 
 def _get_tile_sets(

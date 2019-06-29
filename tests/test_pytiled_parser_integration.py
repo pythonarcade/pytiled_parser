@@ -74,7 +74,7 @@ def test_map_simple():
         [33, 34, 35, 36, 37, 38, 39, 40],
         [41, 42, 43, 44, 45, 46, 47, 48],
     ]
-    assert map.layers[0].id == 1
+    assert map.layers[0].id_ == 1
     assert map.layers[0].name == "Tile Layer 1"
     assert map.layers[0].offset == None
     assert map.layers[0].opacity == None
