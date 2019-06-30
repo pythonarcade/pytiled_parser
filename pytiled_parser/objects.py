@@ -1,11 +1,8 @@
-"""
-pytiled_parser objects for Tiled maps.
+"""pytiled_parser objects for Tiled maps.
 """
 
-import functools
-import re
-import xml.etree.ElementTree as etree
-from collections import OrderedDict
+# pylint: disable=too-few-public-methods
+
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Union
 
@@ -16,10 +13,10 @@ class Color(NamedTuple):
     """Color object.
 
     Attributes:
-        :red (int): Red, between 1 and 255.
-        :green (int): Green, between 1 and 255.
-        :blue (int): Blue, between 1 and 255.
-        :alpha (int): Alpha, between 1 and 255.
+        red (int): Red, between 1 and 255.
+        green (int): Green, between 1 and 255.
+        blue (int): Blue, between 1 and 255.
+        alpha (int): Alpha, between 1 and 255.
     """
 
     red: int
@@ -64,24 +61,22 @@ class Size(NamedTuple):
     height: Union[int, float]
 
 
+@attr.s(auto_attribs=True)
 class Template:
-    """
-    FIXME TODO
-    """
+    """FIXME TODO"""
 
 
 @attr.s(auto_attribs=True)
 class Chunk:
-    """
-    Chunk object for infinite maps.
+    """Chunk object for infinite maps.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#chunk
 
     Attributes:
-        :location (OrderedPair): Location of chunk in tiles.
-        :width (int): The width of the chunk in tiles.
-        :height (int): The height of the chunk in tiles.
-        :layer_data (List[List(int)]): The global tile IDs in chunky
+        location (OrderedPair): Location of chunk in tiles.
+        width (int): The width of the chunk in tiles.
+        height (int): The height of the chunk in tiles.
+        layer_data (List[List(int)]): The global tile IDs in chunky
             according to row.
     """
 
@@ -93,19 +88,18 @@ class Chunk:
 
 @attr.s(auto_attribs=True)
 class Image:
-    """
-    Image object.
+    """Image object.
 
     This module does not support embedded data in image elements.
 
     Attributes:
-        :source (Optional[str]): The reference to the tileset image file.
+        source (Optional[str]): The reference to the tileset image file.
             Not that this is a relative path compared to FIXME
-        :trans (Optional[Color]): Defines a specific color that is treated
+        trans (Optional[Color]): Defines a specific color that is treated
             as transparent.
-        :width (Optional[str]): The image width in pixels
+        width (Optional[str]): The image width in pixels
             (optional, used for tile index correction when the image changes).
-        :height (Optional[str]): The image height in pixels (optional).
+        height (Optional[str]): The image height in pixels (optional).
     """
 
     source: str
@@ -117,8 +111,7 @@ Properties = Dict[str, Union[int, float, Color, Path, str]]
 
 
 class Grid(NamedTuple):
-    """
-    Contains info for isometric maps.
+    """Contains info for isometric maps.
 
     This element is only used in case of isometric orientation, and
         determines how tile overlays for terrain and collision information
@@ -131,12 +124,11 @@ class Grid(NamedTuple):
 
 
 class Terrain(NamedTuple):
-    """
-    Terrain object.
+    """Terrain object.
 
     Args:
-        :name (str): The name of the terrain type.
-        :tile (int): The local tile-id of the tile that represents the
+        name (str): The name of the terrain type.
+        tile (int): The local tile-id of the tile that represents the
             terrain visually.
     """
 
@@ -145,15 +137,14 @@ class Terrain(NamedTuple):
 
 
 class Frame(NamedTuple):
-    """
-    Animation Frame object.
+    """Animation Frame object.
 
     This is only used as a part of an animation for Tile objects.
 
     Args:
-        :tile_id (int): The local ID of a tile within the parent tile set
+        tile_id (int): The local ID of a tile within the parent tile set
             object.
-        :duration (int): How long in milliseconds this frame should be
+        duration (int): How long in milliseconds this frame should be
             displayed before advancing to the next frame.
     """
 
@@ -163,17 +154,16 @@ class Frame(NamedTuple):
 
 @attr.s(auto_attribs=True)
 class TileTerrain:
-    """
-    Defines each corner of a tile by Terrain index in
+    """Defines each corner of a tile by Terrain index in
         'TileSet.terrain_types'.
 
     Defaults to 'None'. 'None' means that corner has no terrain.
 
     Attributes:
-        :top_left (Optional[int]): Top left terrain type.
-        :top_right (Optional[int]): Top right terrain type.
-        :bottom_left (Optional[int]): Bottom left terrain type.
-        :bottom_right (Optional[int]): Bottom right terrain type.
+        top_left (Optional[int]): Top left terrain type.
+        top_right (Optional[int]): Top right terrain type.
+        bottom_left (Optional[int]): Bottom left terrain type.
+        bottom_right (Optional[int]): Bottom right terrain type.
     """
 
     top_left: Optional[int] = None
@@ -214,8 +204,7 @@ class Layer:
 
 
 LayerData = Union[List[List[int]], List[Chunk]]
-"""
-The tile data for one layer.
+"""The tile data for one layer.
 
 Either a 2 dimensional array of integers representing the global tile IDs
     for a map layer, or a lists of chunks for an infinite map layer.
@@ -242,27 +231,26 @@ class TileLayer(Layer):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class TiledObject:
-    """
-    TiledObject object.
+    """TiledObject object.
 
     See:
         https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
 
     Args:
-        :id_ (int): Unique ID of the object. Each object that is placed on a
+        id_ (int): Unique ID of the object. Each object that is placed on a
             map gets a unique id. Even if an object was deleted, no object
             gets the same ID.
-        :gid (Optional[int]): Global tiled object ID
-        :location (OrderedPair): The location of the object in pixels.
-        :size (Size): The width of the object in pixels
+        gid (Optional[int]): Global tiled object ID
+        location (OrderedPair): The location of the object in pixels.
+        size (Size): The width of the object in pixels
             (default: (0, 0)).
-        :rotation (int): The rotation of the object in degrees clockwise
+        rotation (int): The rotation of the object in degrees clockwise
             (default: 0).
-        :opacity (int): The opacity of the object. (default: 255)
-        :name (Optional[str]): The name of the object.
-        :type (Optional[str]): The type of the object.
-        :properties (Properties): The properties of the TiledObject.
-        :template Optional[Template]: A reference to a Template object FIXME
+        opacity (int): The opacity of the object. (default: 255)
+        name (Optional[str]): The name of the object.
+        type (Optional[str]): The type of the object.
+        properties (Properties): The properties of the TiledObject.
+        template Optional[Template]: A reference to a Template object FIXME
     """
 
     id_: int
@@ -282,8 +270,7 @@ class TiledObject:
 
 @attr.s()
 class RectangleObject(TiledObject):
-    """
-    Rectangle shape defined by a point, width, and height.
+    """Rectangle shape defined by a point, width, and height.
 
     See: https://doc.mapeditor.org/en/stable/manual/objects/#insert-rectangle
         (objects in tiled are rectangles by default, so there is no specific
@@ -293,8 +280,7 @@ class RectangleObject(TiledObject):
 
 @attr.s()
 class ElipseObject(TiledObject):
-    """
-    Elipse shape defined by a point, width, and height.
+    """Elipse shape defined by a point, width, and height.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#ellipse
     """
@@ -302,8 +288,7 @@ class ElipseObject(TiledObject):
 
 @attr.s()
 class PointObject(TiledObject):
-    """
-    Point defined by a point (x,y).
+    """Point defined by a point (x,y).
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#point
     """
@@ -311,13 +296,12 @@ class PointObject(TiledObject):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class TileImageObject(TiledObject):
-    """
-    Polygon shape defined by a set of connections between points.
+    """Polygon shape defined by a set of connections between points.
 
     See: https://doc.mapeditor.org/en/stable/manual/objects/#insert-tile
 
     Attributes:
-        :gid (int): Refference to a global tile id.
+        gid (int): Refference to a global tile id.
     """
 
     gid: int
@@ -325,13 +309,12 @@ class TileImageObject(TiledObject):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class PolygonObject(TiledObject):
-    """
-    Polygon shape defined by a set of connections between points.
+    """Polygon shape defined by a set of connections between points.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polygon
 
     Attributes:
-        :points (List[OrderedPair])
+        points (List[OrderedPair]): FIXME
     """
 
     points: List[OrderedPair]
@@ -339,14 +322,13 @@ class PolygonObject(TiledObject):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class PolylineObject(TiledObject):
-    """
-    Polyline defined by a set of connections between points.
+    """Polyline defined by a set of connections between points.
 
     See:
         https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polyline
 
     Attributes:
-        :points (List[Tuple[int, int]]): List of coordinates relative to \
+        points (List[Tuple[int, int]]): List of coordinates relative to \
         the location of the object.
     """
 
@@ -355,26 +337,25 @@ class PolylineObject(TiledObject):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class TextObject(TiledObject):
-    """
-    Text object with associated settings.
+    """Text object with associated settings.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#text
         and https://doc.mapeditor.org/en/stable/manual/objects/#insert-text
 
     Attributes:
-        :font_family (str): The font family used (default: “sans-serif”)
-        :font_size (int): The size of the font in pixels. (default: 16)
-        :wrap (bool): Whether word wrapping is enabled. (default: False)
-        :color (Color): Color of the text. (default: #000000)
-        :bold (bool): Whether the font is bold. (default: False)
-        :italic (bool): Whether the font is italic. (default: False)
-        :underline (bool): Whether the text is underlined. (default: False)
-        :strike_out (bool): Whether the text is striked-out. (default: False)
-        :kerning (bool): Whether kerning should be used while rendering the \
-        text. (default: False)
-        :horizontal_align (str): Horizontal alignment of the text \
-        (default: "left")
-        :vertical_align (str): Vertical alignment of the text (defalt: "top")
+        font_family (str): The font family used (default: "sans-serif")
+        font_size (int): The size of the font in pixels. (default: 16)
+        wrap (bool): Whether word wrapping is enabled. (default: False)
+        color (Color): Color of the text. (default: #000000)
+        bold (bool): Whether the font is bold. (default: False)
+        italic (bool): Whether the font is italic. (default: False)
+        underline (bool): Whether the text is underlined. (default: False)
+        strike_out (bool): Whether the text is striked-out. (default: False)
+        kerning (bool): Whether kerning should be used while rendering the \
+            text. (default: False)
+        horizontal_align (str): Horizontal alignment of the text \
+            (default: "left")
+        vertical_align (str): Vertical alignment of the text (defalt: "top")
     """
 
     text: str
@@ -393,11 +374,10 @@ class TextObject(TiledObject):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class ObjectLayer(Layer):
-    """
-    TiledObject Group Object.
+    """TiledObject Group Object.
 
     The object group is in fact a map layer, and is hence called \
-    “object layer” in Tiled.
+    "object layer" in Tiled.
 
     See:
     https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
@@ -422,8 +402,7 @@ class ObjectLayer(Layer):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class LayerGroup(Layer):
-    """
-    Layer Group.
+    """Layer Group.
 
     A LayerGroup can be thought of as a layer that contains layers
         (potentially including other LayerGroups).
@@ -433,7 +412,8 @@ class LayerGroup(Layer):
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#group
 
     Attributes:
-
+        Layers (Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]):
+            Layers in group.
     """
 
     layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
@@ -441,33 +421,32 @@ class LayerGroup(Layer):
 
 @attr.s(auto_attribs=True)
 class TileSet:
-    """
-    Object for storing a TSX with all associated collision data.
+    """Object for storing a TSX with all associated collision data.
 
     Args:
-        :name (str): The name of this tileset.
-        :max_tile_size (Size): The maximum size of a tile in this
+        name (str): The name of this tileset.
+        max_tile_size (Size): The maximum size of a tile in this
             tile set in pixels.
-        :spacing (int): The spacing in pixels between the tiles in this
+        spacing (int): The spacing in pixels between the tiles in this
             tileset (applies to the tileset image).
-        :margin (int): The margin around the tiles in this tileset
+        margin (int): The margin around the tiles in this tileset
             (applies to the tileset image).
-        :tile_count (int): The number of tiles in this tileset.
-        :columns (int): The number of tile columns in the tileset.
+        tile_count (int): The number of tiles in this tileset.
+        columns (int): The number of tile columns in the tileset.
             For image collection tilesets it is editable and is used when
             displaying the tileset.
-        :grid (Grid): Only used in case of isometric orientation, and
+        grid (Grid): Only used in case of isometric orientation, and
             determines how tile overlays for terrain and collision information
             are rendered.
-        :tileoffset (Optional[OrderedPair]): Used to specify an offset in
+        tileoffset (Optional[OrderedPair]): Used to specify an offset in
             pixels when drawing a tile from the tileset. When not present, no
             offset is applied.
-        :image (Image): Used for spritesheet tile sets.
-        :terrain_types (Dict[str, int]): List of of terrain types which
+        image (Image): Used for spritesheet tile sets.
+        terrain_types (Dict[str, int]): List of of terrain types which
             can be referenced from the terrain attribute of the tile object.
             Ordered according to the terrain element's appearance in the TSX
             file.
-        :tiles (Optional[Dict[int, Tile]]): Dict of Tile objects by Tile.id.
+        tiles (Optional[Dict[int, Tile]]): Dict of Tile objects by Tile.id.
     """
 
     name: str
@@ -490,8 +469,7 @@ TileSetDict = Dict[int, TileSet]
 
 @attr.s(auto_attribs=True, kw_only=True)
 class Tile:
-    """
-    Individual tile object.
+    """Individual tile object.
 
     Args:
         :id (int): The local tile ID within its tileset.
@@ -513,8 +491,7 @@ class Tile:
 
 @attr.s(auto_attribs=True)
 class TileMap:
-    """
-    Object for storing a TMX with all associated layers and properties.
+    """Object for storing a TMX with all associated layers and properties.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#map
 
@@ -524,8 +501,8 @@ class TileMap:
         :version (str): The TMX format version.
         :tiledversion (str): The Tiled version used to save the file. May
             be a date (for snapshot builds).
-        :orientation (str): Map orientation. Tiled supports “orthogonal”,
-            “isometric”, “staggered” and “hexagonal”
+        :orientation (str): Map orientation. Tiled supports "orthogonal",
+            "isometric", "staggered" and "hexagonal"
         :renderorder (str): The order in which tiles on tile layers are
             rendered. Valid values are right-down, right-up, left-down and
             left-up. In all cases, the map is drawn row-by-row. (only
@@ -534,12 +511,12 @@ class TileMap:
         :tile_size (Size): The width of a tile.
         :infinite (bool): If the map is infinite or not.
         :hexsidelength (int): Only for hexagonal maps. Determines the width or
-            height (depending on the staggered axis) of the tile’s edge, in
+            height (depending on the staggered axis) of the tile's edge, in
             pixels.
         :stagger_axis (str): For staggered and hexagonal maps, determines
-            which axis (“x” or “y”) is staggered.
+            which axis ("x" or "y") is staggered.
         :staggerindex (str): For staggered and hexagonal maps, determines
-            whether the “even” or “odd” indexes along the staggered axis are
+            whether the "even" or "odd" indexes along the staggered axis are
             shifted.
         :backgroundcolor (##FIXME##): The background color of the map.
         :nextlayerid (int): Stores the next available ID for new layers.

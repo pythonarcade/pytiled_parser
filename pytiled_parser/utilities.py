@@ -5,8 +5,10 @@ import pytiled_parser.objects as objects
 
 
 def parse_color(color: str) -> objects.Color:
-    """
-    Converts the color formats that Tiled uses into ones that Arcade accepts.
+    """Convert Tiled color format into Arcade's.
+
+    Args:
+        color (str): Tiled formatted color string.
 
     Returns:
         :Color: Color object in the format that Arcade understands.
@@ -34,7 +36,8 @@ def _get_tile_set_key(gid: int, tile_set_keys: List[int]) -> int:
     """Gets tile set key given a tile GID.
 
     Args:
-        gid: Global ID of the tile.
+        gid (int): Global ID of the tile.
+        tile_set_keys (List[int]): List of tile set keys.
 
     Returns:
         int: The key of the tile set that contains the tile for the GID.
