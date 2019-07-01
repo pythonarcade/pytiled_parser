@@ -48,12 +48,12 @@ def _decode_base64_data(
     for byte in unzipped_data:
         int_value += byte << (byte_count * 8)
         byte_count += 1
-        if byte_count % 4 == 0:
+        if not byte_count % 4:
             byte_count = 0
             int_count += 1
             tile_grid[row_count].append(int_value)
             int_value = 0
-            if int_count % layer_width == 0:
+            if not int_count % layer_width:
                 row_count += 1
                 tile_grid.append([])
 
@@ -498,7 +498,7 @@ def _parse_tiles(
             terrain_list: List[Optional[int]] = []
             # each index in terrain_list_attrib refers to a corner
             for corner in terrain_list_attrib:
-                if corner == "":
+                if not corner:
                     terrain_list.append(None)
                 else:
                     terrain_list.append(int(corner))

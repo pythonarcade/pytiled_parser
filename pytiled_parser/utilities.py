@@ -1,5 +1,6 @@
-import functools
-from typing import Dict, List, Optional
+"""Helper unitilies for pytiled_parser."""
+
+from typing import List, Optional
 
 import pytiled_parser.objects as objects
 
@@ -13,8 +14,9 @@ def parse_color(color: str) -> objects.Color:
     Returns:
         :Color: Color object in the format that Arcade understands.
     """
-    # strip initial '#' character
-    if not len(color) % 2 == 0:
+    # the actual part we care about is always an even number
+    if len(color) % 2:
+        # strip initial '#' character
         color = color[1:]
 
     if len(color) == 6:

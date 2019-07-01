@@ -1,6 +1,7 @@
+"""Unit tests for pytiled_parser"""
+
 import xml.etree.ElementTree as etree
 from contextlib import contextmanager
-from typing import Callable, List, Optional, Tuple
 
 import pytest
 from pytiled_parser import objects, utilities, xml_parser
@@ -12,24 +13,33 @@ def does_not_raise():
 
 
 def _get_root_element(xml: str) -> etree.Element:
+    """Get root element of string of XML.
+
+    Args:
+        xml (str): String of XML to be parsed into etree.
+
+    Returns:
+        etree.Element: Root element of XML given.
+    """
     return etree.fromstring(xml)
 
 
-layer_data = [
+LAYER_DATA = [
     (
-        '<layer id="1" name="Tile Layer 1" width="10" height="10">' "</layer>",
+        '<layer id="1" name="Tile Layer 1" width="10" height="10">'
+        + "</layer>",
         (int(1), "Tile Layer 1", None, None, None),
     ),
     (
         '<layer id="2" name="Tile Layer 2" width="10" height="10" opacity="0.5">'
-        "</layer>",
+        + "</layer>",
         (int(2), "Tile Layer 2", None, float(0.5), None),
     ),
     (
         '<layer id="5" name="Tile Layer 4" width="10" height="10" offsetx="49" offsety="-50">'
-        "<properties>"
-        "</properties>"
-        "</layer>",
+        + "<properties>"
+        + "</properties>"
+        + "</layer>",
         (
             int(5),
             "Tile Layer 4",
@@ -41,7 +51,7 @@ layer_data = [
 ]
 
 
-@pytest.mark.parametrize("xml,expected", layer_data)
+@pytest.mark.parametrize("xml,expected", LAYER_DATA)
 def test_parse_layer(xml, expected, monkeypatch):
     def mockreturn(*args):
         return "properties"
@@ -62,9 +72,6 @@ def test_parse_layer(xml, expected, monkeypatch):
     ],
 )
 def test_color_parsing(test_input, expected):
-    """
-    Tiled has a few different types of color representations.
-    """
     assert utilities.parse_color(test_input) == expected
 
 
@@ -94,7 +101,7 @@ def test_decode_csv_data(data_csv, expected):
     assert xml_parser._decode_csv_data(data_csv) == expected
 
 
-data_base64 = [
+DATA_BASE64 = [
     (
         "AQAAAAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAAsAAAAMAAAADQAAAA4AAAAPAAAAEAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAeAAAAHwAAACAAAAAhAAAAIgAAACMAAAAkAAAAJQAAACYAAAAnAAAAKAAAACkAAAAqAAAAKwAAACwAAAAtAAAALgAAAC8AAAAwAAAA",
         8,
@@ -155,7 +162,7 @@ data_base64 = [
 
 
 @pytest.mark.parametrize(
-    "data_base64,width,compression,expected,raises", data_base64
+    "data_base64,width,compression,expected,raises", DATA_BASE64
 )
 def test_decode_base64_data(data_base64, width, compression, expected, raises):
     with raises:
