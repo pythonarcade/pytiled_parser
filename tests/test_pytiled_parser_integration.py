@@ -1,9 +1,7 @@
 import os
-
 from pathlib import Path
 
 import pytest
-
 import pytiled_parser
 
 print(os.path.dirname(os.path.abspath(__file__)))
@@ -15,13 +13,11 @@ def test_map_simple():
     """
     TMX with a very simple spritesheet tile set and some properties.
     """
-    map = pytiled_parser.parse_tile_map(
-        Path("../test_data/test_map_simple.tmx")
-    )
+    map = pytiled_parser.parse_tile_map(Path("test_data/test_map_simple.tmx"))
 
     # map
     # unsure how to get paths to compare propperly
-    assert str(map.parent_dir) == "../test_data"
+    assert str(map.parent_dir) == "test_data"
     assert map.version == "1.2"
     assert map.tiled_version == "1.2.3"
     assert map.orientation == "orthogonal"
@@ -41,7 +37,7 @@ def test_map_simple():
     assert map.properties == {
         "bool property - false": False,
         "bool property - true": True,
-        "color property": (0x49, 0xFC, 0xFF, 0xFF),
+        "color property": "#ff49fcff",
         "file property": Path("/var/log/syslog"),
         "float property": 1.23456789,
         "int property": 13,
@@ -78,7 +74,7 @@ def test_map_simple():
         [33, 34, 35, 36, 37, 38, 39, 40],
         [41, 42, 43, 44, 45, 46, 47, 48],
     ]
-    assert map.layers[0].id == 1
+    assert map.layers[0].id_ == 1
     assert map.layers[0].name == "Tile Layer 1"
     assert map.layers[0].offset == None
     assert map.layers[0].opacity == None

@@ -11,5 +11,5 @@ do
   pip3 install $file
 done
 # sphinx-build -b html doc doc/build/html
-coverage run --source arcade setup.py test
+coverage run --source pytiled_parser setup.py test
 coverage report -m
