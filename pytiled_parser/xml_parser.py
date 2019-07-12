@@ -483,6 +483,7 @@ def _parse_tiles(
         except KeyError:
             pass
 
+        terrain = None
         try:
             tile_terrain_attrib = tile_element.attrib["terrain"]
         except KeyError:
