@@ -484,6 +484,7 @@ class Tile:
     type_: Optional[str] = None
     terrain: Optional[TileTerrain] = None
     animation: Optional[List[Frame]] = None
+    objectgroup: Optional[List[TiledObject]] = None
     image: Optional[Image] = None
     properties: Optional[List[Property]] = None
     tileset: Optional[TileSet] = None

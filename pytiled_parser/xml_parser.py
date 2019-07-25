@@ -531,11 +531,45 @@ def _parse_tiles(
                 duration = int(frame.attrib["duration"])
                 animation.append(objects.Frame(id_, duration))
 
+        # tile element optional sub-elements
+        objectgroup: Optional[List[objects.TiledObject]] = None
+        objectgroup_element = tile_element.find("./objectgroup")
+        if objectgroup_element:
+            objectgroup = []
+            object_list = objectgroup_element.findall("./object")
+            for object in object_list:
+                my_id = object.attrib["id"]
+                my_x = object.attrib["x"]
+                my_y = object.attrib["y"]
+                if "width" in object.attrib:
+                    my_width = object.attrib["width"]
+                else:
+                    my_width = None
+                if "height" in object.attrib:
+                    my_height = object.attrib["height"]
+                else:
+                    my_height = None
+
+                polygon = objectgroup_element.findall("./object")
+
+                if polygon:
+                    my_object = objects.PolygonObject(id_=my_id,
+                                                      location=(my_x, my_y),
+                                                      size=(my_width, my_height))
+                else:
+                    my_object = objects.TiledObject(id_=my_id,
+                                                    location=(my_x, my_y),
+                                                    size=(my_width, my_height))
+
+                objectgroup.append(objects.TiledObject(my_object))
+
         # if this is None, then the Tile is part of a spritesheet
         image = None
         image_element = tile_element.find("./image")
         if image_element is not None:
             image = _parse_image_element(image_element)
+
+        print(id_, image, objectgroup)
 
         tiles[id_] = objects.Tile(
             id_=id_,
@@ -545,6 +579,7 @@ def _parse_tiles(
             image=image,
             properties=properties,
             tileset=None,
+            objectgroup=objectgroup
         )
 
     return tiles
