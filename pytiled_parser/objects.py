@@ -529,6 +529,7 @@ class TileMap:
     """
 
     parent_dir: Path
+    tmx_file: Union[str, Path]
 
     version: str
     tiled_version: str
