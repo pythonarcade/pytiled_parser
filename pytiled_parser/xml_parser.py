@@ -459,6 +459,19 @@ def _parse_external_tile_set(
     return _parse_tile_set(tile_set_tree)
 
 
+def _parse_points(point_string: str) -> List[objects.OrderedPair]:
+    str_pairs = point_string.split(" ")
+
+    points = []
+    for str_pair in str_pairs:
+        xys = str_pair.split(",")
+        x = float(xys[0])
+        y = float(xys[1])
+        points.append((x, y))
+
+    return points
+
+
 def _parse_tiles(
     tile_element_list: List[etree.Element]
 ) -> Dict[int, objects.Tile]:
@@ -525,11 +538,11 @@ def _parse_tiles(
             frames = tile_animation_element.findall("./frame")
             for frame in frames:
                 # tileid refers to the Tile.id of the animation frame
-                id_ = int(frame.attrib["tileid"])
+                animated_id = int(frame.attrib["tileid"])
                 # duration is in MS. Should perhaps be converted to seconds.
                 # FIXME: make decision
                 duration = int(frame.attrib["duration"])
-                animation.append(objects.Frame(id_, duration))
+                animation.append(objects.Frame(animated_id, duration))
 
         # tile element optional sub-elements
         objectgroup: Optional[List[objects.TiledObject]] = None
@@ -539,29 +552,56 @@ def _parse_tiles(
             object_list = objectgroup_element.findall("./object")
             for object in object_list:
                 my_id = object.attrib["id"]
-                my_x = object.attrib["x"]
-                my_y = object.attrib["y"]
+                my_x = float(object.attrib["x"])
+                my_y = float(object.attrib["y"])
                 if "width" in object.attrib:
-                    my_width = object.attrib["width"]
+                    my_width = float(object.attrib["width"])
                 else:
                     my_width = None
                 if "height" in object.attrib:
-                    my_height = object.attrib["height"]
+                    my_height = float(object.attrib["height"])
                 else:
                     my_height = None
 
-                polygon = objectgroup_element.findall("./object")
+                # This is where it would be nice if we could assume a walrus
+                # operator was part of our Python distribution.
 
-                if polygon:
+                my_object = None
+
+                polygon = object.findall("./polygon")
+
+                if polygon and len(polygon) > 0:
+                    points = _parse_points(polygon[0].attrib["points"])
                     my_object = objects.PolygonObject(id_=my_id,
                                                       location=(my_x, my_y),
-                                                      size=(my_width, my_height))
-                else:
-                    my_object = objects.TiledObject(id_=my_id,
-                                                    location=(my_x, my_y),
-                                                    size=(my_width, my_height))
+                                                      size=(my_width, my_height),
+                                                      points=points)
 
-                objectgroup.append(objects.TiledObject(my_object))
+                if my_object is None:
+                    polyline  = object.findall("./polyline")
+
+                    if polygon and len(polygon) > 0:
+                        points = _parse_points(polyline[0].attrib["points"])
+                        my_object = objects.PolylineObject(id_=my_id,
+                                                           location=(my_x, my_y),
+                                                           size=(my_width, my_height),
+                                                           points=points)
+
+                if my_object is None:
+                    ellipse  = object.findall("./ellipse")
+
+                    if ellipse and len(ellipse):
+                        my_object = objects.ElipseObject(id_=my_id,
+                                                         location=(my_x, my_y),
+                                                         size=(my_width, my_height))
+
+
+                if my_object is None:
+                       my_object = objects.RectangleObject(id_=my_id,
+                                                        location=(my_x, my_y),
+                                                        size=(my_width, my_height))
+
+                objectgroup.append(my_object)
 
         # if this is None, then the Tile is part of a spritesheet
         image = None
@@ -569,7 +609,7 @@ def _parse_tiles(
         if image_element is not None:
             image = _parse_image_element(image_element)
 
-        print(id_, image, objectgroup)
+        # print(f"Adding '{id_}', {image}, {objectgroup}")
 
         tiles[id_] = objects.Tile(
             id_=id_,
@@ -844,6 +884,7 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
 
     tile_map = objects.TileMap(
         parent_dir,
+        tmx_file,
         version,
         tiled_version,
         orientation,
