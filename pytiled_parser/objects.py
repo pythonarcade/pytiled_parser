@@ -488,6 +488,9 @@ class Tile:
     image: Optional[Image] = None
     properties: Optional[List[Property]] = None
     tileset: Optional[TileSet] = None
+    flipped_horizontally: bool = False
+    flipped_diagonally: bool = False
+    flipped_vertically: bool = False
 
 
 @attr.s(auto_attribs=True)
