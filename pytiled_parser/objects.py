@@ -547,6 +547,6 @@ class TileMap:
     hex_side_length: Optional[int] = None
     stagger_axis: Optional[int] = None
     stagger_index: Optional[int] = None
-    background_color: Optional[str] = None
+    background_color: Optional[Color] = None
 
     properties: Optional[Properties] = None
