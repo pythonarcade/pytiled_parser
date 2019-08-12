@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import pytiled_parser.objects as objects
-
+from pytiled_parser.utilities import parse_color
 
 def _decode_base64_data(
     data_text: str, layer_width: int, compression: Optional[str] = None
@@ -914,7 +914,8 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
         pass
 
     try:
-        tile_map.background_color = map_element.attrib["backgroundcolor"]
+        color = parse_color(map_element.attrib["backgroundcolor"])
+        tile_map.background_color = (color.red, color.green, color.blue)
     except KeyError:
         pass
 
