@@ -580,7 +580,7 @@ def _parse_tiles(
                 if my_object is None:
                     polyline  = object.findall("./polyline")
 
-                    if polygon and len(polygon) > 0:
+                    if polyline and len(polyline) > 0:
                         points = _parse_points(polyline[0].attrib["points"])
                         my_object = objects.PolylineObject(id_=my_id,
                                                            location=(my_x, my_y),
