@@ -187,7 +187,10 @@ def _parse_layer(
     Returns:
         FIXME
     """
-    id_ = int(layer_element.attrib["id"])
+    if "id" in layer_element:
+        id_ = int(layer_element.attrib["id"])
+    else:
+        id_ = None
 
     name = layer_element.attrib["name"]
 
@@ -875,8 +878,15 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
     infinite_attribute = map_element.attrib["infinite"]
     infinite = bool(infinite_attribute == "true")
 
-    next_layer_id = int(map_element.attrib["nextlayerid"])
-    next_object_id = int(map_element.attrib["nextobjectid"])
+    if "nextlayerid" in map_element.attrib:
+        next_layer_id = int(map_element.attrib["nextlayerid"])
+    else:
+        next_layer_id = None
+
+    if "nextobjectid" in map_element.attrib:
+        next_object_id = int(map_element.attrib["nextobjectid"])
+    else:
+        next_object_id = None
 
     tile_sets = _get_tile_sets(map_element, parent_dir)
 
