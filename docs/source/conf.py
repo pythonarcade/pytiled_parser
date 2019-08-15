@@ -24,7 +24,7 @@ project = 'PyTiled Parser'
 copyright = '2019, Beefy-Swain'
 author = 'Beefy-Swain'
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- General configuration ---------------------------------------------------
 
