@@ -17,10 +17,14 @@
 
 # -- Project information -----------------------------------------------------
 
+import os
+import sys
+
 project = 'PyTiled Parser'
 copyright = '2019, Beefy-Swain'
 author = 'Beefy-Swain'
 
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration ---------------------------------------------------
 
