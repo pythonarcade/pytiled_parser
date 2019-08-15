@@ -60,8 +60,7 @@ def get_tile_by_gid(
 
     Returns:
         objects.Tile: The Tile object reffered to by the global tile ID.
-        None: If there is no objects.Tile object in the tile_set.tiles dict
-            for the associated gid.
+        None: If there is no objects.Tile object in the tile_set.tiles dict for the associated gid.
     """
     tile_set_key = _get_tile_set_key(gid, list(tile_sets.keys()))
     tile_set = tile_sets[tile_set_key]
