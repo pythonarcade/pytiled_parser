@@ -28,3 +28,8 @@ Examples
 .. _Arcade: http://arcade.academy
 .. _Pyglet: https://pyglet.readthedocs.io/en/pyglet-1.3-maintenance/
 .. _Pygame: https://www.pygame.org/news
+
+PyPi
+----
+
+* https://pypi.org/project/pytiled-parser/
