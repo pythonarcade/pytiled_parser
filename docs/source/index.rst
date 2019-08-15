@@ -29,7 +29,8 @@ Examples
 .. _Pyglet: https://pyglet.readthedocs.io/en/pyglet-1.3-maintenance/
 .. _Pygame: https://www.pygame.org/news
 
-PyPi
-----
+For More Info
+-------------
 
-* https://pypi.org/project/pytiled-parser/
+* `PyTiled Parser on GitHub <https://github.com/pvcraven/pytiled_parser>`_
+* `PyTiled Parser on PyPi <https://pypi.org/project/pytiled-parser/>`_
