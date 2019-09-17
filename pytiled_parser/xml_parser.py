@@ -145,7 +145,12 @@ def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
     Returns:
         LayerData: Data object containing layer data or chunks of data.
     """
-    encoding = element.attrib["encoding"]
+    try:
+        encoding = element.attrib["encoding"]
+    except KeyError as e:
+        print( "The tmx_file must be encoding by csv,. base64, gzip-base64, or zlip-base64")
+        raise e
+
     compression = None
     try:
         compression = element.attrib["compression"]
