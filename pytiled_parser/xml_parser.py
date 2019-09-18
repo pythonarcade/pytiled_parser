@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import pytiled_parser.objects as objects
-
+from pytiled_parser.utilities import parse_color
 
 def _decode_base64_data(
     data_text: str, layer_width: int, compression: Optional[str] = None
@@ -192,7 +192,10 @@ def _parse_layer(
     Returns:
         FIXME
     """
-    id_ = int(layer_element.attrib["id"])
+    if "id" in layer_element:
+        id_ = int(layer_element.attrib["id"])
+    else:
+        id_ = None
 
     name = layer_element.attrib["name"]
 
@@ -464,6 +467,19 @@ def _parse_external_tile_set(
     return _parse_tile_set(tile_set_tree)
 
 
+def _parse_points(point_string: str) -> List[objects.OrderedPair]:
+    str_pairs = point_string.split(" ")
+
+    points = []
+    for str_pair in str_pairs:
+        xys = str_pair.split(",")
+        x = float(xys[0])
+        y = float(xys[1])
+        points.append((x, y))
+
+    return points
+
+
 def _parse_tiles(
     tile_element_list: List[etree.Element]
 ) -> Dict[int, objects.Tile]:
@@ -488,6 +504,7 @@ def _parse_tiles(
         except KeyError:
             pass
 
+        terrain = None
         try:
             tile_terrain_attrib = tile_element.attrib["terrain"]
         except KeyError:
@@ -529,17 +546,78 @@ def _parse_tiles(
             frames = tile_animation_element.findall("./frame")
             for frame in frames:
                 # tileid refers to the Tile.id of the animation frame
-                id_ = int(frame.attrib["tileid"])
+                animated_id = int(frame.attrib["tileid"])
                 # duration is in MS. Should perhaps be converted to seconds.
                 # FIXME: make decision
                 duration = int(frame.attrib["duration"])
-                animation.append(objects.Frame(id_, duration))
+                animation.append(objects.Frame(animated_id, duration))
+
+        # tile element optional sub-elements
+        objectgroup: Optional[List[objects.TiledObject]] = None
+        objectgroup_element = tile_element.find("./objectgroup")
+        if objectgroup_element:
+            objectgroup = []
+            object_list = objectgroup_element.findall("./object")
+            for object in object_list:
+                my_id = object.attrib["id"]
+                my_x = float(object.attrib["x"])
+                my_y = float(object.attrib["y"])
+                if "width" in object.attrib:
+                    my_width = float(object.attrib["width"])
+                else:
+                    my_width = None
+                if "height" in object.attrib:
+                    my_height = float(object.attrib["height"])
+                else:
+                    my_height = None
+
+                # This is where it would be nice if we could assume a walrus
+                # operator was part of our Python distribution.
+
+                my_object = None
+
+                polygon = object.findall("./polygon")
+
+                if polygon and len(polygon) > 0:
+                    points = _parse_points(polygon[0].attrib["points"])
+                    my_object = objects.PolygonObject(id_=my_id,
+                                                      location=(my_x, my_y),
+                                                      size=(my_width, my_height),
+                                                      points=points)
+
+                if my_object is None:
+                    polyline  = object.findall("./polyline")
+
+                    if polyline and len(polyline) > 0:
+                        points = _parse_points(polyline[0].attrib["points"])
+                        my_object = objects.PolylineObject(id_=my_id,
+                                                           location=(my_x, my_y),
+                                                           size=(my_width, my_height),
+                                                           points=points)
+
+                if my_object is None:
+                    ellipse  = object.findall("./ellipse")
+
+                    if ellipse and len(ellipse):
+                        my_object = objects.ElipseObject(id_=my_id,
+                                                         location=(my_x, my_y),
+                                                         size=(my_width, my_height))
+
+
+                if my_object is None:
+                       my_object = objects.RectangleObject(id_=my_id,
+                                                        location=(my_x, my_y),
+                                                        size=(my_width, my_height))
+
+                objectgroup.append(my_object)
 
         # if this is None, then the Tile is part of a spritesheet
         image = None
         image_element = tile_element.find("./image")
         if image_element is not None:
             image = _parse_image_element(image_element)
+
+        # print(f"Adding '{id_}', {image}, {objectgroup}")
 
         tiles[id_] = objects.Tile(
             id_=id_,
@@ -549,6 +627,7 @@ def _parse_tiles(
             image=image,
             properties=properties,
             tileset=None,
+            objectgroup=objectgroup
         )
 
     return tiles
@@ -804,8 +883,15 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
     infinite_attribute = map_element.attrib["infinite"]
     infinite = bool(infinite_attribute == "true")
 
-    next_layer_id = int(map_element.attrib["nextlayerid"])
-    next_object_id = int(map_element.attrib["nextobjectid"])
+    if "nextlayerid" in map_element.attrib:
+        next_layer_id = int(map_element.attrib["nextlayerid"])
+    else:
+        next_layer_id = None
+
+    if "nextobjectid" in map_element.attrib:
+        next_object_id = int(map_element.attrib["nextobjectid"])
+    else:
+        next_object_id = None
 
     tile_sets = _get_tile_sets(map_element, parent_dir)
 
@@ -813,6 +899,7 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
 
     tile_map = objects.TileMap(
         parent_dir,
+        tmx_file,
         version,
         tiled_version,
         orientation,
@@ -842,7 +929,8 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
         pass
 
     try:
-        tile_map.background_color = map_element.attrib["backgroundcolor"]
+        color = parse_color(map_element.attrib["backgroundcolor"])
+        tile_map.background_color = (color.red, color.green, color.blue)
     except KeyError:
         pass
 
