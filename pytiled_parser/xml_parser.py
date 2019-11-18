@@ -192,7 +192,10 @@ def _parse_layer(
     else:
         id_ = None
 
-    name = layer_element.attrib["name"]
+    if "name" in layer_element.attrib:
+        name = layer_element.attrib["name"]
+    else:
+        name = None
 
     offset: Optional[objects.OrderedPair]
     offset_x_attrib = layer_element.attrib.get("offsetx")
@@ -598,9 +601,13 @@ def _parse_tiles(
                                                          location=(my_x, my_y),
                                                          size=(my_width, my_height))
 
+                if my_object is None:
+                    if "template" in object.attrib:
+                        print("Warning, this .tmx file is using an unsupported 'template' attribute. Ignoring.")
+                        continue
 
                 if my_object is None:
-                       my_object = objects.RectangleObject(id_=my_id,
+                    my_object = objects.RectangleObject(id_=my_id,
                                                         location=(my_x, my_y),
                                                         size=(my_width, my_height))
 
