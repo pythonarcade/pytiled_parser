@@ -4,7 +4,7 @@ from os import path
 from setuptools import setup  # type: ignore
 
 BUILD = 0
-VERSION = "0.9.0"
+VERSION = "0.9.1"
 RELEASE = VERSION
 
 if __name__ == "__main__":
@@ -32,6 +32,7 @@ if __name__ == "__main__":
             "Programming Language :: Python",
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: Implementation :: CPython",
             "Topic :: Software Development :: Libraries :: Python Modules",
         ],
