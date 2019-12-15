@@ -317,7 +317,7 @@ def _parse_objects(
             pass
 
         try:
-            tiled_object.rotation = int(object_element.attrib["rotation"])
+            tiled_object.rotation = float(object_element.attrib["rotation"])
         except KeyError:
             pass
 
