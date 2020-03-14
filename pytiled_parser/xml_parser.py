@@ -926,12 +926,12 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
         pass
 
     try:
-        tile_map.stagger_axis = int(map_element.attrib["staggeraxis"])
+        tile_map.stagger_axis = map_element.attrib["staggeraxis"]
     except KeyError:
         pass
 
     try:
-        tile_map.stagger_index = int(map_element.attrib["staggerindex"])
+        tile_map.stagger_index = map_element.attrib["staggerindex"]
     except KeyError:
         pass
 
