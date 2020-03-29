@@ -530,16 +530,11 @@ def _parse_tiles(
             terrain = objects.TileTerrain(*terrain_list)
 
         # tile element optional sub-elements
-        properties: Optional[List[objects.Property]] = None
+        properties: Optional[Properties] = None
         tile_properties_element = tile_element.find("./properties")
+        
         if tile_properties_element:
-            properties = []
-            property_list = tile_properties_element.findall("./property")
-            for property_ in property_list:
-                name = property_.attrib["name"]
-                value = property_.attrib["value"]
-                obj = objects.Property(name, value)
-                properties.append(obj)
+            properties = _parse_properties_element(tile_properties_element)
 
         # tile element optional sub-elements
         animation: Optional[List[objects.Frame]] = None
