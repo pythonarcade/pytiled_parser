@@ -444,6 +444,10 @@ class TileSet:
             Ordered according to the terrain element's appearance in the TSX \
             file.
         tiles (Optional[Dict[int, Tile]]): Dict of Tile objects by Tile.id.
+        tsx_file (Path): Path of the file containing the tileset, \
+            None if loaded internally from a map
+        parent_dir (Path): Path of the parent directory of the file \
+            containing the tileset, None if loaded internally from a map
     """
 
     name: str
@@ -459,6 +463,8 @@ class TileSet:
     image: Optional[Image] = None
     terrain_types: Optional[List[Terrain]] = None
     tiles: Optional[Dict[int, "Tile"]] = None
+    tsx_file: Path = None
+    parent_dir: Path = None
 
 
 TileSetDict = Dict[int, TileSet]

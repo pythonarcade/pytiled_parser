@@ -465,9 +465,15 @@ def _parse_external_tile_set(
         objects.Tileset: The tileset being parsed.
     """
     source = Path(tile_set_element.attrib["source"])
+    resolved_path = parent_dir / source
     tile_set_tree = etree.parse(str(parent_dir / Path(source))).getroot()
 
-    return _parse_tile_set(tile_set_tree)
+    parsed_tile_set = _parse_tile_set(tile_set_tree)
+
+    parsed_tile_set.tsx_file = resolved_path
+    parsed_tile_set.parent_dir = resolved_path.parent
+
+    return parsed_tile_set
 
 
 def _parse_points(point_string: str) -> List[objects.OrderedPair]:
