@@ -111,7 +111,6 @@ def _decode_data(
     Returns:
         List[List[int]]: Tile grid.
     """
-    # etree.Element.text comes with an appended and a prepended '\n'
     supported_encodings = ["base64", "csv"]
     if encoding not in supported_encodings:
         raise ValueError(f"{encoding} is not a supported encoding")
