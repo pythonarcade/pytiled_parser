@@ -2,18 +2,19 @@ import os
 from pathlib import Path
 
 import pytest
+
 import pytiled_parser
 
-print(os.path.dirname(os.path.abspath(__file__)))
-
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+TESTS_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
+TEST_DATA = TESTS_DIR / "test_data"
 
 
 def test_map_simple():
     """
     TMX with a very simple spritesheet tile set and some properties.
     """
-    map = pytiled_parser.parse_tile_map(Path("test_data/test_map_simple.tmx"))
+
+    test_map = pytiled_parser.parse_tile_map(TEST_DATA / "test_map_simple.tmx")
 
     # map
     # unsure how to get paths to compare propperly
