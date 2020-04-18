@@ -1,15 +1,11 @@
 """Unit tests for pytiled_parser"""
 
 import xml.etree.ElementTree as etree
-from contextlib import contextmanager
+from contextlib import ExitStack as does_not_raise
 
 import pytest
+
 from pytiled_parser import objects, utilities, xml_parser
-
-
-@contextmanager
-def does_not_raise():
-    yield
 
 
 def _get_root_element(xml: str) -> etree.Element:

@@ -193,7 +193,7 @@ def _parse_layer(
     Returns:
         FIXME
     """
-    if "id" in layer_element:
+    if "id" in layer_element.attrib:
         id_ = int(layer_element.attrib["id"])
     else:
         id_ = None
