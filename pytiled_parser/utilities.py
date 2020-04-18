@@ -49,9 +49,7 @@ def _get_tile_set_key(gid: int, tile_set_keys: List[int]) -> int:
     return max([key for key in tile_set_keys if key <= gid])
 
 
-def get_tile_by_gid(
-    gid: int, tile_sets: objects.TileSetDict
-) -> Optional[objects.Tile]:
+def get_tile_by_gid(gid: int, tile_sets: objects.TileSetDict) -> Optional[objects.Tile]:
     """Gets correct Tile for a given global ID.
 
     Args:

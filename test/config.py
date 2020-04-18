@@ -1,1 +1,1 @@
-MAP_NAME = 'assets/tiled_test_4.tmx'
+MAP_NAME = "assets/tiled_test_4.tmx"

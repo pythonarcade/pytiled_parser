@@ -56,9 +56,7 @@ def test_map_simple():
     assert map.tile_sets[1].properties == None
 
     # unsure how to get paths to compare propperly
-    assert str(map.tile_sets[1].image.source) == (
-        "images/tmw_desert_spacing.png"
-    )
+    assert str(map.tile_sets[1].image.source) == ("images/tmw_desert_spacing.png")
     assert map.tile_sets[1].image.trans == None
     assert map.tile_sets[1].image.size == (265, 199)
 

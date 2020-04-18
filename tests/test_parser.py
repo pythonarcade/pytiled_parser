@@ -26,8 +26,7 @@ def _get_root_element(xml: str) -> etree.Element:
 
 LAYER_DATA = [
     (
-        '<layer id="1" name="Tile Layer 1" width="10" height="10">'
-        + "</layer>",
+        '<layer id="1" name="Tile Layer 1" width="10" height="10">' + "</layer>",
         (int(1), "Tile Layer 1", None, None, None),
     ),
     (
@@ -40,13 +39,7 @@ LAYER_DATA = [
         + "<properties>"
         + "</properties>"
         + "</layer>",
-        (
-            int(5),
-            "Tile Layer 4",
-            objects.OrderedPair(49, -50),
-            None,
-            "properties",
-        ),
+        (int(5), "Tile Layer 4", objects.OrderedPair(49, -50), None, "properties",),
     ),
 ]
 
@@ -58,7 +51,11 @@ def test_parse_layer(xml, expected, monkeypatch):
 
     monkeypatch.setattr(xml_parser, "_parse_properties_element", mockreturn)
 
-    assert xml_parser._parse_layer(_get_root_element(xml)) == expected
+    result = xml_parser._parse_layer(_get_root_element(xml))
+
+    print(result)
+
+    assert result == expected
 
 
 @pytest.mark.parametrize(
@@ -161,14 +158,11 @@ DATA_BASE64 = [
 ]
 
 
-@pytest.mark.parametrize(
-    "data_base64,width,compression,expected,raises", DATA_BASE64
-)
+@pytest.mark.parametrize("data_base64,width,compression,expected,raises", DATA_BASE64)
 def test_decode_base64_data(data_base64, width, compression, expected, raises):
     with raises:
         assert (
-            xml_parser._decode_base64_data(data_base64, width, compression)
-            == expected
+            xml_parser._decode_base64_data(data_base64, width, compression) == expected
         )
 
 
@@ -201,11 +195,7 @@ tile_by_gid = [
     (15, {1: create_tile_set(5), 6: create_tile_set(10)}, objects.Tile(id_=9)),
     (
         20,
-        {
-            1: create_tile_set(5),
-            6: create_tile_set(10),
-            16: create_tile_set(10),
-        },
+        {1: create_tile_set(5), 6: create_tile_set(10), 16: create_tile_set(10),},
         objects.Tile(id_=4),
     ),
 ]
