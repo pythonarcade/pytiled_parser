@@ -12,6 +12,7 @@ from typing import Callable, Dict, List, Optional, Tuple, Union
 import pytiled_parser.objects as objects
 from pytiled_parser.utilities import parse_color
 
+
 def _decode_base64_data(
     data_text: str, layer_width: int, compression: Optional[str] = None
 ) -> List[List[int]]:
@@ -148,7 +149,9 @@ def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
     try:
         encoding = element.attrib["encoding"]
     except KeyError as e:
-        print( "The tmx_file must be encoding by csv,. base64, gzip-base64, or zlip-base64")
+        print(
+            "The tmx_file must be encoding by csv,. base64, gzip-base64, or zlip-base64"
+        )
         raise e
 
     compression = None
@@ -166,9 +169,7 @@ def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
             location = objects.OrderedPair(x, y)
             width = int(chunk_element.attrib["width"])
             height = int(chunk_element.attrib["height"])
-            layer_data = _decode_data(
-                chunk_element, layer_width, encoding, compression
-            )
+            layer_data = _decode_data(chunk_element, layer_width, encoding, compression)
             chunks.append(objects.Chunk(location, width, height, layer_data))
         return chunks
 
@@ -176,7 +177,7 @@ def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
 
 
 def _parse_layer(
-    layer_element: etree.Element
+    layer_element: etree.Element,
 ) -> Tuple[
     int,
     str,
@@ -273,9 +274,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
     )
 
 
-def _parse_objects(
-    object_elements: List[etree.Element]
-) -> List[objects.TiledObject]:
+def _parse_objects(object_elements: List[etree.Element]) -> List[objects.TiledObject]:
     """Parses objects found in the 'objectgroup' element.
 
     Args:
@@ -333,9 +332,7 @@ def _parse_objects(
 
         properties_element = object_element.find("./properties")
         if properties_element is not None:
-            tiled_object.properties = _parse_properties_element(
-                properties_element
-            )
+            tiled_object.properties = _parse_properties_element(properties_element)
 
         tiled_objects.append(tiled_object)
 
@@ -403,7 +400,7 @@ def _parse_layer_group(element: etree.Element,) -> objects.LayerGroup:
 
 
 def _get_layer_parser(
-    layer_tag: str
+    layer_tag: str,
 ) -> Optional[Callable[[etree.Element], objects.Layer]]:
     """Gets a the parser for the layer type specified.
 
@@ -489,9 +486,7 @@ def _parse_points(point_string: str) -> List[objects.OrderedPair]:
     return points
 
 
-def _parse_tiles(
-    tile_element_list: List[etree.Element]
-) -> Dict[int, objects.Tile]:
+def _parse_tiles(tile_element_list: List[etree.Element]) -> Dict[int, objects.Tile]:
     """Parse a list of tile elements.
 
     Args:
@@ -589,38 +584,44 @@ def _parse_tiles(
 
                 if polygon and len(polygon) > 0:
                     points = _parse_points(polygon[0].attrib["points"])
-                    my_object = objects.PolygonObject(id_=my_id,
-                                                      location=(my_x, my_y),
-                                                      size=(my_width, my_height),
-                                                      points=points)
+                    my_object = objects.PolygonObject(
+                        id_=my_id,
+                        location=(my_x, my_y),
+                        size=(my_width, my_height),
+                        points=points,
+                    )
 
                 if my_object is None:
-                    polyline  = object.findall("./polyline")
+                    polyline = object.findall("./polyline")
 
                     if polyline and len(polyline) > 0:
                         points = _parse_points(polyline[0].attrib["points"])
-                        my_object = objects.PolylineObject(id_=my_id,
-                                                           location=(my_x, my_y),
-                                                           size=(my_width, my_height),
-                                                           points=points)
+                        my_object = objects.PolylineObject(
+                            id_=my_id,
+                            location=(my_x, my_y),
+                            size=(my_width, my_height),
+                            points=points,
+                        )
 
                 if my_object is None:
-                    ellipse  = object.findall("./ellipse")
+                    ellipse = object.findall("./ellipse")
 
                     if ellipse and len(ellipse):
-                        my_object = objects.ElipseObject(id_=my_id,
-                                                         location=(my_x, my_y),
-                                                         size=(my_width, my_height))
+                        my_object = objects.ElipseObject(
+                            id_=my_id, location=(my_x, my_y), size=(my_width, my_height)
+                        )
 
                 if my_object is None:
                     if "template" in object.attrib:
-                        print("Warning, this .tmx file is using an unsupported 'template' attribute. Ignoring.")
+                        print(
+                            "Warning, this .tmx file is using an unsupported 'template' attribute. Ignoring."
+                        )
                         continue
 
                 if my_object is None:
-                    my_object = objects.RectangleObject(id_=my_id,
-                                                        location=(my_x, my_y),
-                                                        size=(my_width, my_height))
+                    my_object = objects.RectangleObject(
+                        id_=my_id, location=(my_x, my_y), size=(my_width, my_height)
+                    )
 
                 objectgroup.append(my_object)
 
@@ -640,7 +641,7 @@ def _parse_tiles(
             image=image,
             properties=properties,
             tileset=None,
-            objectgroup=objectgroup
+            objectgroup=objectgroup,
         )
 
     return tiles
@@ -672,9 +673,7 @@ def _parse_image_element(image_element: etree.Element) -> objects.Image:
     return image
 
 
-def _parse_properties_element(
-    properties_element: etree.Element
-) -> objects.Properties:
+def _parse_properties_element(properties_element: etree.Element) -> objects.Properties:
     """Adds Tiled property to Properties dict.
 
     Each property element has a number of attributes:
@@ -702,9 +701,7 @@ def _parse_properties_element(
         value = property_element.attrib["value"]
 
         property_types = ["string", "int", "float", "bool", "color", "file"]
-        assert (
-            property_type in property_types
-        ), f"Invalid type for property {name}"
+        assert property_type in property_types, f"Invalid type for property {name}"
 
         if property_type == "int":
             properties[name] = int(value)
@@ -824,9 +821,7 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
     return tileset
 
 
-def _get_tile_sets(
-    map_element: etree.Element, parent_dir: Path
-) -> objects.TileSetDict:
+def _get_tile_sets(map_element: etree.Element, parent_dir: Path) -> objects.TileSetDict:
     """Get tile sets.
 
     Args:
