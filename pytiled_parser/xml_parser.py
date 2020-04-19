@@ -86,13 +86,15 @@ def _decode_csv_data(data_text: str) -> List[List[int]]:
     return tile_grid
 
 
-def _decode_data(
+def _decode_tile_layer_data(
     element: etree.Element,
     layer_width: int,
     encoding: str,
     compression: Optional[str] = None,
 ) -> List[List[int]]:
-    """Decodes data or chunk data.
+    """Decodes tile layer data or chunk data.
+
+    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tmx-data
 
     Args:
         element (Element): Element to have text decoded.
@@ -162,11 +164,13 @@ def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
             location = objects.OrderedPair(x, y)
             width = int(chunk_element.attrib["width"])
             height = int(chunk_element.attrib["height"])
-            layer_data = _decode_data(chunk_element, layer_width, encoding, compression)
+            layer_data = _decode_tile_layer_data(
+                chunk_element, layer_width, encoding, compression
+            )
             chunks.append(objects.Chunk(location, width, height, layer_data))
         return chunks
 
-    return _decode_data(element, layer_width, encoding, compression)
+    return _decode_tile_layer_data(element, layer_width, encoding, compression)
 
 
 def _parse_layer(
