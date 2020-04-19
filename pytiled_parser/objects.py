@@ -175,6 +175,7 @@ class TileTerrain:
 
 @attr.s(auto_attribs=True, kw_only=True)
 class Layer:
+    # FIXME:this docstring appears to be innacurate
     """
     Class that all layers inherit from.
 
