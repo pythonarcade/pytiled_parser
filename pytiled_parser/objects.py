@@ -13,14 +13,13 @@ TileLayerGrid = List[List[int]]
 
 
 class Color(NamedTuple):
-    """
-    Color object.
+    """Color object.
 
     Attributes:
-        red (int): Red, between 1 and 255.
-        green (int): Green, between 1 and 255.
-        blue (int): Blue, between 1 and 255.
-        alpha (int): Alpha, between 1 and 255.
+        red: Red, between 1 and 255.
+        green: Green, between 1 and 255.
+        blue: Blue, between 1 and 255.
+        alpha: Alpha, between 1 and 255.
     """
 
     red: int
@@ -33,8 +32,8 @@ class OrderedPair(NamedTuple):
     """OrderedPair NamedTuple.
 
     Attributes:
-        x (Union[int, float]): X coordinate.
-        y (Union[int, float]): Y coordinate.
+        x: X coordinate.
+        y: Y coordinate.
     """
 
     x: Union[int, float]
@@ -45,8 +44,8 @@ class Property(NamedTuple):
     """Property NamedTuple.
 
     Attributes:
-        name str: Name of property
-        value str: Value of property
+        name: Name of property
+        value: Value of property
     """
 
     name: str
@@ -57,8 +56,8 @@ class Size(NamedTuple):
     """Size NamedTuple.
 
     Attributes:
-        width (Union[int, float]): The width of the object.
-        size (Union[int, float]): The height of the object.
+        width: The width of the object.
+        size: The height of the object.
     """
 
     width: Union[int, float]
@@ -72,16 +71,15 @@ class Template:
 
 @attr.s(auto_attribs=True)
 class Chunk:
-    """
-    Chunk object for infinite maps.
+    """Chunk object for infinite maps.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#chunk
 
     Attributes:
-        location (OrderedPair): Location of chunk in tiles.
-        width (int): The width of the chunk in tiles.
-        height (int): The height of the chunk in tiles.
-        layer_data (List[List(int)]): The global tile IDs in chunky according to row.
+        location: Location of chunk in tiles.
+        width: The width of the chunk in tiles.
+        height: The height of the chunk in tiles.
+        layer_data: The global tile IDs in chunky according to row.
     """
 
     location: OrderedPair
@@ -92,24 +90,25 @@ class Chunk:
 
 @attr.s(auto_attribs=True)
 class Image:
-    """
-    Image object.
+    """Image object.
 
-    This module does not support embedded data in image elements.
+    pytiled_parser does not support embedded data in image elements at this time,
+        even though the TMX format technically does.
 
     Attributes:
-        source (Optional[str]): The reference to the tileset image file. Note that this
-            is a relative path compared to FIXME
-        trans (Optional[Color]): Defines a specific color that is treated as
-            transparent.
-        width (Optional[str]): The image width in pixels (optional, used for tile index
-            correction when the image changes).
-        height (Optional[str]): The image height in pixels (optional).
+        source: The reference to the tileset image file. Note that this is a relative
+            path compared to FIXME
+        trans: Defines a specific color that is treated as transparent.
+        width: The image width in pixels (optional, used for tile index correction when
+            the image changes).
+        height: The image height in pixels (optional).
     """
 
     source: str
     size: Optional[Size] = None
     trans: Optional[str] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
 
 
 Properties = Dict[str, Union[int, float, Color, Path, str]]
@@ -118,9 +117,14 @@ Properties = Dict[str, Union[int, float, Color, Path, str]]
 class Grid(NamedTuple):
     """Contains info for isometric maps.
 
-    This element is only used in case of isometric orientation, and
-        determines how tile overlays for terrain and collision information
-        are rendered.
+    This element is only used in case of isometric orientation, and determines how tile
+        overlays for terrain and collision information are rendered.
+
+    Args:
+        orientation: Orientation of the grid for the tiles in this tileset (orthogonal
+            or isometric).
+        width: Width of a grid cell.
+        height: Height of a grid cell.
     """
 
     orientation: str
@@ -132,8 +136,8 @@ class Terrain(NamedTuple):
     """Terrain object.
 
     Args:
-        name (str): The name of the terrain type.
-        tile (int): The local tile-id of the tile that represents the terrain visually.
+        name: The name of the terrain type.
+        tile: The local tile-id of the tile that represents the terrain visually.
     """
 
     name: str
@@ -146,10 +150,9 @@ class Frame(NamedTuple):
     This is only used as a part of an animation for Tile objects.
 
     Args:
-        tile_id (int): The local ID of a tile within the parent tile set
-            object.
-        duration (int): How long in milliseconds this frame should be
-            displayed before advancing to the next frame.
+        tile_id: The local ID of a tile within the parent tile set object.
+        duration: How long in milliseconds this frame should be displayed before
+            advancing to the next frame.
     """
 
     tile_id: int
@@ -164,10 +167,10 @@ class TileTerrain:
     Defaults to 'None'. 'None' means that corner has no terrain.
 
     Attributes:
-        top_left (Optional[int]): Top left terrain type.
-        top_right (Optional[int]): Top right terrain type.
-        bottom_left (Optional[int]): Bottom left terrain type.
-        bottom_right (Optional[int]): Bottom right terrain type.
+        top_left: Top left terrain type.
+        top_right: Top right terrain type.
+        bottom_left: Bottom left terrain type.
+        bottom_right: Bottom right terrain type.
     """
 
     top_left: Optional[int] = None
@@ -179,25 +182,24 @@ class TileTerrain:
 @attr.s(auto_attribs=True, kw_only=True)
 class Layer:
     # FIXME:this docstring appears to be innacurate
-    """
-    Class that all layers inherit from.
+    """Class that all layers inherit from.
 
     Args:
-        id: Unique ID of the layer. Each layer that added to a map gets a \
-            unique id. Even if a layer is deleted, no layer ever gets the same \
-            ID.
+        id: Unique ID of the layer. Each layer that added to a map gets a unique id.
+            Even if a layer is deleted, no layer ever gets the same ID.
         name: The name of the layer object.
         tiled_objects: List of tiled_objects in the layer.
         offset: Rendering offset of the layer object in pixels.
-        opacity: Decimal value between 0 and 1 to determine opacity. 1 is \
-                 completely opaque, 0 is completely transparent.
+        opacity: Decimal value between 0 and 1 to determine opacity. 1 is completely
+            opaque, 0 is completely transparent.
         properties: Properties for the layer.
         color: The color used to display the objects in this group.
-        draworder: Whether the objects are drawn according to the order of the \
-                   object elements in the object group element ('manual'), or sorted \
-                   by their y-coordinate ('topdown'). Defaults to 'topdown'. See: \
-                   https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order \
-                   for more info.
+        draworder: Whether the objects are drawn according to the order of the object
+            elements in the object group element ('manual'), or sorted by their
+            y-coordinate ('topdown'). Defaults to 'topdown'.
+            See:
+            https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
+            for more info.
 
     """
 
@@ -213,7 +215,7 @@ LayerData = Union[TileLayerGrid, List[Chunk]]
 """The tile data for one layer.
 
 Either a 2 dimensional array of integers representing the global tile IDs
-    for a map layer, or a lists of chunks for an infinite map layer.
+    for a TileLayerGrid, or a list of chunks for an infinite map layer.
 """
 
 
@@ -224,11 +226,10 @@ class TileLayer(Layer):
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#layer
 
     Args:
-        size: The width of the layer in tiles. The same as the map width
-            unless map is infitite.
-        data: Either an 2 dimensional array of integers representing the
-            global tile IDs for the map layer, or a list of chunks for an
-            infinite map.
+        size: The width of the layer in tiles. The same as the map width unless map is
+            infitite.
+        data: Either an 2 dimensional array of integers representing the global tile
+            IDs for the map layer, or a list of chunks for an infinite map.
     """
 
     size: Size
@@ -243,18 +244,17 @@ class TiledObject:
         https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#object
 
     Args:
-        id (int): Unique ID of the object. Each object that is placed on a \
-           map gets a unique id. Even if an object was deleted, no object \
-           gets the same ID.
-        gid (Optional[int]): Global tiled object ID
-        location (OrderedPair): The location of the object in pixels.
-        size (Size): The width of the object in pixels (default: (0, 0)).
-        rotation (int): The rotation of the object in degrees clockwise (default: 0).
-        opacity (int): The opacity of the object. (default: 255)
-        name (Optional[str]): The name of the object.
-        type (Optional[str]): The type of the object.
-        properties (Properties): The properties of the TiledObject.
-        template Optional[Template]: A reference to a Template object FIXME
+        id: Unique ID of the object. Each object that is placed on a map gets a unique
+            id. Even if an object was deleted, no object gets the same ID.
+        gid: Global tiled object ID.
+        location: The location of the object in pixels.
+        size: The width of the object in pixels (default: (0, 0)).
+        rotation: The rotation of the object in degrees clockwise (default: 0).
+        opacity: The opacity of the object. (default: 255)
+        name: The name of the object.
+        type: The type of the object.
+        properties: The properties of the TiledObject.
+        template: A reference to a Template object FIXME
     """
 
     id_: int
@@ -305,7 +305,7 @@ class TileImageObject(TiledObject):
     See: https://doc.mapeditor.org/en/stable/manual/objects/#insert-tile
 
     Attributes:
-        gid (int): Refference to a global tile id.
+        gid: Refference to a global tile id.
     """
 
     gid: int
@@ -318,7 +318,7 @@ class PolygonObject(TiledObject):
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polygon
 
     Attributes:
-        points (List[OrderedPair]): FIXME
+        points: FIXME
     """
 
     points: List[OrderedPair]
@@ -332,8 +332,7 @@ class PolylineObject(TiledObject):
         https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polyline
 
     Attributes:
-        points (List[Tuple[int, int]]): List of coordinates relative to \
-        the location of the object.
+        points: List of coordinates relative to the location of the object.
     """
 
     points: List[OrderedPair]
@@ -347,19 +346,18 @@ class TextObject(TiledObject):
         and https://doc.mapeditor.org/en/stable/manual/objects/#insert-text
 
     Attributes:
-        font_family (str): The font family used (default: "sans-serif")
-        font_size (int): The size of the font in pixels. (default: 16)
-        wrap (bool): Whether word wrapping is enabled. (default: False)
-        color (Color): Color of the text. (default: #000000)
-        bold (bool): Whether the font is bold. (default: False)
-        italic (bool): Whether the font is italic. (default: False)
-        underline (bool): Whether the text is underlined. (default: False)
-        strike_out (bool): Whether the text is striked-out. (default: False)
-        kerning (bool): Whether kerning should be used while rendering the \
-            text. (default: False)
-        horizontal_align (str): Horizontal alignment of the text \
-            (default: "left")
-        vertical_align (str): Vertical alignment of the text (defalt: "top")
+        font_family: The font family used (default: "sans-serif")
+        font_size: The size of the font in pixels. (default: 16)
+        wrap: Whether word wrapping is enabled. (default: False)
+        color: Color of the text. (default: #000000)
+        bold: Whether the font is bold. (default: False)
+        italic: Whether the font is italic. (default: False)
+        underline: Whether the text is underlined. (default: False)
+        strike_out: Whether the text is striked-out. (default: False)
+        kerning: Whether kerning should be used while rendering the text. (default:
+            False)
+        horizontal_align: Horizontal alignment of the text (default: "left")
+        vertical_align: Vertical alignment of the text (defalt: "top")
     """
 
     text: str
@@ -381,21 +379,20 @@ class ObjectLayer(Layer):
     """
     TiledObject Group Object.
 
-    The object group is in fact a map layer, and is hence called \
-    "object layer" in Tiled.
+    The object group is in fact a map layer, and is hence called "object layer" in
+        Tiled.
 
-    See:
-    https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
+    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
 
     Args:
         tiled_objects: List of tiled_objects in the layer.
         offset: Rendering offset of the layer object in pixels.
         color: The color used to display the objects in this group. FIXME: editor only?
-        draworder: Whether the objects are drawn according to the order of the \
-                   object elements in the object group element ('manual'), or sorted \
-                   by their y-coordinate ('topdown'). Defaults to 'topdown'. See: \
-                   https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order \
-                   for more info.
+        draworder: Whether the objects are drawn according to the order of the object
+            elements in the object group element ('manual'), or sorted by their
+            y-coordinate ('topdown'). Defaults to 'topdown'. See:
+            https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
+            for more info.
 
     """
 
@@ -417,8 +414,7 @@ class LayerGroup(Layer):
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#group
 
     Attributes:
-        Layers (Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]):
-            Layers in group.
+        Layers: Layers in group.
     """
 
     layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
@@ -429,32 +425,28 @@ class TileSet:
     """Object for storing a TSX with all associated collision data.
 
     Args:
-        name (str): The name of this tileset.
-        max_tile_size (Size): The maximum size of a tile in this tile set in pixels.
-        spacing (int): The spacing in pixels between the tiles in this \
-            tileset (applies to the tileset image).
-        margin (int): The margin around the tiles in this tileset \
-            (applies to the tileset image).
-        tile_count (int): The number of tiles in this tileset.
-        columns (int): The number of tile columns in the tileset. \
-            For image collection tilesets it is editable and is used when \
-            displaying the tileset.
-        grid (Grid): Only used in case of isometric orientation, and \
-            determines how tile overlays for terrain and collision information \
-            are rendered.
-        tileoffset (Optional[OrderedPair]): Used to specify an offset in \
-            pixels when drawing a tile from the tileset. When not present, no \
-            offset is applied.
-        image (Image): Used for spritesheet tile sets.
-        terrain_types (Dict[str, int]): List of of terrain types which \
-            can be referenced from the terrain attribute of the tile object. \
-            Ordered according to the terrain element's appearance in the TSX \
-            file.
-        tiles (Optional[Dict[int, Tile]]): Dict of Tile objects by Tile.id.
-        tsx_file (Path): Path of the file containing the tileset, \
+        name: The name of this tileset.
+        max_tile_size: The maximum size of a tile in this tile set in pixels.
+        spacing: The spacing in pixels between the tiles in this tileset (applies to
+            the tileset image).
+        margin: The margin around the tiles in this tileset (applies to the tileset
+            image).
+        tile_count: The number of tiles in this tileset.
+        columns: The number of tile columns in the tileset. For image collection
+            tilesets it is editable and is used when displaying the tileset.
+        grid: Only used in case of isometric orientation, and determines how tile
+            overlays for terrain and collision information are rendered.
+        tileoffset: Used to specify an offset in pixels when drawing a tile from the
+            tileset. When not present, no offset is applied.
+        image: Used for spritesheet tile sets.
+        terrain_types: List of of terrain types which can be referenced from the
+            terrain attribute of the tile object. Ordered according to the terrain
+            element's appearance in the TSX file.
+        tiles: Dict of Tile objects by Tile.id.
+        tsx_file: Path of the file containing the tileset, None if loaded internally
+            from a map
+        parent_dir: Path of the parent directory of the file containing the tileset,
             None if loaded internally from a map
-        parent_dir (Path): Path of the parent directory of the file \
-            containing the tileset, None if loaded internally from a map
     """
 
     name: str
@@ -481,13 +473,14 @@ TileSetDict = Dict[int, TileSet]
 class Tile:
     """Individual tile object.
 
+    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tile
+
     Args:
-        :id (int): The local tile ID within its tileset.
-        :type (str): The type of the tile. Refers to an object type and is
-            used by tile objects.
-        :terrain (int): Defines the terrain type of each corner of the tile.
-        :animation (List[Frame]): Each tile can have exactly one animation
-            associated with it.
+        id: The local tile ID within its tileset.
+        type: The type of the tile. Refers to an object type and is used by tile
+            objects.
+        terrain: Defines the terrain type of each corner of the tile.
+        animation: Each tile can have exactly one animation associated with it.
     """
 
     id_: int
@@ -510,35 +503,31 @@ class TileMap:
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#map
 
     Attributes:
-        :parent_dir (Path): The directory the TMX file is in. Used for finding
-            relative paths to TSX files and other assets.
-        :version (str): The TMX format version.
-        :tiledversion (str): The Tiled version used to save the file. May
-            be a date (for snapshot builds).
-        :orientation (str): Map orientation. Tiled supports "orthogonal",
-            "isometric", "staggered" and "hexagonal"
-        :renderorder (str): The order in which tiles on tile layers are
-            rendered. Valid values are right-down, right-up, left-down and
-            left-up. In all cases, the map is drawn row-by-row. (only
-            supported for orthogonal maps at the moment)
-        :map_size (Size): The map width in tiles.
-        :tile_size (Size): The width of a tile.
-        :infinite (bool): If the map is infinite or not.
-        :hexsidelength (int): Only for hexagonal maps. Determines the width or
-            height (depending on the staggered axis) of the tile's edge, in
-            pixels.
-        :stagger_axis (str): For staggered and hexagonal maps, determines
-            which axis ("x" or "y") is staggered.
-        :staggerindex (str): For staggered and hexagonal maps, determines
-            whether the "even" or "odd" indexes along the staggered axis are
-            shifted.
-        :backgroundcolor (##FIXME##): The background color of the map.
-        :nextlayerid (int): Stores the next available ID for new layers.
-        :nextobjectid (int): Stores the next available ID for new objects.
-        :tile_sets (dict[str, TileSet]): Dict of tile sets used
-            in this map. Key is the first GID for the tile set. The value
-            is a TileSet object.
-        :layers List[LayerType]: List of layer objects by draw order.
+        parent_dir: The directory the TMX file is in. Used for finding relative paths
+            to TSX files and other assets.
+        version: The TMX format version.
+        tiledversion: The Tiled version used to save the file. May be a date (for
+            snapshot builds).
+        orientation: Map orientation. Tiled supports "orthogonal", "isometric",
+            "staggered" and "hexagonal"
+        renderorder: The order in which tiles on tile layers are rendered. Valid values
+            are right-down, right-up, left-down and left-up. In all cases, the map is
+            drawn row-by-row. (only supported for orthogonal maps at the moment)
+        map_size: The map width in tiles.
+        tile_size: The width of a tile.
+        infinite: If the map is infinite or not.
+        hexsidelength: Only for hexagonal maps. Determines the width or height
+            (depending on the staggered axis) of the tile's edge, in pixels.
+        stagger_axis: For staggered and hexagonal maps, determines which axis ("x" or
+            "y") is staggered.
+        staggerindex: For staggered and hexagonal maps, determines whether the "even"
+            or "odd" indexes along the staggered axis are shifted.
+        backgroundcolor: The background color of the map.
+        nextlayerid: Stores the next available ID for new layers.
+        nextobjectid: Stores the next available ID for new objects.
+        tile_sets: Dict of tile sets used in this map. Key is the first GID for the
+            tile set. The value is a TileSet object.
+        layers: List of layer objects by draw order.
     """
 
     parent_dir: Path
