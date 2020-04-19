@@ -393,8 +393,7 @@ def _get_layer_parser(
         'group' for a layer group. If anything else is passed, returns None.
 
     Args:
-        layer_tag: Specifies the layer type to be parsed based on the element
-            tag.
+        layer_tag: Specifies the layer type to be parsed based on the element tag.
 
     Returns:
         Callable: the function to be used to parse the layer.
