@@ -245,10 +245,8 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
     size = objects.Size(width, height)
 
     data_element = element.find("./data")
-    if data_element is not None:
-        data: objects.LayerData = _parse_data(data_element, width)
-    else:
-        raise ValueError(f"{element} has no child data element.")
+    assert data_element is not None
+    data: objects.LayerData = _parse_data(data_element, width)
 
     return objects.TileLayer(
         id_=id_,
