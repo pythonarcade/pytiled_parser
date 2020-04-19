@@ -184,6 +184,7 @@ def _parse_layer(
     """
     id_ = int(layer_element.attrib["id"])
 
+    # FIXME: create example layer with no name (if possible)
     if "name" in layer_element.attrib:
         name = layer_element.attrib["name"]
     else:
