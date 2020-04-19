@@ -12,13 +12,10 @@ from typing import Callable, Dict, List, Optional, Tuple, Union
 import pytiled_parser.objects as objects
 from pytiled_parser.utilities import parse_color
 
-# See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#data
-TileLayerData = List[List[int]]
-
 
 def _decode_base64_data(
     data_text: str, layer_width: int, compression: Optional[str] = None
-) -> TileLayerData:
+) -> objects.TileLayerData:
     """Decode base64 data.
 
     Args:
@@ -30,9 +27,9 @@ def _decode_base64_data(
         ValueError: If compression type is unsupported.
 
     Returns:
-        TileLayerData: Tile grid.
+        objects.TileLayerData: Tile grid.
     """
-    tile_grid: TileLayerData = [[]]
+    tile_grid: objects.TileLayerData = [[]]
 
     unencoded_data = base64.b64decode(data_text)
     if compression == "zlib":
@@ -65,14 +62,14 @@ def _decode_base64_data(
     return tile_grid
 
 
-def _decode_csv_data(data_text: str) -> TileLayerData:
+def _decode_csv_data(data_text: str) -> objects.TileLayerData:
     """Decodes csv encoded layer data.
 
     Args:
         data_text (str): Data to be decoded.
 
     Returns:
-        TileLayerData: Tile grid.
+        objects.TileLayerData: Tile grid.
     """
     tile_grid = []
     lines: List[str] = data_text.split("\n")
@@ -89,13 +86,33 @@ def _decode_csv_data(data_text: str) -> TileLayerData:
     return tile_grid
 
 
-TileLayerDecoder = Callable[[str, Optional[int], Optional[str]], TileLayerData]
+TileLayerDecoder = Callable[[str, Optional[int], Optional[str]], objects.TileLayerData]
 
 
 def _get_tile_layer_decoder(
     encoding: str, compression: Optional[str] = None
 ) -> TileLayerDecoder:
-    pass
+    #
+    supported_encodings = ["base64", "csv"]
+    if encoding not in supported_encodings:
+        raise ValueError(f"{encoding} is not a supported encoding")
+
+    supported_compression = [None, "gzip", "zlib"]
+    if compression is not None:
+        if encoding != "base64":
+            raise ValueError(f"{encoding} does not support compression")
+        if compression not in supported_compression:
+            raise ValueError(f"{compression} is not a supported compression")
+
+    try:
+        data_text: str = element.text  # type: ignore
+    except AttributeError:
+        raise AttributeError(f"{element} lacks layer data.")
+
+    if encoding == "csv":
+        return _decode_csv_data(data_text)
+
+    return _decode_base64_data(data_text, layer_width, compression)
 
 
 def _decode_tile_layer_data(
@@ -103,7 +120,7 @@ def _decode_tile_layer_data(
     layer_width: int,
     encoding: str,
     compression: Optional[str] = None,
-) -> TileLayerData:
+) -> objects.TileLayerData:
     """Decodes tile layer data or chunk data.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tmx-data
@@ -123,7 +140,7 @@ def _decode_tile_layer_data(
         AttributeError: No data in element.
 
     Returns:
-        TileLayerData: Tile grid.
+        objects.TileLayerData: Tile grid.
     """
     supported_encodings = ["base64", "csv"]
     if encoding not in supported_encodings:

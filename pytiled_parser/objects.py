@@ -8,6 +8,9 @@ from typing import Dict, List, NamedTuple, Optional, Union
 
 import attr
 
+# See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#data
+TileLayerData = List[List[int]]
+
 
 class Color(NamedTuple):
     """
