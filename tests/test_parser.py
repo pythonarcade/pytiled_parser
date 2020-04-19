@@ -7,19 +7,6 @@ import pytest
 
 from pytiled_parser import objects, utilities, xml_parser
 
-
-def _get_root_element(xml: str) -> etree.Element:
-    """Get root element of string of XML.
-
-    Args:
-        xml (str): String of XML to be parsed into etree.
-
-    Returns:
-        etree.Element: Root element of XML given.
-    """
-    return etree.fromstring(xml)
-
-
 LAYER_DATA = [
     (
         '<layer id="1" name="Tile Layer 1" width="10" height="10">' + "</layer>",
@@ -47,7 +34,7 @@ def test_parse_layer(xml, expected, monkeypatch):
 
     monkeypatch.setattr(xml_parser, "_parse_properties_element", mockreturn)
 
-    result = xml_parser._parse_layer(_get_root_element(xml))
+    result = xml_parser._parse_layer(etree.fromstring(xml))
 
     print(result)
 
