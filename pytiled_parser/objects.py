@@ -9,7 +9,7 @@ from typing import Dict, List, NamedTuple, Optional, Union
 import attr
 
 # See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#data
-TileLayerData = List[List[int]]
+TileLayerGrid = List[List[int]]
 
 
 class Color(NamedTuple):
@@ -87,7 +87,7 @@ class Chunk:
     location: OrderedPair
     width: int
     height: int
-    chunk_data: List[List[int]]
+    chunk_data: TileLayerGrid
 
 
 @attr.s(auto_attribs=True)
@@ -209,7 +209,7 @@ class Layer:
     properties: Optional[Properties]
 
 
-LayerData = Union[List[List[int]], List[Chunk]]
+LayerData = Union[TileLayerGrid, List[Chunk]]
 """The tile data for one layer.
 
 Either a 2 dimensional array of integers representing the global tile IDs

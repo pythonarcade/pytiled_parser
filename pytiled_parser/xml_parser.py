@@ -15,7 +15,7 @@ from pytiled_parser.utilities import parse_color
 
 def _decode_base64_data(
     data_text: str, layer_width: int, compression: Optional[str] = None
-) -> objects.TileLayerData:
+) -> objects.TileLayerGrid:
     """Decode base64 data.
 
     Args:
@@ -27,9 +27,9 @@ def _decode_base64_data(
         ValueError: If compression type is unsupported.
 
     Returns:
-        objects.TileLayerData: Tile grid.
+        objects.TileLayerGrid: Tile grid.
     """
-    tile_grid: objects.TileLayerData = [[]]
+    tile_grid: objects.TileLayerGrid = [[]]
 
     unencoded_data = base64.b64decode(data_text)
     if compression == "zlib":
@@ -62,14 +62,14 @@ def _decode_base64_data(
     return tile_grid
 
 
-def _decode_csv_data(data_text: str) -> objects.TileLayerData:
+def _decode_csv_data(data_text: str) -> objects.TileLayerGrid:
     """Decodes csv encoded layer data.
 
     Args:
         data_text (str): Data to be decoded.
 
     Returns:
-        objects.TileLayerData: Tile grid.
+        objects.TileLayerGrid: Tile grid.
     """
     tile_grid = []
     lines: List[str] = data_text.split("\n")
@@ -86,7 +86,7 @@ def _decode_csv_data(data_text: str) -> objects.TileLayerData:
     return tile_grid
 
 
-TileLayerDecoder = Callable[[str, Optional[int], Optional[str]], objects.TileLayerData]
+TileLayerDecoder = Callable[[str, Optional[int], Optional[str]], objects.TileLayerGrid]
 
 
 def _get_tile_layer_decoder(
@@ -120,7 +120,7 @@ def _decode_tile_layer_data(
     layer_width: int,
     encoding: str,
     compression: Optional[str] = None,
-) -> objects.TileLayerData:
+) -> objects.TileLayerGrid:
     """Decodes tile layer data or chunk data.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tmx-data
@@ -140,7 +140,7 @@ def _decode_tile_layer_data(
         AttributeError: No data in element.
 
     Returns:
-        objects.TileLayerData: Tile grid.
+        objects.TileLayerGrid: Tile grid.
     """
     supported_encodings = ["base64", "csv"]
     if encoding not in supported_encodings:
