@@ -184,11 +184,7 @@ def _parse_layer(
     """
     id_ = int(layer_element.attrib["id"])
 
-    # FIXME: create example layer with no name (if possible)
-    if "name" in layer_element.attrib:
-        name = layer_element.attrib["name"]
-    else:
-        name = None
+    name = layer_element.attrib["name"]
 
     offset: Optional[objects.OrderedPair]
     offset_x_attrib = layer_element.attrib.get("offsetx")
