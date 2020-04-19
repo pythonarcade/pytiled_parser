@@ -190,7 +190,7 @@ def _parse_layer(
     offset_x_attrib = layer_element.attrib.get("offsetx")
     offset_y_attrib = layer_element.attrib.get("offsety")
     # If any offset is present, we need to return an OrderedPair
-    # Unknown if one of the offsets could be absent.
+    # Unknown if only one of the offsets could be absent.
     if any([offset_x_attrib, offset_y_attrib]):
         if offset_x_attrib:
             offset_x = float(offset_x_attrib)
