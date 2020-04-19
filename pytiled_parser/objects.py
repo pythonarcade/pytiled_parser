@@ -39,7 +39,7 @@ class OrderedPair(NamedTuple):
 
 
 class Property(NamedTuple):
-    """OrderedPair NamedTuple.
+    """Property NamedTuple.
 
     Attributes:
         name str: Name of property
