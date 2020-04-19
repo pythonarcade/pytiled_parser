@@ -39,7 +39,7 @@ def _decode_base64_data(
     elif compression is None:
         unzipped_data = unencoded_data
     else:
-        raise ValueError(f"Unsupported compression type '{compression}'.")
+        raise ValueError(f"Unsupported compression type: '{compression}'.")
 
     # Turn bytes into 4-byte integers
     byte_count = 0
@@ -86,33 +86,11 @@ def _decode_csv_data(data_text: str) -> objects.TileLayerGrid:
     return tile_grid
 
 
-TileLayerDecoder = Callable[[str, Optional[int], Optional[str]], objects.TileLayerGrid]
-
-
-def _get_tile_layer_decoder(
-    encoding: str, compression: Optional[str] = None
-) -> TileLayerDecoder:
-    #
-    supported_encodings = ["base64", "csv"]
-    if encoding not in supported_encodings:
-        raise ValueError(f"{encoding} is not a supported encoding")
-
-    supported_compression = [None, "gzip", "zlib"]
-    if compression is not None:
-        if encoding != "base64":
-            raise ValueError(f"{encoding} does not support compression")
-        if compression not in supported_compression:
-            raise ValueError(f"{compression} is not a supported compression")
-
-    try:
-        data_text: str = element.text  # type: ignore
-    except AttributeError:
-        raise AttributeError(f"{element} lacks layer data.")
-
-    if encoding == "csv":
-        return _decode_csv_data(data_text)
-
-    return _decode_base64_data(data_text, layer_width, compression)
+# I'm not sure if this is the best way to do this
+TileLayerDecoder = Union[
+    Callable[[str], objects.TileLayerGrid],
+    Callable[[str, int, Optional[str]], objects.TileLayerGrid],
+]
 
 
 def _decode_tile_layer_data(
@@ -134,24 +112,12 @@ def _decode_tile_layer_data(
         compression (str): Compression format of the layer data.
 
     Raises:
-        ValueError: Encoding type is not supported.
-        ValueError: Compression is not supported for this encoding type.
-        ValueError: Compression type is not supported
         AttributeError: No data in element.
+        ValueError: Encoding type is not supported.
 
     Returns:
         objects.TileLayerGrid: Tile grid.
     """
-    supported_encodings = ["base64", "csv"]
-    if encoding not in supported_encodings:
-        raise ValueError(f"{encoding} is not a supported encoding")
-
-    supported_compression = [None, "gzip", "zlib"]
-    if compression is not None:
-        if encoding != "base64":
-            raise ValueError(f"{encoding} does not support compression")
-        if compression not in supported_compression:
-            raise ValueError(f"{compression} is not a supported compression")
 
     try:
         data_text: str = element.text  # type: ignore
@@ -160,8 +126,10 @@ def _decode_tile_layer_data(
 
     if encoding == "csv":
         return _decode_csv_data(data_text)
+    if encoding == "base64":
+        return _decode_base64_data(data_text, layer_width, compression)
 
-    return _decode_base64_data(data_text, layer_width, compression)
+    raise ValueError(f"{encoding} is not a supported encoding")
 
 
 def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
