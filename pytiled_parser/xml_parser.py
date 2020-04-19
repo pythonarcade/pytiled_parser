@@ -19,9 +19,9 @@ def _decode_base64_data(
     """Decode base64 data.
 
     Args:
-        data_text (str): Data to be decoded.
-        layer_width (int): Width of each layer in tiles.
-        compression (Optional[str]): The type of compression for the data.
+        data_text: Data to be decoded.
+        layer_width: Width of each layer in tiles.
+        compression: The type of compression for the data.
 
     Raises:
         ValueError: If compression type is unsupported.
@@ -66,7 +66,7 @@ def _decode_csv_data(data_text: str) -> objects.TileLayerGrid:
     """Decodes csv encoded layer data.
 
     Args:
-        data_text (str): Data to be decoded.
+        data_text: Data to be decoded.
 
     Returns:
         objects.TileLayerGrid: Tile grid.
@@ -104,12 +104,11 @@ def _decode_tile_layer_data(
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tmx-data
 
     Args:
-        element (Element): Element to have text decoded.
-        layer_width (int): Number of tiles per column in this layer. Used
-            for determining when to cut off a row when decoding base64
-            encoding layers.
-        encoding (str): Encoding format of the layer data.
-        compression (str): Compression format of the layer data.
+        element: Element to have text decoded.
+        layer_width: Number of tiles per column in this layer. Used for determining
+            when to cut off a row when decoding base64 encoding layers.
+        encoding: Encoding format of the layer data.
+        compression: Compression format of the layer data.
 
     Raises:
         AttributeError: No data in element.
@@ -138,8 +137,8 @@ def _parse_data(element: etree.Element, layer_width: int) -> objects.LayerData:
     Will parse CSV, base64, gzip-base64, or zlip-base64 encoded data.
 
     Args:
-        element (Element): Data element to parse.
-        layer_width (int): Layer width. Used for base64 decoding.
+        element: Data element to parse.
+        layer_width: Layer width. Used for base64 decoding.
 
     Returns:
         LayerData: Data object containing layer data or chunks of data.
@@ -337,7 +336,7 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     """Parse the objectgroup element given.
 
     Args:
-        element (etree.Element): Element to be parsed.
+        element: Element to be parsed.
 
     Returns:
         ObjectLayer: The object layer object.
@@ -374,7 +373,7 @@ def _parse_layer_group(element: etree.Element,) -> objects.LayerGroup:
     """Parse the objectgroup element given.
 
     Args:
-        element (etree.Element): Element to be parsed.
+        element: Element to be parsed.
 
     Returns:
         LayerGroup: The layer group object.
@@ -398,9 +397,8 @@ def _get_layer_parser(
 ) -> Optional[Callable[[etree.Element], objects.Layer]]:
     """Gets a the parser for the layer type specified.
 
-    Layer tags are 'layer' for a tile layer, 'objectgroup' for an object
-        layer, and 'group' for a layer group. If anything else is passed,
-        returns None.
+    Layer tags are 'layer' for a tile layer, 'objectgroup' for an object layer, and
+        'group' for a layer group. If anything else is passed, returns None.
 
     Args:
         layer_tag: Specifies the layer type to be parsed based on the element
@@ -428,8 +426,7 @@ def _get_layers(map_element: etree.Element) -> List[objects.Layer]:
         map_element: The element containing the layer.
 
     Returns:
-        List[Layer]: A list of the layers, ordered by draw order.
-            FIXME: confirm
+        List[Layer]: A list of the layers, ordered by draw order. FIXME: confirm
     """
     layers: List[objects.Layer] = []
     for element in map_element.findall("./"):
@@ -449,8 +446,8 @@ def _parse_external_tile_set(
     Caches the results to speed up subsequent maps with identical tilesets.
 
     Args:
-        parent_dir (Path): Directory that TMX is in.
-        tile_set_element (etree.Element): Tile set element.
+        parent_dir: Directory that TMX is in.
+        tile_set_element: Tile set element.
 
     Returns:
         objects.Tileset: The tileset being parsed.
@@ -484,11 +481,10 @@ def _parse_tiles(tile_element_list: List[etree.Element]) -> Dict[int, objects.Ti
     """Parse a list of tile elements.
 
     Args:
-        tile_element_list (List[etree.Element]): List of tile elements.
+        tile_element_list: List of tile elements.
 
     Returns:
-        Dict[int, objects.Tile]: Dictionary containing Tile objects by their
-            ID.
+        Dict[int, objects.Tile]: Dictionary containing Tile objects by their ID.
     """
     tiles: Dict[int, objects.Tile] = {}
     for tile_element in tile_element_list:
@@ -668,16 +664,17 @@ def _parse_image_element(image_element: etree.Element) -> objects.Image:
 
 
 def _parse_properties_element(properties_element: etree.Element) -> objects.Properties:
+    # FIXME: wtf is this pseudo 'attributes' section?
     """Adds Tiled property to Properties dict.
 
     Each property element has a number of attributes:
-        name (str): Name of property.
-        property_type (str): Type of property. Can be string, int, float,
-            bool, color or file. Defaults to string.
-        value (str): The value of the property.
+        name: Name of property.
+        property_type: Type of property. Can be string, int, float, bool, color or
+            file. Defaults to string.
+        value: The value of the property.
 
     Args:
-        properties_element (etree.Element): Element to be parsed.
+        properties_element: Element to be parsed.
 
     Returns:
         objects.Properties: Dict of the property values by property name.
@@ -720,7 +717,7 @@ def _parse_tile_set(tile_set_element: etree.Element) -> objects.TileSet:
     """Parses a tile set that is embedded into a TMX.
 
     Args:
-        tile_set_element (etree.Element): Element to be parsed.
+        tile_set_element: Element to be parsed.
 
     Returns:
         objects.TileSet: Tile Set from element.
@@ -819,8 +816,8 @@ def _get_tile_sets(map_element: etree.Element, parent_dir: Path) -> objects.Tile
     """Get tile sets.
 
     Args:
-        map_element (etree.Element): Element to be parsed.
-        parent_dir (Path): Directory that TMX is in.
+        map_element: Element to be parsed.
+        parent_dir: Directory that TMX is in.
 
     Returns:
         objects.TileSetDict: Dict of tile sets in the TMX by first_gid
@@ -857,7 +854,7 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
     """Parse tile map.
 
     Args:
-        tmx_file (Union[str, Path]): TMX file to be parsed.
+        tmx_file: TMX file to be parsed.
 
     Returns:
         objects.TileMap: TileMap object generated from the TMX file provided.
