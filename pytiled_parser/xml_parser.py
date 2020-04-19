@@ -876,7 +876,7 @@ def parse_tile_map(tmx_file: Union[str, Path]) -> objects.TileMap:
     tile_size = objects.Size(tile_width, tile_height)
 
     infinite_attribute = map_element.attrib["infinite"]
-    infinite = bool(infinite_attribute == "true")
+    infinite = bool(infinite_attribute == "1")
 
     if "nextlayerid" in map_element.attrib:
         next_layer_id = int(map_element.attrib["nextlayerid"])
