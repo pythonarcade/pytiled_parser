@@ -95,9 +95,12 @@ class Image:
     This module does not support embedded data in image elements.
 
     Attributes:
-        source (Optional[str]): The reference to the tileset image file. Note that this is a relative path compared to FIXME
-        trans (Optional[Color]): Defines a specific color that is treated as transparent.
-        width (Optional[str]): The image width in pixels (optional, used for tile index correction when the image changes).
+        source (Optional[str]): The reference to the tileset image file. Note that this
+            is a relative path compared to FIXME
+        trans (Optional[Color]): Defines a specific color that is treated as
+            transparent.
+        width (Optional[str]): The image width in pixels (optional, used for tile index
+            correction when the image changes).
         height (Optional[str]): The image height in pixels (optional).
     """
 
