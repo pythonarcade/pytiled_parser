@@ -111,17 +111,13 @@ def _decode_tile_layer_data(
         compression: Compression format of the layer data.
 
     Raises:
-        AttributeError: No data in element.
         ValueError: Encoding type is not supported.
 
     Returns:
         objects.TileLayerGrid: Tile grid.
     """
 
-    try:
-        data_text: str = element.text  # type: ignore
-    except AttributeError:
-        raise AttributeError(f"{element} lacks layer data.")
+    data_text: str = element.text  # type: ignore
 
     if encoding == "csv":
         return _decode_csv_data(data_text)
