@@ -255,7 +255,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
         element: The layer element to be parsed.
 
     Raises:
-        ValueError: Element has no chile data element.
+        ValueError: Element has no child data element.
 
     Returns:
         TileLayer: The tile layer object.
