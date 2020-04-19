@@ -55,36 +55,18 @@ def test_color_parsing(test_input, expected):
     assert utilities.parse_color(test_input) == expected
 
 
-data_csv = [
+layer_data = [
     (
-        "\n1,2,3,4,5,6,7,8,\n"
-        "9,10,11,12,13,14,15,16,\n"
-        "17,18,19,20,21,22,23,24,\n"
-        "25,26,27,28,29,30,31,32,\n"
-        "33,34,35,36,37,38,39,40,\n"
-        "41,42,43,44,45,46,47,48\n",
-        [
-            [1, 2, 3, 4, 5, 6, 7, 8],
-            [9, 10, 11, 12, 13, 14, 15, 16],
-            [17, 18, 19, 20, 21, 22, 23, 24],
-            [25, 26, 27, 28, 29, 30, 31, 32],
-            [33, 34, 35, 36, 37, 38, 39, 40],
-            [41, 42, 43, 44, 45, 46, 47, 48],
-        ],
-    ),
-    ("\n0,0,0,0,0\n", [[0, 0, 0, 0, 0]]),
-]
-
-
-@pytest.mark.parametrize("data_csv,expected", data_csv)
-def test_decode_csv_data(data_csv, expected):
-    assert xml_parser._decode_csv_data(data_csv) == expected
-
-
-DATA_BASE64 = [
-    (
-        "AQAAAAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAAsAAAAMAAAADQAAAA4AAAAPAAAAEAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAeAAAAHwAAACAAAAAhAAAAIgAAACMAAAAkAAAAJQAAACYAAAAnAAAAKAAAACkAAAAqAAAAKwAAACwAAAAtAAAALgAAAC8AAAAwAAAA",
+        etree.fromstring(
+            "<data>\n1,2,3,4,5,6,7,8,\n"
+            "9,10,11,12,13,14,15,16,\n"
+            "17,18,19,20,21,22,23,24,\n"
+            "25,26,27,28,29,30,31,32,\n"
+            "33,34,35,36,37,38,39,40,\n"
+            "41,42,43,44,45,46,47,48\n</data>"
+        ),
         8,
+        "csv",
         None,
         [
             [1, 2, 3, 4, 5, 6, 7, 8],
@@ -97,8 +79,36 @@ DATA_BASE64 = [
         does_not_raise(),
     ),
     (
-        "eJwNwwUSgkAAAMAzEQOwUCzExPb/r2N3ZlshhLYdu/bsGzkwdujIsRMTUzOnzpy7cGnuyrWFG7fu3Huw9GjlybMXr968W/vw6cu3H7/+/NsAMw8EmQ==",
+        etree.fromstring("<data>\n0,0,0,0,0\n</data>"),
+        5,
+        "csv",
+        None,
+        [[0, 0, 0, 0, 0]],
+        does_not_raise(),
+    ),
+    (
+        etree.fromstring(
+            "<data>AQAAAAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAAsAAAAMAAAADQAAAA4AAAAPAAAAEAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAeAAAAHwAAACAAAAAhAAAAIgAAACMAAAAkAAAAJQAAACYAAAAnAAAAKAAAACkAAAAqAAAAKwAAACwAAAAtAAAALgAAAC8AAAAwAAAA</data>"
+        ),
         8,
+        "base64",
+        None,
+        [
+            [1, 2, 3, 4, 5, 6, 7, 8],
+            [9, 10, 11, 12, 13, 14, 15, 16],
+            [17, 18, 19, 20, 21, 22, 23, 24],
+            [25, 26, 27, 28, 29, 30, 31, 32],
+            [33, 34, 35, 36, 37, 38, 39, 40],
+            [41, 42, 43, 44, 45, 46, 47, 48],
+        ],
+        does_not_raise(),
+    ),
+    (
+        etree.fromstring(
+            "<data>eJwNwwUSgkAAAMAzEQOwUCzExPb/r2N3ZlshhLYdu/bsGzkwdujIsRMTUzOnzpy7cGnuyrWFG7fu3Huw9GjlybMXr968W/vw6cu3H7/+/NsAMw8EmQ==</data>"
+        ),
+        8,
+        "base64",
         "zlib",
         [
             [1, 2, 3, 4, 5, 6, 7, 8],
@@ -111,8 +121,11 @@ DATA_BASE64 = [
         does_not_raise(),
     ),
     (
-        "H4sIAAAAAAAAAw3DBRKCQAAAwDMRA7BQLMTE9v+vY3dmWyGEth279uwbOTB26MixExNTM6fOnLtwae7KtYUbt+7ce7D0aOXJsxev3rxb+/Dpy7cfv/782wAcvDirwAAAAA==",
+        etree.fromstring(
+            "<data>H4sIAAAAAAAAAw3DBRKCQAAAwDMRA7BQLMTE9v+vY3dmWyGEth279uwbOTB26MixExNTM6fOnLtwae7KtYUbt+7ce7D0aOXJsxev3rxb+/Dpy7cfv/782wAcvDirwAAAAA==</data>"
+        ),
         8,
+        "base64",
         "gzip",
         [
             [1, 2, 3, 4, 5, 6, 7, 8],
@@ -125,9 +138,27 @@ DATA_BASE64 = [
         does_not_raise(),
     ),
     (
-        "SGVsbG8gV29ybGQh",
+        etree.fromstring("<data>SGVsbG8gV29ybGQh</data>"),
         8,
+        "base64",
         "lzma",
+        [
+            [1, 2, 3, 4, 5, 6, 7, 8],
+            [9, 10, 11, 12, 13, 14, 15, 16],
+            [17, 18, 19, 20, 21, 22, 23, 24],
+            [25, 26, 27, 28, 29, 30, 31, 32],
+            [33, 34, 35, 36, 37, 38, 39, 40],
+            [41, 42, 43, 44, 45, 46, 47, 48],
+        ],
+        pytest.raises(ValueError),
+    ),
+    (
+        etree.fromstring(
+            "<data>/ .---- --..-- ..--- --..-- ...-- --..-- ....- --..-- ..... --..-- -.... --..-- --... --..-- ---.. --..-- / ----. --..-- .---- ----- --..-- .---- .---- --..-- .---- ..--- --..-- .---- ...-- --..-- .---- ....- --..-- .---- ..... --..-- .---- -.... --..-- / .---- --... --..-- .---- ---.. --..-- .---- ----. --..-- ..--- ----- --..-- ..--- .---- --..-- ..--- ..--- --..-- ..--- ...-- --..-- ..--- ....- --..-- / ..--- ..... --..-- ..--- -.... --..-- ..--- --... --..-- ..--- ---.. --..-- ..--- ----. --..-- ...-- ----- --..-- ...-- .---- --..-- ...-- ..--- --..-- / ...-- ...-- --..-- ...-- ....- --..-- ...-- ..... --..-- ...-- -.... --..-- ...-- --... --..-- ...-- ---.. --..-- ...-- ----. --..-- ....- ----- --..-- / ....- .---- --..-- ....- ..--- --..-- ....- ...-- --..-- ....- ....- --..-- ....- ..... --..-- ....- -.... --..-- ....- --... --..-- ....- ---..</data>"
+        ),
+        8,
+        "morse",
+        None,
         [
             [1, 2, 3, 4, 5, 6, 7, 8],
             [9, 10, 11, 12, 13, 14, 15, 16],
@@ -141,16 +172,21 @@ DATA_BASE64 = [
 ]
 
 
-@pytest.mark.parametrize("data_base64,width,compression,expected,raises", DATA_BASE64)
-def test_decode_base64_data(data_base64, width, compression, expected, raises):
+@pytest.mark.parametrize(
+    "layer_data,width,encoding,compression,expected,raises", layer_data
+)
+def test_decode_layer_data(layer_data, width, encoding, compression, expected, raises):
     with raises:
         assert (
-            xml_parser._decode_base64_data(data_base64, width, compression) == expected
+            xml_parser._decode_tile_layer_data(layer_data, width, encoding, compression)
+            == expected
         )
 
 
 # FIXME: use hypothesis for this
 def create_tile_set(qty_of_tiles):
+    """ Create tile set of specific size.
+    """
     tile_set = objects.TileSet(None, None)
 
     if qty_of_tiles == 0:
