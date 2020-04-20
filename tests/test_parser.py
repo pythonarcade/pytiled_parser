@@ -36,8 +36,6 @@ def test_parse_layer(xml, expected, monkeypatch):
 
     result = xml_parser._parse_layer(etree.fromstring(xml))
 
-    print(result)
-
     assert result == expected
 
 
