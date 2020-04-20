@@ -247,7 +247,9 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
     )
 
 
-def _parse_objects(object_elements: List[etree.Element]) -> List[objects.TiledObject]:
+def _parse_tiled_objects(
+    object_elements: List[etree.Element],
+) -> List[objects.TiledObject]:
     """Parses objects found in the 'objectgroup' element.
 
     Args:
@@ -323,7 +325,7 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     """
     id_, name, offset, opacity, properties = _parse_layer(element)
 
-    tiled_objects = _parse_objects(element.findall("./object"))
+    tiled_objects = _parse_tiled_objects(element.findall("./object"))
 
     color = None
     try:
