@@ -250,7 +250,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
 def _parse_tiled_objects(
     object_elements: List[etree.Element],
 ) -> List[objects.TiledObject]:
-    """Parses objects found in the 'objectgroup' element.
+    """Parses objects found in a 'objectgroup' element.
 
     Args:
         object_elements: List of object elements to be parsed.
