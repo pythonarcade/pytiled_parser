@@ -587,7 +587,8 @@ def _parse_tiles(tile_element_list: List[etree.Element]) -> Dict[int, objects.Ti
                 if my_object is None:
                     if "template" in object.attrib:
                         print(
-                            "Warning, this .tmx file is using an unsupported 'template' attribute. Ignoring."
+                            "Warning, this .tmx file is using an unsupported"
+                            "'template' attribute. Ignoring."
                         )
                         continue
 
