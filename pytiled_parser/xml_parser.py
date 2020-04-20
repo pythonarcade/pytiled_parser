@@ -327,8 +327,6 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     """
     id_, name, offset, opacity, properties = _parse_layer(element)
 
-    tiled_objects = _parse_tiled_objects(element.findall("./object"))
-
     color = None
     try:
         color = element.attrib["color"]
@@ -341,15 +339,17 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     except KeyError:
         pass
 
+    tiled_objects = _parse_tiled_objects(element.findall("./object"))
+
     return objects.ObjectLayer(
         id_=id_,
         name=name,
         offset=offset,
         opacity=opacity,
         properties=properties,
-        tiled_objects=tiled_objects,
         color=color,
         draw_order=draw_order,
+        tiled_objects=tiled_objects,
     )
 
 
