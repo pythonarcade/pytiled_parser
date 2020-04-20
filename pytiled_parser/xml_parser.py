@@ -317,6 +317,8 @@ def _parse_tiled_objects(
 def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     """Parse the objectgroup element given.
 
+    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
+
     Args:
         element: Element to be parsed.
 
