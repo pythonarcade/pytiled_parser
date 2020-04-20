@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import pytiled_parser.objects as objects
+import pytiled_parser.typing_helpers as TH
 from pytiled_parser.utilities import parse_color
 
 
@@ -187,21 +188,12 @@ def _parse_layer(
     name = layer_element.attrib["name"]
 
     offset: Optional[objects.OrderedPair]
-    offset_x_attrib = layer_element.attrib.get("offsetx")
-    offset_y_attrib = layer_element.attrib.get("offsety")
-    # If any offset is present, we need to return an OrderedPair
-    # Unknown if only one of the offsets could be absent.
-    if any([offset_x_attrib, offset_y_attrib]):
-        if offset_x_attrib:
-            offset_x = float(offset_x_attrib)
-        else:
-            offset_x = 0.0
-        if offset_y_attrib:
-            offset_y = float(offset_y_attrib)
-        else:
-            offset_y = 0.0
-
-        offset = objects.OrderedPair(offset_x, offset_y)
+    offset_x = layer_element.attrib.get("offsetx")
+    offset_y = layer_element.attrib.get("offsety")
+    if offset_x and offset_y:
+        assert TH.is_float(offset_x)
+        assert TH.is_float(offset_y)
+        offset = objects.OrderedPair(float(offset_x), float(offset_y))
     else:
         offset = None
 
