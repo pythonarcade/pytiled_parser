@@ -234,7 +234,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
 
     data_element = element.find("./data")
     assert data_element is not None
-    data: objects.LayerData = _parse_data(data_element, width)
+    layer_data: objects.LayerData = _parse_data(data_element, width)
 
     return objects.TileLayer(
         id_=id_,
@@ -243,7 +243,7 @@ def _parse_tile_layer(element: etree.Element,) -> objects.TileLayer:
         opacity=opacity,
         properties=properties,
         size=size,
-        data=data,
+        layer_data=layer_data,
     )
 
 

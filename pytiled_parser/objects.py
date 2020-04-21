@@ -233,7 +233,7 @@ class TileLayer(Layer):
     """
 
     size: Size
-    data: LayerData
+    layer_data: LayerData
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -261,9 +261,9 @@ class TiledObject:
     gid: Optional[int] = None
 
     location: OrderedPair
-    size: Size = Size(0, 0)
-    rotation: int = 0
-    opacity: float = 1
+    size: Optional[Size] = None
+    rotation: int
+    opacity: Optional[float] = None
 
     name: Optional[str] = None
     type: Optional[str] = None
