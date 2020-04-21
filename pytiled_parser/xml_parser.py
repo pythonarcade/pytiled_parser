@@ -274,16 +274,12 @@ def _parse_tiled_objects(
             tiled_object.gid = None
 
         try:
+            # If any dimension is provided, they both will be
             width = float(object_element.attrib["width"])
-        except KeyError:
-            width = 0.0
-
-        try:
             height = float(object_element.attrib["height"])
+            tiled_object.size = objects.Size(width, height)
         except KeyError:
-            height = 0.0
-
-        tiled_object.size = objects.Size(width, height)
+            pass
 
         try:
             tiled_object.opacity = float(object_element.attrib["opacity"])
