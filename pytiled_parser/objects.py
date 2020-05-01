@@ -262,7 +262,7 @@ class TiledObject:
 
     location: OrderedPair
     size: Optional[Size] = None
-    rotation: int
+    rotation: Optional[float] = None
     opacity: Optional[float] = None
 
     name: Optional[str] = None
