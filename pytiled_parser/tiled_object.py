@@ -169,6 +169,7 @@ class RawTiledObject(TypedDict):
     type: str
     properties: Properties
     template: Template
+    polygon: List[Dict]
 
 
 RawTiledObjects = List[RawTiledObject]
@@ -242,11 +243,27 @@ def _cast_ellipse(raw_tiled_object: RawTiledObject) -> Ellipse:
 
 
 def _cast_rectangle(raw_tiled_object: RawTiledObject) -> Rectangle:
-    raise NotImplementedError
+    """ Cast the raw_tiled_object to a Rectangle object.
+
+    Args:
+        raw_tiled_object: Raw Tiled object to be casted to a Rectangle
+
+    Returns:
+        Rectangle: The Rectangle object created from the raw_tiled_object
+    """
+    return Rectangle(**_get_common_attributes(raw_tiled_object).__dict__)
 
 
 def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
-    raise NotImplementedError
+    """ Cast the raw_tiled_object to a Point object.
+
+    Args:
+        raw_tiled_object: Raw Tiled object to be casted to a Point
+
+    Returns:
+        Point: The Point object created from the raw_tiled_object
+    """
+    return Point(**_get_common_attributes(raw_tiled_object).__dict__)
 
 
 def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
@@ -254,7 +271,20 @@ def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
 
 
 def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
-    raise NotImplementedError
+    """ Cast the raw_tiled_object to a Polygon object.
+
+    Args:
+        raw_tiled_object: Raw Tiled object to be casted to a Polygon
+
+    Returns:
+        Polygon: The Polygon object created from the raw_tiled_object
+    """
+    polygon = []
+    if raw_tiled_object.get("polygon"):
+        for point in raw_tiled_object["polygon"]:
+            polygon.append(OrderedPair(point["x"], point["y"]))
+
+    return Polygon(**_get_common_attributes(raw_tiled_object).__dict__, points=polygon)
 
 
 def _cast_polyline(raw_tiled_object: RawTiledObject) -> Polyline:
