@@ -5,8 +5,7 @@ from typing import Callable, Dict, List, Mapping, Optional, Union
 import attr
 from typing_extensions import TypedDict
 
-from .common_types import OrderedPair, Size
-from .properties import Properties
+from .properties import Properties, RawProperties
 from .template import Template
 
 
