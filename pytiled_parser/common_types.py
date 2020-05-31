@@ -22,8 +22,8 @@ class Size(NamedTuple):
         height: The height of the object.
     """
 
-    width: Union[int, float]
-    height: Union[int, float]
+    width: float
+    height: float
 
 
 class OrderedPair(NamedTuple):
@@ -34,5 +34,5 @@ class OrderedPair(NamedTuple):
         y: Y coordinate.
     """
 
-    x: Union[int, float]
-    y: Union[int, float]
+    x: float
+    y: float
