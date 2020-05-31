@@ -122,7 +122,7 @@
                 {
                  "height":0,
                  "id":9,
-                 "name":"name: polyline",
+                 "name":"name: polygon",
                  "polygon":[
                         {
                          "x":0,
@@ -145,7 +145,7 @@
                          "y":16.3692167784472
                         }],
                  "rotation":0,
-                 "type":"polyline",
+                 "type":"polygon",
                  "visible":true,
                  "width":0,
                  "x":89.485051722178,
@@ -154,7 +154,7 @@
                 {
                  "height":0,
                  "id":10,
-                 "name":"name: polyline - invisible",
+                 "name":"name: polygon - invisible",
                  "polygon":[
                         {
                          "x":0,
@@ -169,7 +169,7 @@
                          "y":-10.2580425144936
                         }],
                  "rotation":0,
-                 "type":"polyline",
+                 "type":"polygon",
                  "visible":false,
                  "width":0,
                  "x":133.791065135842,
@@ -178,7 +178,7 @@
                 {
                  "height":0,
                  "id":11,
-                 "name":"name: polyline - rotated",
+                 "name":"name: polygon - rotated",
                  "polygon":[
                         {
                          "x":0,
@@ -205,7 +205,7 @@
                          "y":8.29373650107991
                         }],
                  "rotation":123,
-                 "type":"polyline",
+                 "type":"polygon",
                  "visible":true,
                  "width":0,
                  "x":152.779356598841,
@@ -214,7 +214,7 @@
                 {
                  "height":0,
                  "id":12,
-                 "name":"name: polyline - not closed",
+                 "name":"name: polyline",
                  "polyline":[
                         {
                          "x":0,
@@ -234,6 +234,54 @@
                  "width":0,
                  "x":124.187791292486,
                  "y":90.1398203933159
+                }, 
+                {
+                 "height":0,
+                 "id":31,
+                 "name":"name: polyline - invisible",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "x":-9,
+                         "y":20.3333333333333
+                        }, 
+                        {
+                         "x":5,
+                         "y":23.6666666666667
+                        }],
+                 "rotation":0,
+                 "type":"polyline",
+                 "visible":false,
+                 "width":0,
+                 "x":140,
+                 "y":163.333333333333
+                }, 
+                {
+                 "height":0,
+                 "id":32,
+                 "name":"name: polyline - rotated",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "x":10.3333333333333,
+                         "y":13
+                        }, 
+                        {
+                         "x":-5.33333333333331,
+                         "y":19.6666666666667
+                        }],
+                 "rotation":0,
+                 "type":"polyline",
+                 "visible":true,
+                 "width":0,
+                 "x":192.333333333333,
+                 "y":128.666666666667
                 }, 
                 {
                  "gid":79,
@@ -531,10 +579,10 @@
          "y":0
         }],
  "nextlayerid":3,
- "nextobjectid":31,
+ "nextobjectid":33,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.3.1",
+ "tiledversion":"1.3.5",
  "tileheight":32,
  "tilesets":[
         {
