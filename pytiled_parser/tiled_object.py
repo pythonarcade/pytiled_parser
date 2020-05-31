@@ -170,7 +170,7 @@ class RawTiledObject(TypedDict):
     template: Template
     ellipse: bool
     point: bool
-    polygon: List[Dict]
+    polygon: List[Dict[str, float]]
 
 
 RawTiledObjects = List[RawTiledObject]
