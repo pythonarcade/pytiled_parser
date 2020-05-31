@@ -1,4 +1,5 @@
 """Tests for objects"""
+import json
 from contextlib import ExitStack as does_not_raise
 from pathlib import Path
 
@@ -738,8 +739,9 @@ TEXTS = []
 OBJECTS = ELLIPSES + RECTANGLES + POINTS + TILE_IMAGES + POLYGONS + POLYLINES + TEXTS
 
 
-@pytest.mark.parametrize("raw_object,expected", OBJECTS)
-def test_parse_layer(raw_object, expected):
+@pytest.mark.parametrize("raw_object_json,expected", OBJECTS)
+def test_parse_layer(raw_object_json, expected):
+    raw_object = json.loads(raw_object_json)
     result = tiled_object._cast_tiled_object(raw_object)
 
     assert result == expected
