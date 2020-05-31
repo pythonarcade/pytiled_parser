@@ -102,7 +102,7 @@
                  "name":"name: ellipse - invisible",
                  "rotation":0,
                  "type":"ellipse",
-                 "visible":true,
+                 "visible":false,
                  "width":6.32943048766625,
                  "x":22.6986472661134,
                  "y":53.9092872570194
