@@ -220,7 +220,7 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
         common_attributes.name = raw_tiled_object["name"]
 
     if raw_tiled_object.get("type"):
-        common_attributes.name = raw_tiled_object["type"]
+        common_attributes.type = raw_tiled_object["type"]
 
     if raw_tiled_object.get("properties"):
         raise NotImplementedError
