@@ -131,7 +131,7 @@ class Text(TiledObject):
     italic: bool = False
     underline: bool = False
     strike_out: bool = False
-    kerning: bool = False
+    kerning: bool = True
     horizontal_align: str = "left"
     vertical_align: str = "top"
 
