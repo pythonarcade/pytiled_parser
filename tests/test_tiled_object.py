@@ -11,7 +11,8 @@ ELLIPSES = []
 RECTANGLES = [
     (
         """
-        {"height":41.4686825053996,
+        {
+        "height":41.4686825053996,
         "id":1,
         "name":"name: rectangle",
         "rotation":0,
@@ -19,7 +20,8 @@ RECTANGLES = [
         "visible":true,
         "width":45.3972945322269,
         "x":27.7185404115039,
-        "y":23.571672160964}
+        "y":23.571672160964
+        }
         """,
         tiled_object.Rectangle(
             id_=1,
@@ -36,7 +38,8 @@ RECTANGLES = [
 POINTS = [
     (
         """
-        {"height":0,
+        {
+        "height":0,
         "id":2,
         "name":"name:  point",
         "point":true,
@@ -45,7 +48,8 @@ POINTS = [
         "visible":true,
         "width":0,
         "x":159.981811981357,
-        "y":82.9373650107991}
+        "y":82.9373650107991
+        }
         """,
         {
             "height": 0,
