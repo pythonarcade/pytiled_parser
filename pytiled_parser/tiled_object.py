@@ -327,7 +327,7 @@ def _get_tiled_object_caster(
     if raw_tiled_object.get("text"):
         return _cast_text
 
-    raise RuntimeError("No caster found for TiledObject")
+    return _cast_rectangle
 
 
 def _cast_tiled_object(raw_tiled_object: RawTiledObject) -> TiledObject:
