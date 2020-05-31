@@ -270,6 +270,14 @@ def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
 
 
 def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
+    """ Cast the raw_tiled_object to a Tile object.
+
+    Args:
+        raw_tiled_object: Raw Tiled object to be casted to a Tile
+
+    Returns:
+        Tile: The Tile object created from the raw_tiled_object
+    """
     gid = raw_tiled_object["gid"]
 
     return Tile(gid=gid, **_get_common_attributes(raw_tiled_object).__dict__)
