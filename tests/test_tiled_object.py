@@ -1051,6 +1051,47 @@ TEXTS = [
             coordinates=common_types.OrderedPair(96.3338140843469, 130.620495623508),
         ),
     ),
+    (
+        """
+        {
+         "height":19,
+         "id":31,
+         "name":"name: text - font options",
+         "rotation":0,
+         "text":
+            {
+             "bold":true,
+             "italic":true,
+             "kerning":false,
+             "strikeout":true,
+             "text":"Hello World",
+             "underline":true,
+             "wrap":true
+            },
+         "type":"text",
+         "visible":true,
+         "width":92.375,
+         "x":33,
+         "y":22
+        }
+        """,
+        tiled_object.Text(
+            id=31,
+            name="name: text - font options",
+            rotation=0,
+            bold=True,
+            italic=True,
+            kerning=False,
+            strike_out=True,
+            text="Hello World",
+            underline=True,
+            wrap=True,
+            type="text",
+            visible=True,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(33, 22),
+        ),
+    ),
 ]
 
 OBJECTS = ELLIPSES + RECTANGLES + POINTS + TILES + POLYGONS + POLYLINES + TEXTS

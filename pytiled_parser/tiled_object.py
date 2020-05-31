@@ -6,6 +6,7 @@ import attr
 from typing_extensions import TypedDict
 
 from .properties import Properties, RawProperties
+from .common_types import Color, OrderedPair, Size
 from .template import Template
 
 
@@ -125,12 +126,12 @@ class Text(TiledObject):
     font_family: str = "sans-serif"
     font_size: int = 16
     wrap: bool = False
-    color: str = "#000000"
+    color: Color = "#000000"
     bold: bool = False
     italic: bool = False
     underline: bool = False
     strike_out: bool = False
-    kerning: bool = False
+    kerning: bool = True
     horizontal_align: str = "left"
     vertical_align: str = "top"
 
@@ -146,9 +147,6 @@ class Tile(TiledObject):
     """
 
     gid: int
-
-
-RawProperties = Dict[str, Union[str, float, bool]]
 
 
 class RawTiledObject(TypedDict):
@@ -170,6 +168,8 @@ class RawTiledObject(TypedDict):
     ellipse: bool
     point: bool
     polygon: List[Dict[str, float]]
+    polyline: List[Dict[str, float]]
+    text: Dict[str, Union[float, str]]
 
 
 RawTiledObjects = List[RawTiledObject]
@@ -267,6 +267,14 @@ def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
 
 
 def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
+    """ Cast the raw_tiled_object to a Tile object.
+
+    Args:
+        raw_tiled_object: Raw Tiled object to be casted to a Tile
+
+    Returns:
+        Tile: The Tile object created from the raw_tiled_object
+    """
     gid = raw_tiled_object["gid"]
 
     return Tile(gid=gid, **_get_common_attributes(raw_tiled_object).__dict__)
