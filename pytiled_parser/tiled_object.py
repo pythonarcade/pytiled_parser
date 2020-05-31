@@ -38,6 +38,7 @@ class TiledObject:
     size: Size = Size(0, 0)
     rotation: float = 0
     opacity: float = 1
+    visible: bool
 
     name: Optional[str] = None
     type: Optional[str] = None
