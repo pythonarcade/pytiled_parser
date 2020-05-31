@@ -4,9 +4,9 @@ from typing import Callable, Dict, List, Optional, Union
 
 import attr
 
-from pytiled_parser import OrderedPair, Size
-from pytiled_parser.properties import Properties
-from pytiled_parser.template import Template
+from .common_types import OrderedPair, Size
+from .properties import Properties
+from .template import Template
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -38,6 +38,7 @@ class TiledObject:
     size: Size = Size(0, 0)
     rotation: float = 0
     opacity: float = 1
+    visible: bool
 
     name: Optional[str] = None
     type: Optional[str] = None
