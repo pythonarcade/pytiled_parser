@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, Mapping, Optional, Union
 import attr
 from typing_extensions import TypedDict
 
-from .common_types import OrderedPair, Size
+from .common_types import Color, OrderedPair, Size
 from .properties import Properties
 from .template import Template
 
@@ -126,7 +126,7 @@ class Text(TiledObject):
     font_family: str = "sans-serif"
     font_size: int = 16
     wrap: bool = False
-    color: str = "#000000"
+    color: Color = "#000000"
     bold: bool = False
     italic: bool = False
     underline: bool = False
