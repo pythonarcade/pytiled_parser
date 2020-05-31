@@ -1,11 +1,10 @@
 """Tests for objects"""
-import xml.etree.ElementTree as etree
 from contextlib import ExitStack as does_not_raise
 from pathlib import Path
 
 import pytest
 
-from pytiled_parser import common_types, properties, tiled_object
+from pytiled_parser import common_types, tiled_object
 
 ELLIPSES = [
     (
