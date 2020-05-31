@@ -137,7 +137,7 @@ class Text(TiledObject):
 
 
 @attr.s(auto_attribs=True, kw_only=True)
-class TileImage(TiledObject):
+class Tile(TiledObject):
     """Tile object
 
     See: https://doc.mapeditor.org/en/stable/manual/objects/#insert-tile
