@@ -4,7 +4,7 @@ from contextlib import ExitStack as does_not_raise
 
 import pytest
 
-from pytiled_parser import tiled_object
+from pytiled_parser import common_types, tiled_object
 
 ELLIPSES = []
 
@@ -21,17 +21,15 @@ RECTANGLES = [
         "x":27.7185404115039,
         "y":23.571672160964}
         """,
-        {
-            "height": 41.4686825053996,
-            "id": 1,
-            "name": "name: rectangle",
-            "rotation": 0,
-            "type": "rectangle",
-            "visible": True,
-            "width": 45.3972945322269,
-            "x": 27.7185404115039,
-            "y": 23.571672160964,
-        },
+        tiled_object.Rectangle(
+            id_=1,
+            size=common_types.Size(41.4686825053996, 45.3972945322269),
+            name="name: rectangle",
+            rotation=0,
+            type="rectangle",
+            visible=True,
+            coordinates=common_types.OrderedPair(27.7185404115039, 23.571672160964),
+        ),
     ),
 ]
 
