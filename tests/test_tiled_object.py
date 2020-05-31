@@ -322,7 +322,7 @@ POINTS = [
     ),
 ]
 
-TILE_IMAGES = [
+TILES = [
     (
         """
         {
@@ -1053,7 +1053,7 @@ TEXTS = [
     ),
 ]
 
-OBJECTS = ELLIPSES + RECTANGLES + POINTS + TILE_IMAGES + POLYGONS + POLYLINES + TEXTS
+OBJECTS = ELLIPSES + RECTANGLES + POINTS + TILES + POLYGONS + POLYLINES + TEXTS
 
 
 @pytest.mark.parametrize("raw_object_json,expected", OBJECTS)
