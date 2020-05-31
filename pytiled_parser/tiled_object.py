@@ -285,7 +285,7 @@ def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
         for point in raw_tiled_object["polygon"]:
             polygon.append(OrderedPair(point["x"], point["y"]))
 
-    return Polygon(**_get_common_attributes(raw_tiled_object).__dict__, points=polygon)
+    return Polygon(points=polygon, **_get_common_attributes(raw_tiled_object).__dict__)
 
 
 def _cast_polyline(raw_tiled_object: RawTiledObject) -> Polyline:
