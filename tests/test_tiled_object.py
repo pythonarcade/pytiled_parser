@@ -82,6 +82,30 @@ ELLIPSES = [
             coordinates=common_types.OrderedPair(35.7940206888712, 120.040923041946),
         ),
     ),
+    (
+        """
+        {
+                 "ellipse":true,
+                 "height":0,
+                 "id":29,
+                 "name":"name: ellipse - no width or height",
+                 "rotation":0,
+                 "type":"ellipse",
+                 "visible":true,
+                 "width":0,
+                 "x":72.4610662725929,
+                 "y":127.679890871888
+        }
+        """,
+        tiled_object.Ellipse(
+            id_=29,
+            name="name: ellipse - no width or height",
+            rotation=0,
+            type="ellipse",
+            visible=True,
+            coordinates=common_types.OrderedPair(72.4610662725929, 127.679890871888),
+        ),
+    ),
 ]
 
 RECTANGLES = [
@@ -576,7 +600,299 @@ POLYLINES = [
     ),
 ]
 
-TEXTS = []
+TEXTS = [
+    (
+        """
+        {
+                 "height":19,
+                 "id":19,
+                 "name":"name: text",
+                 "rotation":0,
+                 "text":
+                    {
+                     "text":"Hello World",
+                     "wrap":true
+                    },
+                 "type":"text",
+                 "visible":true,
+                 "width":92.375,
+                 "x":81.7106470956008,
+                 "y":93.2986813686484
+        }
+        """,
+        tiled_object.Text(
+            id_=19,
+            name="name: text",
+            text="Hello World",
+            type="text",
+            wrap=True,
+            rotation=0,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(81.7106470956008, 93.2986813686484),
+        ),
+    ),
+    (
+        """
+        {
+                 "height":19,
+                 "id":20,
+                 "name":"name: text - invisible",
+                 "rotation":0,
+                 "text":
+                    {
+                     "text":"Hello World",
+                     "wrap":true
+                    },
+                 "type":"text",
+                 "visible":false,
+                 "width":92.375,
+                 "x":8.37655592815732,
+                 "y":112.068716607935
+        }
+        """,
+        tiled_object.Text(
+            id_=20,
+            name="name: text - invisible",
+            text="Hello World",
+            wrap=True,
+            type="text",
+            rotation=0,
+            visible=False,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(8.37655592815732, 112.068716607935),
+        ),
+    ),
+    (
+        """
+        {
+                 "height":19,
+                 "id":21,
+                 "name":"name: text - rotated",
+                 "rotation":19,
+                 "text":
+                    {
+                     "text":"Hello World",
+                     "wrap":true
+                    },
+                 "type":"text",
+                 "visible":true,
+                 "width":92.375,
+                 "x":157.882069171308,
+                 "y":78.4572581561896
+        }
+        """,
+        tiled_object.Text(
+            id_=21,
+            name="name: text - rotated",
+            text="Hello World",
+            wrap=True,
+            rotation=19,
+            type="text",
+            visible=True,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(157.882069171308, 78.4572581561896),
+        ),
+    ),
+    (
+        """
+        {
+                 "height":19,
+                 "id":22,
+                 "name":"name: text - different font",
+                 "rotation":0,
+                 "text":
+                    {
+                     "bold":true,
+                     "fontfamily":"DejaVu Sans",
+                     "pixelsize":19,
+                     "text":"Hello World",
+                     "wrap":true
+                    },
+                 "type":"text",
+                 "visible":true,
+                 "width":92.375,
+                 "x":2.70189411162896,
+                 "y":101.592417869728
+        }
+        """,
+        tiled_object.Text(
+            id_=22,
+            name="name: text - different font",
+            text="Hello World",
+            wrap=True,
+            bold=True,
+            font_family="DejaVu Sans",
+            font_size=19,
+            rotation=0,
+            type="text",
+            visible=True,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(2.70189411162896, 101.592417869728),
+        ),
+    ),
+    (
+        """
+        {
+                 "height":19,
+                 "id":23,
+                 "name":"name: text - no word wrap",
+                 "rotation":0,
+                 "text":
+                    {
+                     "text":"Hello World"
+                    },
+                 "type":"text",
+                 "visible":true,
+                 "width":92.375,
+                 "x":9.90434949414573,
+                 "y":154.192167784472
+        }
+        """,
+        tiled_object.Text(
+            id_=23,
+            name="name: text - no word wrap",
+            text="Hello World",
+            rotation=0,
+            type="text",
+            visible=True,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(9.90434949414573, 154.192167784472),
+        ),
+    ),
+    (
+        """
+        {
+                 "height":19,
+                 "id":24,
+                 "name":"name: text - right bottom align",
+                 "rotation":0,
+                 "text":
+                    {
+                     "halign":"right",
+                     "text":"Hello World",
+                     "valign":"bottom",
+                     "wrap":true
+                    },
+                 "type":"text",
+                 "visible":true,
+                 "width":92.375,
+                 "x":151.989151131067,
+                 "y":1.19455496191883
+        }
+        """,
+        tiled_object.Text(
+            id_=24,
+            name="name: text - right bottom align",
+            text="Hello World",
+            wrap=True,
+            horizontal_align="right",
+            vertical_align="bottom",
+            rotation=0,
+            type="text",
+            visible=True,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(151.989151131067, 1.19455496191883),
+        ),
+    ),
+    (
+        """
+        {
+          "height": 19,
+          "id": 25,
+          "name": "text: center center align",
+          "rotation": 0,
+          "text": {
+            "halign": "center",
+            "text": "Hello World",
+            "valign": "center",
+            "wrap": true
+          },
+          "type": "text",
+          "visible": true,
+          "width": 92.375,
+          "x": 4.22968767761736,
+          "y": 3.81362964647039
+        }
+        """,
+        tiled_object.Text(
+            id_=25,
+            name="text: center center align",
+            rotation=0,
+            text="Hello World",
+            wrap=True,
+            horizontal_align="center",
+            vertical_align="center",
+            type="text",
+            visible=True,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(4.22968767761736, 3.81362964647039),
+        ),
+    ),
+    (
+        """
+        {
+          "height": 19,
+          "id": 26,
+          "name": "name: text - justified",
+          "rotation": 0,
+          "text": {
+            "halign": "justify",
+            "text": "Hello World",
+            "wrap": true
+          },
+          "type": "text",
+          "visible": true,
+          "width": 92.375,
+          "x": 13.8329615209731,
+          "y": 60.7785040354666
+        }
+        """,
+        tiled_object.Text(
+            id_=26,
+            name="name: text - justified",
+            rotation=0,
+            text="Hello World",
+            wrap=True,
+            horizontal_align="justify",
+            type="text",
+            visible=True,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(13.8329615209731, 60.7785040354666),
+        ),
+    ),
+    (
+        """
+        {
+          "height": 19,
+          "id": 27,
+          "name": "name: text - red",
+          "rotation": 0,
+          "text": {
+            "color": "#aa0000",
+            "text": "Hello World",
+            "wrap": true
+          },
+          "type": "text",
+          "visible": true,
+          "width": 92.375,
+          "x": 96.3338140843469,
+          "y": 130.620495623508
+        }
+        """,
+        tiled_object.Text(
+            id_=27,
+            name="name: text - red",
+            rotation=0,
+            text="Hello World",
+            wrap=True,
+            color="#aa0000",
+            type="text",
+            visible=True,
+            size=common_types.Size(92.375, 19),
+            coordinates=common_types.OrderedPair(96.3338140843469, 130.620495623508),
+        ),
+    ),
+]
 
 OBJECTS = ELLIPSES + RECTANGLES + POINTS + TILE_IMAGES + POLYGONS + POLYLINES + TEXTS
 
