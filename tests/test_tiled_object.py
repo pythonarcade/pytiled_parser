@@ -785,6 +785,7 @@ TEXTS = [
             type="text",
             wrap=True,
             rotation=0,
+            visible=True,
             size=common_types.Size(92.375, 19),
             coordinates=common_types.OrderedPair(81.7106470956008, 93.2986813686484),
         ),
