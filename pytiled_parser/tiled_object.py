@@ -168,6 +168,8 @@ class RawTiledObject(TypedDict):
     type: str
     properties: Properties
     template: Template
+    ellipse: bool
+    point: bool
 
 
 RawTiledObjects = List[RawTiledObject]
@@ -278,6 +280,22 @@ def _get_tiled_object_caster(
     """
     if raw_tiled_object.get("ellipse"):
         return _cast_ellipse
+
+    if raw_tiled_object.get("point"):
+        return _cast_point
+
+    if raw_tiled_object.get("gid"):
+        # Only Tile objects have the `gid` key (I think)
+        return _cast_tile
+
+    if raw_tiled_object.get("polygon"):
+        return _cast_polygon
+
+    if raw_tiled_object.get("polyline"):
+        return _cast_polyline
+
+    if raw_tiled_object.get("text"):
+        return _cast_text
 
     raise RuntimeError("No caster found for TiledObject")
 
