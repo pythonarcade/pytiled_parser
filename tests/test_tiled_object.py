@@ -54,7 +54,7 @@ ELLIPSES = [
             name="name: ellipse - invisible",
             rotation=0,
             type="ellipse",
-            visible=True,
+            visible=False,
             coordinates=common_types.OrderedPair(22.6986472661134, 53.9092872570194),
         ),
     ),
