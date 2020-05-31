@@ -19,7 +19,7 @@ class Size(NamedTuple):
 
     Attributes:
         width: The width of the object.
-        size: The height of the object.
+        height: The height of the object.
     """
 
     width: Union[int, float]
