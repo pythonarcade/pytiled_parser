@@ -67,7 +67,7 @@
                  "name":"name:  rectangle - invisible",
                  "rotation":0,
                  "type":"rectangle",
-                 "visible":true,
+                 "visible":false,
                  "width":30.9923837671934,
                  "x":163.910424008185,
                  "y":91.0128452881664
