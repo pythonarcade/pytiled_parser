@@ -115,76 +115,94 @@ POINTS = [
     (
         """
         {
-        "height":0,
-        "id":2,
-        "name":"name:  point",
-        "point":true,
-        "rotation":0,
-        "type":"point",
-        "visible":true,
-        "width":0,
-        "x":159.981811981357,
-        "y":82.9373650107991
+                 "height":0,
+                 "id":2,
+                 "name":"name:  point",
+                 "point":true,
+                 "rotation":0,
+                 "type":"point",
+                 "visible":true,
+                 "width":0,
+                 "x":159.981811981357,
+                 "y":82.9373650107991            
         }
         """,
+        tiled_object.Point(
+            id_=2,
+            name="name:  point",
+            rotation=0,
+            type="point",
+            visible=True,
+            coordinates=common_types.OrderedPair(159.981811981357, 82.9373650107991),
+        ),
+    ),
+    (
+        """
         {
-            "height": 0,
-            "id": 2,
-            "name": "name:  point",
-            "point": True,
-            "rotation": 0,
-            "type": "point",
-            "visible": True,
-            "width": 0,
-            "x": 159.981811981357,
-            "y": 82.9373650107991,
-        },
+                 "height":0,
+                 "id":3,
+                 "name":"name:  point invisible",
+                 "point":true,
+                 "rotation":0,
+                 "type":"point",
+                 "visible":false,
+                 "width":0,
+                 "x":109.346368080027,
+                 "y":95.8144822098443
+        }
+        """,
+        tiled_object.Point(
+            id_=3,
+            name="name:name:  point invisible",
+            rotation=0,
+            type="point",
+            visible=True,
+            coordinates=common_types.OrderedPair(109.346368080027, 95.8144822098443),
+        ),
     ),
 ]
 
 TILE_IMAGES = []
 
-POLYGONS = []
-
-POLYLINES = [
+POLYGONS = [
     (
         """
         {
-        "height":0,
-        "id":9,
-        "name":"name: polyline",
-        "polygon":[
-            {
-                "x":0,
-                "y":0
-            }, 
-            {
-                "x":19.424803910424,
-                "y":27.063771740366
-            }, 
-            {
-                "x":19.6430601341366,
-                "y":3.05558713197681
-            }, 
-            {
-                "x":-2.61907468455156,
-                "y":15.9327043310219
-            }, 
-            {
-                "x":25.317721950665,
-                "y":16.3692167784472
-            }],
-        "rotation":0,
-        "type":"polyline",
-        "visible":true,
-        "width":0,
-        "x":89.485051722178,
-        "y":38.6313515971354
+                 "height":0,
+                 "id":9,
+                 "name":"name: polygon",
+                 "polygon":[
+                        {
+                         "x":0,
+                         "y":0
+                        },
+                        {
+                         "x":19.424803910424,
+                         "y":27.063771740366
+                        },
+                        {
+                         "x":19.6430601341366,
+                         "y":3.05558713197681
+                        },
+                        {
+                         "x":-2.61907468455156,
+                         "y":15.9327043310219
+                        },
+                        {
+                         "x":25.317721950665,
+                         "y":16.3692167784472
+                        }],
+                 "rotation":0,
+                 "type":"polygon",
+                 "visible":true,
+                 "width":0,
+                 "x":89.485051722178,
+                 "y":38.6313515971354
         }
         """,
-        tiled_object.Polyline(
+        tiled_object.Polygon(
             id_=9,
-            name="name: polyline",
+            name="name: polygon",
             points=[
                 common_types.OrderedPair(0, 0),
                 common_types.OrderedPair(19.424803910424, 27.063771740366),
@@ -193,7 +211,7 @@ POLYLINES = [
                 common_types.OrderedPair(25.317721950665, 16.3692167784472),
             ],
             rotation=0,
-            type="polyline",
+            type="polygon",
             visible=True,
             coordinates=common_types.OrderedPair(89.485051722178, 38.6313515971354),
         ),
@@ -203,7 +221,7 @@ POLYLINES = [
         {
                  "height":0,
                  "id":10,
-                 "name":"name: polyline - invisible",
+                 "name":"name: polygon - invisible",
                  "polygon":[
                         {
                          "x":0,
@@ -218,23 +236,23 @@ POLYLINES = [
                          "y":-10.2580425144936
                         }],
                  "rotation":0,
-                 "type":"polyline",
+                 "type":"polygon",
                  "visible":false,
                  "width":0,
                  "x":133.791065135842,
                  "y":24.4446970558145
         }
         """,
-        tiled_object.Polyline(
-            id_=10,
-            name="name: polyline - invisible",
+        tiled_object.Polygon(
+            id_=9,
+            name="name: polygon - invisible",
             points=[
                 common_types.OrderedPair(0, 0),
                 common_types.OrderedPair(-12.8771171990451, 7.63896782994203),
                 common_types.OrderedPair(-14.8414232124588, -10.2580425144936),
             ],
             rotation=0,
-            type="polyline",
+            type="polygon",
             visible=False,
             coordinates=common_types.OrderedPair(133.791065135842, 24.4446970558145),
         ),
@@ -244,43 +262,43 @@ POLYLINES = [
         {
                  "height":0,
                  "id":11,
-                 "name":"name: polyline - rotated",
+                 "name":"name: polygon - rotated",
                  "polygon":[
                         {
                          "x":0,
                          "y":0
-                        }, 
+                        },
                         {
                          "x":-12.8771171990451,
                          "y":0
-                        }, 
+                        },
                         {
                          "x":-6.98419915880413,
                          "y":7.63896782994203
-                        }, 
+                        },
                         {
                          "x":-13.9683983176083,
                          "y":16.8057292258725
-                        }, 
+                        },
                         {
                          "x":3.71035580311468,
                          "y":15.277935659884
-                        }, 
+                        },
                         {
                          "x":-3.71035580311471,
                          "y":8.29373650107991
                         }],
                  "rotation":123,
-                 "type":"polyline",
+                 "type":"polygon",
                  "visible":true,
                  "width":0,
                  "x":152.779356598841,
-                 "y":19.8613163578493            
+                 "y":19.8613163578493
         }
         """,
-        tiled_object.Polyline(
-            id_=11,
-            name="name: polyline - rotated",
+        tiled_object.Polygon(
+            id_=9,
+            name="name: polygon - rotated",
             points=[
                 common_types.OrderedPair(0, 0),
                 common_types.OrderedPair(-12.8771171990451, 0),
@@ -290,26 +308,29 @@ POLYLINES = [
                 common_types.OrderedPair(-3.71035580311471, 8.29373650107991),
             ],
             rotation=123,
-            type="polyline",
+            type="polygon",
             visible=True,
             coordinates=common_types.OrderedPair(152.779356598841, 19.8613163578493),
         ),
     ),
+]
+
+POLYLINES = [
     (
         """
         {
                  "height":0,
                  "id":12,
-                 "name":"name: polyline - not closed",
+                 "name":"name: polyline",
                  "polyline":[
                         {
                          "x":0,
                          "y":0
-                        }, 
+                        },
                         {
                          "x":-13.3136296464704,
                          "y":41.0321700579743
-                        }, 
+                        },
                         {
                          "x":21.3891099238377,
                          "y":16.8057292258725
@@ -323,8 +344,8 @@ POLYLINES = [
         }
         """,
         tiled_object.Polyline(
-            id_=12,
-            name="name: polyline - not closed",
+            id_=9,
+            name="name: polyline",
             points=[
                 common_types.OrderedPair(0, 0),
                 common_types.OrderedPair(-13.3136296464704, 41.0321700579743),
@@ -334,6 +355,88 @@ POLYLINES = [
             type="polyline",
             visible=True,
             coordinates=common_types.OrderedPair(124.187791292486, 90.1398203933159),
+        ),
+    ),
+    (
+        """
+        {
+                 "height":0,
+                 "id":31,
+                 "name":"name: polyline - invisible",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        },
+                        {
+                         "x":-9,
+                         "y":20.3333333333333
+                        },
+                        {
+                         "x":5,
+                         "y":23.6666666666667
+                        }],
+                 "rotation":0,
+                 "type":"polyline",
+                 "visible":false,
+                 "width":0,
+                 "x":140,
+                 "y":163.333333333333
+        }
+        """,
+        tiled_object.Polyline(
+            id_=10,
+            name="name: polyline - invisible",
+            points=[
+                common_types.OrderedPair(0, 0),
+                common_types.OrderedPair(-9, 20.3333333333333),
+                common_types.OrderedPair(5, 23.6666666666667),
+            ],
+            rotation=0,
+            type="polyline",
+            visible=False,
+            coordinates=common_types.OrderedPair(140, 163.333333333333),
+        ),
+    ),
+    (
+        """
+        {
+                 "height":0,
+                 "id":32,
+                 "name":"name: polyline - rotated",
+                 "polyline":[
+                        {
+                         "x":0,
+                         "y":0
+                        },
+                        {
+                         "x":10.3333333333333,
+                         "y":13
+                        },
+                        {
+                         "x":-5.33333333333331,
+                         "y":19.6666666666667
+                        }],
+                 "rotation":0,
+                 "type":"polyline",
+                 "visible":true,
+                 "width":0,
+                 "x":192.333333333333,
+                 "y":128.666666666667
+        }
+        """,
+        tiled_object.Polyline(
+            id_=11,
+            name="name: polyline - rotated",
+            points=[
+                common_types.OrderedPair(0, 0),
+                common_types.OrderedPair(10.3333333333333, 13),
+                common_types.OrderedPair(-5.33333333333331, 19.6666666666667),
+            ],
+            rotation=0,
+            type="polyline",
+            visible=True,
+            coordinates=common_types.OrderedPair(192.333333333333, 128.666666666667),
         ),
     ),
 ]
