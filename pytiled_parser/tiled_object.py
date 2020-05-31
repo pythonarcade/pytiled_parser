@@ -1,8 +1,9 @@
 # pylint: disable=too-few-public-methods
 
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Dict, List, Mapping, Optional, Union
 
 import attr
+from typing_extensions import TypedDict
 
 from .common_types import OrderedPair, Size
 from .properties import Properties
@@ -149,41 +150,121 @@ class Tile(TiledObject):
     gid: int
 
 
-RawProperties = Dict[str, Union[str, int, float, bool]]
+RawProperties = Dict[str, Union[str, float, bool]]
 
 
-RawTiledObject = Dict[str, Union[str, int, float, bool, RawProperties]]
+class RawTiledObject(TypedDict):
+    """ The keys and their types that appear in a Tiled JSON Object."""
+
+    id: int
+    gid: int
+    x: float
+    y: float
+    width: float
+    height: float
+    rotation: float
+    opacity: float
+    visible: bool
+    name: str
+    type: str
+    properties: Properties
+    template: Template
 
 
 RawTiledObjects = List[RawTiledObject]
 
 
+def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
+    """ Create a TiledObject containing all the attributes common to all tiled objects
+
+    Args:
+        raw_tiled_object: Raw Tiled object get common attributes from
+
+    Returns:
+        TiledObject: The attributes in common of all Tiled Objects
+    """
+
+    # required attributes
+    id_ = raw_tiled_object["id"]
+    coordinates = OrderedPair(x=raw_tiled_object["x"], y=raw_tiled_object["y"])
+    visible = raw_tiled_object["visible"]
+
+    common_attributes = TiledObject(id_=id_, coordinates=coordinates, visible=visible)
+
+    # optional attributes
+    if any([raw_tiled_object.get("x"), raw_tiled_object.get("y")]):
+        # we have to check if either are truthy before we proceed to create Size
+        x: Union[int, float]
+        _x = raw_tiled_object.get("x")
+        if _x:
+            x = _x
+        else:
+            x = 0
+
+        y: Union[int, float]
+        _y = raw_tiled_object.get("y")
+        if _y:
+            y = _y
+        else:
+            y = 0
+
+        common_attributes.size = Size(x, y)
+
+    if raw_tiled_object.get("rotation"):
+        common_attributes.rotation = raw_tiled_object["rotation"]
+
+    if raw_tiled_object.get("opacity"):
+        common_attributes.opacity = raw_tiled_object["opacity"]
+
+    if raw_tiled_object.get("name"):
+        common_attributes.name = raw_tiled_object["name"]
+
+    if raw_tiled_object.get("type"):
+        common_attributes.name = raw_tiled_object["type"]
+
+    if raw_tiled_object.get("properties"):
+        raise NotImplementedError
+
+    if raw_tiled_object.get("template"):
+        raise NotImplementedError
+
+    return common_attributes
+
+
 def _cast_ellipse(raw_tiled_object: RawTiledObject) -> Ellipse:
-    pass
+    """ Cast the raw_tiled_object to an Ellipse object.
+
+    Args:
+        raw_tiled_object: Raw Tiled object to be casted to an Ellipse
+
+    Returns:
+        Ellipse: The Ellipse object created from the raw_tiled_object
+    """
+    return Ellipse(**_get_common_attributes(raw_tiled_object).__dict__)
 
 
 def _cast_rectangle(raw_tiled_object: RawTiledObject) -> Rectangle:
-    pass
+    raise NotImplementedError
 
 
 def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
-    pass
+    raise NotImplementedError
 
 
 def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
-    pass
+    raise NotImplementedError
 
 
 def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
-    pass
+    raise NotImplementedError
 
 
 def _cast_polyline(raw_tiled_object: RawTiledObject) -> Polyline:
-    pass
+    raise NotImplementedError
 
 
 def _cast_text(raw_tiled_object: RawTiledObject) -> Text:
-    pass
+    raise NotImplementedError
 
 
 def _get_tiled_object_caster(
@@ -198,6 +279,10 @@ def _get_tiled_object_caster(
     Returns:
         Callable[[RawTiledObject], TiledObject]: The caster function.
     """
+    if raw_tiled_object.get("ellipse"):
+        return _cast_ellipse
+
+    raise RuntimeError("No caster found for TiledObject")
 
 
 def _cast_tiled_object(raw_tiled_object: RawTiledObject) -> TiledObject:
