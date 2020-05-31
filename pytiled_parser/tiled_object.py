@@ -268,7 +268,9 @@ def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
 
 
 def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
-    raise NotImplementedError
+    gid = raw_tiled_object["gid"]
+
+    return Tile(gid=gid, **_get_common_attributes(raw_tiled_object).__dict__)
 
 
 def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
