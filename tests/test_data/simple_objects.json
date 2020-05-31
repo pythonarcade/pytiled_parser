@@ -67,7 +67,7 @@
                  "name":"name:  rectangle - invisible",
                  "rotation":0,
                  "type":"rectangle",
-                 "visible":true,
+                 "visible":false,
                  "width":30.9923837671934,
                  "x":163.910424008185,
                  "y":91.0128452881664
@@ -102,7 +102,7 @@
                  "name":"name: ellipse - invisible",
                  "rotation":0,
                  "type":"ellipse",
-                 "visible":true,
+                 "visible":false,
                  "width":6.32943048766625,
                  "x":22.6986472661134,
                  "y":53.9092872570194
