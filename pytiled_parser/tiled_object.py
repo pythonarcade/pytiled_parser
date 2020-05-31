@@ -171,6 +171,8 @@ class RawTiledObject(TypedDict):
     ellipse: bool
     point: bool
     polygon: List[Dict[str, float]]
+    polyline: List[Dict[str, float]]
+    text: Dict[str, Union[float, str]]
 
 
 RawTiledObjects = List[RawTiledObject]
