@@ -170,7 +170,7 @@ RECTANGLES = [
         "width":10,
         "x":183.335227918609,
         "y":23.3534159372513
-        },
+        }
         """,
         tiled_object.Rectangle(
             id=5,
