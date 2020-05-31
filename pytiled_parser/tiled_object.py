@@ -281,9 +281,8 @@ def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
         Polygon: The Polygon object created from the raw_tiled_object
     """
     polygon = []
-    if raw_tiled_object.get("polygon"):
-        for point in raw_tiled_object["polygon"]:
-            polygon.append(OrderedPair(point["x"], point["y"]))
+    for point in raw_tiled_object["polygon"]:
+        polygon.append(OrderedPair(point["x"], point["y"]))
 
     return Polygon(points=polygon, **_get_common_attributes(raw_tiled_object).__dict__)
 
