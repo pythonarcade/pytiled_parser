@@ -32,7 +32,7 @@ class TiledObject:
         template: A reference to a Template tiled object FIXME
     """
 
-    id_: int
+    id: int
     gid: Optional[int] = None
 
     coordinates: OrderedPair
@@ -189,26 +189,24 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
     coordinates = OrderedPair(x=raw_tiled_object["x"], y=raw_tiled_object["y"])
     visible = raw_tiled_object["visible"]
 
-    common_attributes = TiledObject(id_=id_, coordinates=coordinates, visible=visible)
+    common_attributes = TiledObject(id=id_, coordinates=coordinates, visible=visible)
 
     # optional attributes
-    if any([raw_tiled_object.get("x"), raw_tiled_object.get("y")]):
+    if any([raw_tiled_object.get("width"), raw_tiled_object.get("height")]):
         # we have to check if either are truthy before we proceed to create Size
-        x: Union[int, float]
-        _x = raw_tiled_object.get("x")
-        if _x:
-            x = _x
+        _width = raw_tiled_object.get("width")
+        if _width:
+            width = _width
         else:
-            x = 0
+            width = 0
 
-        y: Union[int, float]
-        _y = raw_tiled_object.get("y")
-        if _y:
-            y = _y
+        _height = raw_tiled_object.get("height")
+        if _height:
+            height = _height
         else:
-            y = 0
+            height = 0
 
-        common_attributes.size = Size(x, y)
+        common_attributes.size = Size(width, height)
 
     if raw_tiled_object.get("rotation"):
         common_attributes.rotation = raw_tiled_object["rotation"]

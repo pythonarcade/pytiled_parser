@@ -24,7 +24,7 @@ ELLIPSES = [
         }
         """,
         tiled_object.Ellipse(
-            id_=6,
+            id=6,
             size=common_types.Size(57.4013868364215, 18.5517790155735),
             name="name: ellipse",
             rotation=0,
@@ -49,7 +49,7 @@ ELLIPSES = [
         }
         """,
         tiled_object.Ellipse(
-            id_=7,
+            id=7,
             size=common_types.Size(6.32943048766625, 31.4288962146186),
             name="name: ellipse - invisible",
             rotation=0,
@@ -74,7 +74,7 @@ ELLIPSES = [
         }
         """,
         tiled_object.Ellipse(
-            id_=8,
+            id=8,
             size=common_types.Size(29.6828464249176, 24.2264408321018),
             name="name: ellipse - rotated",
             rotation=111,
@@ -99,7 +99,7 @@ ELLIPSES = [
         }
         """,
         tiled_object.Ellipse(
-            id_=29,
+            id=29,
             name="name: ellipse - no width or height",
             rotation=0,
             type="ellipse",
@@ -125,7 +125,7 @@ RECTANGLES = [
         }
         """,
         tiled_object.Rectangle(
-            id_=1,
+            id=1,
             size=common_types.Size(45.3972945322269, 41.4686825053996),
             name="name: rectangle",
             rotation=0,
@@ -149,7 +149,7 @@ RECTANGLES = [
         }
         """,
         tiled_object.Rectangle(
-            id_=4,
+            id=4,
             size=common_types.Size(30.9923837671934, 32.7384335568944),
             name="name:  rectangle - invisible",
             rotation=0,
@@ -173,7 +173,7 @@ RECTANGLES = [
         },
         """,
         tiled_object.Rectangle(
-            id_=5,
+            id=5,
             size=common_types.Size(10, 22),
             name="name:  rectangle - rotated",
             rotation=10,
@@ -197,7 +197,7 @@ RECTANGLES = [
         }
         """,
         tiled_object.Rectangle(
-            id_=28,
+            id=28,
             size=common_types.Size(0, 0),
             name="name: rectangle - no width or height",
             rotation=0,
@@ -252,7 +252,7 @@ RECTANGLES = [
         }
         """,
         tiled_object.Rectangle(
-            id_=30,
+            id=30,
             size=common_types.Size(21.170853700125, 13.7501420938956),
             name="name: rectangle - properties",
             rotation=0,
@@ -288,7 +288,7 @@ POINTS = [
         }
         """,
         tiled_object.Point(
-            id_=2,
+            id=2,
             name="name:  point",
             rotation=0,
             type="point",
@@ -312,7 +312,7 @@ POINTS = [
         }
         """,
         tiled_object.Point(
-            id_=3,
+            id=3,
             name="name:name:  point invisible",
             rotation=0,
             type="point",
@@ -339,7 +339,7 @@ TILE_IMAGES = [
         }
         """,
         tiled_object.Tile(
-            id_=13,
+            id=13,
             size=common_types.Size(32, 32),
             name="name: tile",
             rotation=0,
@@ -365,7 +365,7 @@ TILE_IMAGES = [
         }
         """,
         tiled_object.Tile(
-            id_=14,
+            id=14,
             size=common_types.Size(32, 32),
             name="name: tile - invisible",
             rotation=0,
@@ -391,7 +391,7 @@ TILE_IMAGES = [
         }
         """,
         tiled_object.Tile(
-            id_=15,
+            id=15,
             size=common_types.Size(32, 32),
             name="name: tile - horizontal flipped",
             rotation=0,
@@ -417,7 +417,7 @@ TILE_IMAGES = [
         }
         """,
         tiled_object.Tile(
-            id_=16,
+            id=16,
             size=common_types.Size(32, 32),
             name="name: tile - vertical flipped",
             rotation=0,
@@ -443,7 +443,7 @@ TILE_IMAGES = [
         }
         """,
         tiled_object.Tile(
-            id_=17,
+            id=17,
             size=common_types.Size(32, 32),
             name="name: tile - both flipped",
             rotation=0,
@@ -469,7 +469,7 @@ TILE_IMAGES = [
         }
         """,
         tiled_object.Tile(
-            id_=18,
+            id=18,
             size=common_types.Size(32, 32),
             name="name: tile - rotated",
             rotation=89,
@@ -518,7 +518,7 @@ POLYGONS = [
         }
         """,
         tiled_object.Polygon(
-            id_=9,
+            id=9,
             name="name: polygon",
             points=[
                 common_types.OrderedPair(0, 0),
@@ -561,7 +561,7 @@ POLYGONS = [
         }
         """,
         tiled_object.Polygon(
-            id_=9,
+            id=9,
             name="name: polygon - invisible",
             points=[
                 common_types.OrderedPair(0, 0),
@@ -614,7 +614,7 @@ POLYGONS = [
         }
         """,
         tiled_object.Polygon(
-            id_=9,
+            id=9,
             name="name: polygon - rotated",
             points=[
                 common_types.OrderedPair(0, 0),
@@ -661,7 +661,7 @@ POLYLINES = [
         }
         """,
         tiled_object.Polyline(
-            id_=9,
+            id=9,
             name="name: polyline",
             points=[
                 common_types.OrderedPair(0, 0),
@@ -702,7 +702,7 @@ POLYLINES = [
         }
         """,
         tiled_object.Polyline(
-            id_=10,
+            id=10,
             name="name: polyline - invisible",
             points=[
                 common_types.OrderedPair(0, 0),
@@ -743,7 +743,7 @@ POLYLINES = [
         }
         """,
         tiled_object.Polyline(
-            id_=11,
+            id=11,
             name="name: polyline - rotated",
             points=[
                 common_types.OrderedPair(0, 0),
@@ -779,7 +779,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=19,
+            id=19,
             name="name: text",
             text="Hello World",
             type="text",
@@ -810,7 +810,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=20,
+            id=20,
             name="name: text - invisible",
             text="Hello World",
             wrap=True,
@@ -841,7 +841,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=21,
+            id=21,
             name="name: text - rotated",
             text="Hello World",
             wrap=True,
@@ -875,7 +875,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=22,
+            id=22,
             name="name: text - different font",
             text="Hello World",
             wrap=True,
@@ -908,7 +908,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=23,
+            id=23,
             name="name: text - no word wrap",
             text="Hello World",
             rotation=0,
@@ -940,7 +940,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=24,
+            id=24,
             name="name: text - right bottom align",
             text="Hello World",
             wrap=True,
@@ -974,7 +974,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=25,
+            id=25,
             name="text: center center align",
             rotation=0,
             text="Hello World",
@@ -1007,7 +1007,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=26,
+            id=26,
             name="name: text - justified",
             rotation=0,
             text="Hello World",
@@ -1039,7 +1039,7 @@ TEXTS = [
         }
         """,
         tiled_object.Text(
-            id_=27,
+            id=27,
             name="name: text - red",
             rotation=0,
             text="Hello World",
