@@ -23,7 +23,7 @@ RECTANGLES = [
         """,
         tiled_object.Rectangle(
             id_=1,
-            size=common_types.Size(41.4686825053996, 45.3972945322269),
+            size=common_types.Size(45.3972945322269, 41.4686825053996),
             name="name: rectangle",
             rotation=0,
             type="rectangle",
