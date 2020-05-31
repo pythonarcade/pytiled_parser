@@ -33,7 +33,6 @@ class TiledObject:
     """
 
     id: int
-    gid: Optional[int] = None
 
     coordinates: OrderedPair
     size: Size = Size(0, 0)
