@@ -170,7 +170,7 @@ def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
     pass
 
 
-def _cast_tile_image(raw_tiled_object: RawTiledObject) -> TileImage:
+def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
     pass
 
 
