@@ -277,7 +277,164 @@ POINTS = [
     ),
 ]
 
-TILE_IMAGES = []
+TILE_IMAGES = [
+    (
+        """
+        {
+         "gid":79,
+         "height":32,
+         "id":13,
+         "name":"name: tile",
+         "rotation":0,
+         "type":"tile",
+         "visible":true,
+         "width":32,
+         "x":111.898147095601,
+         "y":48.3019211094691
+        }
+        """,
+        tiled_object.Tile(
+            id_=13,
+            size=common_types.Size(32, 32),
+            name="name: tile",
+            rotation=0,
+            type="tile",
+            visible=True,
+            coordinates=common_types.OrderedPair(111.898147095601, 48.3019211094691),
+            gid=79,
+        ),
+    ),
+    (
+        """
+        {
+         "gid":80,
+         "height":32,
+         "id":14,
+         "name":"name: tile - invisible",
+         "rotation":0,
+         "type":"tile",
+         "visible":false,
+         "width":32,
+         "x":41.1831306127089,
+         "y":168.779356598841
+        }
+        """,
+        tiled_object.Tile(
+            id_=14,
+            size=common_types.Size(32, 32),
+            name="name: tile - invisible",
+            rotation=0,
+            type="tile",
+            visible=False,
+            coordinates=common_types.OrderedPair(41.1831306127089, 168.779356598841),
+            gid=80,
+        ),
+    ),
+    (
+        """
+        {
+         "gid":2147483742,
+         "height":32,
+         "id":15,
+         "name":"name: tile - horizontal flipped",
+         "rotation":0,
+         "type":"tile",
+         "visible":true,
+         "width":32,
+         "x":197.236330567239,
+         "y":59.8695009662385
+        }
+        """,
+        tiled_object.Tile(
+            id_=15,
+            size=common_types.Size(32, 32),
+            name="name: tile - horizontal flipped",
+            rotation=0,
+            type="tile",
+            visible=True,
+            coordinates=common_types.OrderedPair(197.236330567239, 59.8695009662385),
+            gid=2147483742,
+        ),
+    ),
+    (
+        """
+        {
+         "gid":1073741918,
+         "height":32,
+         "id":16,
+         "name":"name: tile - vertical flipped",
+         "rotation":0,
+         "type":"tile",
+         "visible":true,
+         "width":32,
+         "x":32.4528816642037,
+         "y":60.742525861089
+        }
+        """,
+        tiled_object.Tile(
+            id_=16,
+            size=common_types.Size(32, 32),
+            name="name: tile - vertical flipped",
+            rotation=0,
+            type="tile",
+            visible=True,
+            coordinates=common_types.OrderedPair(32.4528816642037, 60.742525861089),
+            gid=1073741918,
+        ),
+    ),
+    (
+        """
+        {
+         "gid":3221225558,
+         "height":32,
+         "id":17,
+         "name":"name: tile - both flipped",
+         "rotation":0,
+         "type":"tile",
+         "visible":true,
+         "width":32,
+         "x":167.553484142321,
+         "y":95.6635216551097
+        }
+        """,
+        tiled_object.Tile(
+            id_=17,
+            size=common_types.Size(32, 32),
+            name="name: tile - both flipped",
+            rotation=0,
+            type="tile",
+            visible=True,
+            coordinates=common_types.OrderedPair(167.553484142321, 95.6635216551097),
+            gid=3221225558,
+        ),
+    ),
+    (
+        """
+        {
+         "gid":86,
+         "height":32,
+         "id":18,
+         "name":"name: tile - rotated",
+         "rotation":89,
+         "type":"tile",
+         "visible":true,
+         "width":32,
+         "x":85.65,
+         "y":142.62
+        }
+        """,
+        tiled_object.Tile(
+            id_=18,
+            size=common_types.Size(32, 32),
+            name="name: tile - rotated",
+            rotation=89,
+            type="tile",
+            visible=True,
+            coordinates=common_types.OrderedPair(85.65, 142.62),
+            gid=86,
+        ),
+    ),
+]
 
 POLYGONS = []
 
