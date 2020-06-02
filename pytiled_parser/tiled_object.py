@@ -302,7 +302,21 @@ def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
 
 
 def _cast_polyline(raw_tiled_object: RawTiledObject) -> Polyline:
-    raise NotImplementedError
+    """ Cast the raw_tiled_object to a Polyline object.
+    
+    Args:
+        raw_tiled_object: Raw Tiled Object to be casted to a Polyline
+
+    Returns:
+        Polyline: The Polyline object created from the raw_tiled_object
+    """
+    polyline = []
+    for point in raw_tiled_object["polyline"]:
+        polyline.append(OrderedPair(point["x"], point["y"]))
+
+    return Polyline(
+        points=polyline, **_get_common_attributes(raw_tiled_object).__dict__
+    )
 
 
 def _cast_text(raw_tiled_object: RawTiledObject) -> Text:
