@@ -1,6 +1,6 @@
 # pylint: disable=too-few-public-methods
 
-from typing import Callable, Dict, List, Mapping, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 import attr
 from typing_extensions import TypedDict
@@ -306,7 +306,7 @@ def _cast_text(raw_tiled_object: RawTiledObject) -> Text:
     raise NotImplementedError
 
 
-def _get_tiled_object_caster(
+def _get_caster(
     raw_tiled_object: RawTiledObject,
 ) -> Callable[[RawTiledObject], TiledObject]:
     """ Get the caster function for the raw tiled object.
@@ -340,7 +340,7 @@ def _get_tiled_object_caster(
     return _cast_rectangle
 
 
-def _cast_tiled_object(raw_tiled_object: RawTiledObject) -> TiledObject:
+def cast(raw_tiled_object: RawTiledObject) -> TiledObject:
     """ Cast the raw tiled object into a pytiled_parser type
 
     Args:
@@ -349,24 +349,7 @@ def _cast_tiled_object(raw_tiled_object: RawTiledObject) -> TiledObject:
     Returns:
         TiledObject: a properly typed Tiled object.
     """
-    caster = _get_tiled_object_caster(raw_tiled_object)
+    caster = _get_caster(raw_tiled_object)
 
     tiled_object = caster(raw_tiled_object)
     return tiled_object
-
-
-def cast_tiled_objects(raw_tiled_objects: RawTiledObjects) -> List[TiledObject]:
-    """Parses objects found in a 'objectgroup' element.
-
-    Args:
-        object_elements: List of object elements to be parsed.
-
-    Returns:
-        list: List of parsed tiled objects.
-    """
-    tiled_objects: List[TiledObject] = []
-
-    for raw_tiled_object in raw_tiled_objects:
-        tiled_objects.append(_cast_tiled_object(raw_tiled_object))
-
-    return tiled_objects
