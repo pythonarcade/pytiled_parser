@@ -661,7 +661,7 @@ POLYLINES = [
         }
         """,
         tiled_object.Polyline(
-            id=9,
+            id=12,
             name="name: polyline",
             points=[
                 common_types.OrderedPair(0, 0),
@@ -702,7 +702,7 @@ POLYLINES = [
         }
         """,
         tiled_object.Polyline(
-            id=10,
+            id=31,
             name="name: polyline - invisible",
             points=[
                 common_types.OrderedPair(0, 0),
@@ -743,7 +743,7 @@ POLYLINES = [
         }
         """,
         tiled_object.Polyline(
-            id=11,
+            id=32,
             name="name: polyline - rotated",
             points=[
                 common_types.OrderedPair(0, 0),
