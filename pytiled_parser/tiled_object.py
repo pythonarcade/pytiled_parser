@@ -5,8 +5,8 @@ from typing import Callable, Dict, List, Mapping, Optional, Union
 import attr
 from typing_extensions import TypedDict
 
+from . import properties
 from .common_types import Color, OrderedPair, Size
-from .properties import Properties, RawProperties
 from .template import Template
 
 
@@ -43,7 +43,7 @@ class TiledObject:
     name: Optional[str] = None
     type: Optional[str] = None
 
-    properties: Properties = {}
+    properties: properties.Properties = {}
     template: Optional[Template] = None
 
 
@@ -163,7 +163,7 @@ class RawTiledObject(TypedDict):
     visible: bool
     name: str
     type: str
-    properties: RawProperties
+    properties: properties.RawProperties
     template: Template
     ellipse: bool
     point: bool
