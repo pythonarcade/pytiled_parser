@@ -4,7 +4,6 @@ from typing import Dict, List, NamedTuple, Optional, Union
 from .common_types import Color
 
 Property = Union[int, float, Path, str, bool, Color]
-class 
 
 RawProperties = List[Dict[str, Property]]
 
