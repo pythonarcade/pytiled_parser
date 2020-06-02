@@ -1,25 +1,36 @@
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Union
 
+from typing_extensions import TypedDict
+
 from .common_types import Color
 
-Property = Union[int, float, Path, str, bool, Color]
-class 
+Property = Union[float, Path, str, bool, Color]
+RawProperty = Union[float, str, bool]
 
-RawProperties = List[Dict[str, Property]]
+
+class RawProperties(TypedDict):
+    """A dictionary of raw properties."""
+
+    name: str
+    type: str
+    value: RawProperty
 
 
 Properties = Dict[str, Property]
 
 
-def cast(raw: RawProperties) -> Dict[str, Property]:
+def cast(raw: List[RawProperties]) -> Dict[str, Property]:
     final: Properties = {}
+    value: Property
+
     for prop in raw:
-        value = prop["value"]
         if prop["type"] == "file":
-            value = Path(str(value))
+            value = Path(str(prop["value"]))
         elif prop["type"] == "color":
-            value = Color(str(value))
+            value = Color(str(prop["value"]))
+        else:
+            value = prop["value"]
         final[str(prop["name"])] = value
 
     return final

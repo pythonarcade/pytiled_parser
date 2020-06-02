@@ -1100,6 +1100,6 @@ OBJECTS = ELLIPSES + RECTANGLES + POINTS + TILES + POLYGONS + POLYLINES + TEXTS
 @pytest.mark.parametrize("raw_object_json,expected", OBJECTS)
 def test_parse_layer(raw_object_json, expected):
     raw_object = json.loads(raw_object_json)
-    result = tiled_object._cast_tiled_object(raw_object)
+    result = tiled_object.cast(raw_object)
 
     assert result == expected
