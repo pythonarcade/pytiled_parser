@@ -230,19 +230,19 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
 
         common_attributes.size = Size(width, height)
 
-    if raw_tiled_object.get("rotation"):
+    if raw_tiled_object.get("rotation") is not None:
         common_attributes.rotation = raw_tiled_object["rotation"]
 
-    if raw_tiled_object.get("opacity"):
+    if raw_tiled_object.get("opacity") is not None:
         common_attributes.opacity = raw_tiled_object["opacity"]
 
-    if raw_tiled_object.get("name"):
+    if raw_tiled_object.get("name") is not None:
         common_attributes.name = raw_tiled_object["name"]
 
-    if raw_tiled_object.get("type"):
+    if raw_tiled_object.get("type") is not None:
         common_attributes.type = raw_tiled_object["type"]
 
-    if raw_tiled_object.get("properties"):
+    if raw_tiled_object.get("properties") is not None:
         common_attributes.properties = properties_.cast(raw_tiled_object["properties"])
 
     return common_attributes
