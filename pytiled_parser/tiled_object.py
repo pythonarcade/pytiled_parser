@@ -1,6 +1,6 @@
 # pylint: disable=too-few-public-methods
 
-from typing import Callable, Dict, List, Mapping, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 
 import attr
 from typing_extensions import TypedDict
