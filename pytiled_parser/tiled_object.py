@@ -166,7 +166,7 @@ class RawTiledObject(TypedDict):
     visible: bool
     name: str
     type: str
-    properties: properties_.RawProperties
+    properties: List[properties_.RawProperties]
     template: Template
     ellipse: bool
     point: bool
