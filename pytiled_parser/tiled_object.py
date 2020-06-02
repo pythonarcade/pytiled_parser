@@ -5,8 +5,8 @@ from typing import Callable, Dict, List, Mapping, Optional, Union
 import attr
 from typing_extensions import TypedDict
 
-from .properties import Properties, RawProperties
 from .common_types import Color, OrderedPair, Size
+from .properties import Properties, RawProperties
 from .template import Template
 
 
@@ -43,7 +43,7 @@ class TiledObject:
     name: Optional[str] = None
     type: Optional[str] = None
 
-    properties: Optional[Properties] = None
+    properties: Properties = {}
     template: Optional[Template] = None
 
 
@@ -190,7 +190,9 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
     coordinates = OrderedPair(x=raw_tiled_object["x"], y=raw_tiled_object["y"])
     visible = raw_tiled_object["visible"]
 
-    common_attributes = TiledObject(id=id_, coordinates=coordinates, visible=visible)
+    common_attributes = TiledObject(
+        id=id_, coordinates=coordinates, visible=visible, properties={}
+    )
 
     # optional attributes
     if any([raw_tiled_object.get("width"), raw_tiled_object.get("height")]):
@@ -222,7 +224,10 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
         common_attributes.type = raw_tiled_object["type"]
 
     if raw_tiled_object.get("properties"):
-        raise NotImplementedError
+        for prop in raw_tiled_object["properties"]:
+            name = str(prop["name"])
+            value = prop["value"]
+            common_attributes.properties[name] = prop["value"]
 
     if raw_tiled_object.get("template"):
         raise NotImplementedError
