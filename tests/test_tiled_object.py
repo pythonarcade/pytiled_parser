@@ -561,7 +561,7 @@ POLYGONS = [
         }
         """,
         tiled_object.Polygon(
-            id=9,
+            id=10,
             name="name: polygon - invisible",
             points=[
                 common_types.OrderedPair(0, 0),
