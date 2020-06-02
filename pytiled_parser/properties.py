@@ -17,19 +17,19 @@ Property = Union[float, Path, str, bool, Color]
 Properties = Dict[str, Property]
 
 
-RawProperty = Union[float, str, bool]
+RawValue = Union[float, str, bool]
 
 
-class RawProperties(TypedDict):
+class RawProperty(TypedDict):
     """A dictionary of raw properties."""
 
     name: str
     type: str
-    value: RawProperty
+    value: RawValue
 
 
-def cast(raw_properties: List[RawProperties]) -> Properties:
-    """ Cast a list of `RawProperties` into `Properties`
+def cast(raw_properties: List[RawProperty]) -> Properties:
+    """ Cast a list of `RawProperty`s into `Properties`
 
     Args:
         raw_properties: The list of `RawProperty`s to cast.

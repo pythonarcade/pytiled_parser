@@ -183,7 +183,7 @@ class RawTiledObject(TypedDict):
     visible: bool
     name: str
     type: str
-    properties: List[properties_.RawProperties]
+    properties: List[properties_.RawProperty]
     ellipse: bool
     point: bool
     polygon: List[Dict[str, float]]
