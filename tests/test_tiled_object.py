@@ -614,7 +614,7 @@ POLYGONS = [
         }
         """,
         tiled_object.Polygon(
-            id=9,
+            id=11,
             name="name: polygon - rotated",
             points=[
                 common_types.OrderedPair(0, 0),
