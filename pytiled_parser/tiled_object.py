@@ -152,6 +152,26 @@ class Tile(TiledObject):
     gid: int
 
 
+class RawTextDict(TypedDict):
+    """ The keys and their types that appear in a Text JSON Object."""
+
+    text: str
+    color: Color
+
+    fontfamily: str
+    pixelsize: float  # this is `font_size` in Text
+
+    bold: bool
+    italic: bool
+    strikeout: bool
+    underline: bool
+    kerning: bool
+
+    halign: str
+    valign: str
+    wrap: bool
+
+
 class RawTiledObject(TypedDict):
     """ The keys and their types that appear in a Tiled JSON Object."""
 
@@ -320,7 +340,56 @@ def _cast_polyline(raw_tiled_object: RawTiledObject) -> Polyline:
 
 
 def _cast_text(raw_tiled_object: RawTiledObject) -> Text:
-    raise NotImplementedError
+    """ Cast the raw_tiled_object to a Text object.
+
+    Args:
+        raw_tiled_object: Raw Tiled object to be casted to a Text object
+
+    Returns:
+        Text: The Text object created from the raw_tiled_object
+    """
+    # required attributes
+    raw_text_dict: RawTextDict = raw_tiled_object["text"]
+    text = raw_text_dict["text"]
+
+    # create base Text object
+    text_object = Text(text=text, **_get_common_attributes(raw_tiled_object).__dict__)
+
+    # optional attributes
+    if raw_text_dict.get("color") is not None:
+        text_object.color = raw_text_dict["color"]
+
+    if raw_text_dict.get("fontfamily") is not None:
+        text_object.font_family = raw_text_dict["fontfamily"]
+
+    if raw_text_dict.get("pixelsize") is not None:
+        text_object.font_size = raw_text_dict["pixelsize"]
+
+    if raw_text_dict.get("bold") is not None:
+        text_object.bold = raw_text_dict["bold"]
+
+    if raw_text_dict.get("italic") is not None:
+        text_object.italic = raw_text_dict["italic"]
+
+    if raw_text_dict.get("kerning") is not None:
+        text_object.kerning = raw_text_dict["kerning"]
+
+    if raw_text_dict.get("strikeout") is not None:
+        text_object.strike_out = raw_text_dict["strikeout"]
+
+    if raw_text_dict.get("underline") is not None:
+        text_object.underline = raw_text_dict["underline"]
+
+    if raw_text_dict.get("halign") is not None:
+        text_object.horizontal_align = raw_text_dict["halign"]
+
+    if raw_text_dict.get("valign") is not None:
+        text_object.vertical_align = raw_text_dict["valign"]
+
+    if raw_text_dict.get("wrap") is not None:
+        text_object.wrap = raw_text_dict["wrap"]
+
+    return text_object
 
 
 def _get_caster(
