@@ -28,14 +28,14 @@ class RawProperties(TypedDict):
     value: RawProperty
 
 
-def cast(raw_properties: List[RawProperties]) -> Dict[str, Property]:
-    """ Cast raw properties into a dictionary of completed properly typed properties.
+def cast(raw_properties: List[RawProperties]) -> Properties:
+    """ Cast a list of `RawProperties` into `Properties`
 
     Args:
-        raw_properties: The list of raw properties to cast.
+        raw_properties: The list of `RawProperty`s to cast.
 
     Returns:
-        Dict[str, Property]: The completed dictionary of casted properties.
+        Properties: The casted `Properties`.
     """
 
     final: Properties = {}
