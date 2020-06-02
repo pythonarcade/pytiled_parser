@@ -7,7 +7,6 @@ from typing_extensions import TypedDict
 
 from . import properties as properties_
 from .common_types import Color, OrderedPair, Size
-from .template import Template
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -29,7 +28,6 @@ class TiledObject:
         name: The name of the tiled object.
         type: The type of the tiled object.
         properties: The properties of the TiledObject.
-        template: A reference to a Template tiled object FIXME
     """
 
     id: int
@@ -44,7 +42,6 @@ class TiledObject:
     type: Optional[str] = None
 
     properties: properties_.Properties = {}
-    template: Optional[Template] = None
 
 
 @attr.s()
@@ -186,8 +183,7 @@ class RawTiledObject(TypedDict):
     visible: bool
     name: str
     type: str
-    properties: properties_.RawProperties
-    template: Template
+    properties: List[properties_.RawProperties]
     ellipse: bool
     point: bool
     polygon: List[Dict[str, float]]
@@ -248,9 +244,6 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
 
     if raw_tiled_object.get("properties"):
         common_attributes.properties = properties_.cast(raw_tiled_object["properties"])
-
-    if raw_tiled_object.get("template"):
-        raise NotImplementedError
 
     return common_attributes
 
