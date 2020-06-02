@@ -313,10 +313,10 @@ POINTS = [
         """,
         tiled_object.Point(
             id=3,
-            name="name:name:  point invisible",
+            name="name:  point invisible",
             rotation=0,
             type="point",
-            visible=True,
+            visible=False,
             coordinates=common_types.OrderedPair(109.346368080027, 95.8144822098443),
         ),
     ),
