@@ -123,17 +123,20 @@ class Text(TiledObject):
     """
 
     text: str
-    font_family: str = "sans-serif"
-    font_size: int = 16
-    wrap: bool = False
     color: Color = "#000000"
+
+    font_family: str = "sans-serif"
+    font_size: float = 16
+
     bold: bool = False
     italic: bool = False
-    underline: bool = False
-    strike_out: bool = False
     kerning: bool = True
+    strike_out: bool = False
+    underline: bool = False
+
     horizontal_align: str = "left"
     vertical_align: str = "top"
+    wrap: bool = False
 
 
 @attr.s(auto_attribs=True, kw_only=True)
