@@ -7,8 +7,6 @@
          "height":6,
          "id":1,
          "name":"Tile Layer 1",
-         "offsetx":16,
-         "offsety":-16.42,
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
@@ -36,19 +34,9 @@
          "value":"#ff49fcff"
         }, 
         {
-         "name":"empty file",
+         "name":"file property",
          "type":"file",
-         "value":""
-        }, 
-        {
-         "name":"empty string",
-         "type":"string",
-         "value":""
-        }, 
-        {
-         "name":"file_property",
-         "type":"file",
-         "value":"test_map_simple_offset.json"
+         "value":"..\/..\/..\/..\/..\/..\/var\/log\/syslog"
         }, 
         {
          "name":"float property",
