@@ -112,8 +112,8 @@ class Tile:
         animation: Each tile can have exactly one animation associated with it.
     """
 
-    id_: int
-    type_: Optional[str] = None
+    id: int
+    type: Optional[str] = None
     terrain: Optional[TileTerrain] = None
     animation: Optional[List[Frame]] = None
     objectgroup: Optional[List[TiledObject]] = None
