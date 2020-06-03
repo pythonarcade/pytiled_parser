@@ -3,10 +3,11 @@ from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional
 
 import attr
+from typing_extensions import TypedDict
 
-from pytiled_parser import OrderedPair, Size
-from pytiled_parser.properties import Properties, Property
-from pytiled_parser.tiled_object import TiledObject
+from . import properties as properties_
+from .common_types import OrderedPair, Size
+from .tiled_object import TiledObject
 
 
 class Grid(NamedTuple):
@@ -118,7 +119,7 @@ class Tile:
     animation: Optional[List[Frame]] = None
     objectgroup: Optional[List[TiledObject]] = None
     image: Optional[Image] = None
-    properties: Optional[List[Property]] = None
+    properties: Optional[List[properties_.Property]] = None
     tileset: Optional["TileSet"] = None
     flipped_horizontally: bool = False
     flipped_diagonally: bool = False
@@ -163,7 +164,7 @@ class TileSet:
     columns: Optional[int] = None
     tile_offset: Optional[OrderedPair] = None
     grid: Optional[Grid] = None
-    properties: Optional[Properties] = None
+    properties: Optional[properties_.Properties] = None
     image: Optional[Image] = None
     terrain_types: Optional[List[Terrain]] = None
     tiles: Optional[Dict[int, Tile]] = None
@@ -171,5 +172,84 @@ class TileSet:
     parent_dir: Path = None
 
 
-def parse():
+class RawFrame(TypedDict):
+    """ The keys and their types that appear in a Frame JSON Object."""
+
+    duration: int
+    tileid: int
+
+
+class RawTileOffset(TypedDict):
+    """ The keys and their types that appear in a TileOffset JSON Object."""
+
+    x: int
+    y: int
+
+
+class RawTerrain(TypedDict):
+    """ The keys and their types that appear in a Terrain JSON Object."""
+
+    name: str
+    properties: List[properties_.RawProperty]
+    tile: int
+
+
+class RawTile(TypedDict):
+    """ The keys and their types that appear in a Tile JSON Object.
+        FIXME Implement objectgroup, can't be done until TileLayer's are implemented"""
+
+    animation: List[RawFrame]
+    id: int
+    image: str
+    imageheight: int
+    imagewidth: int
+    probability: float
+    properties: List[properties_.RawProperty]
+    terrain: List[RawTerrain]
+    type: str
+
+
+class RawGrid(TypedDict):
+    """ The keys and their types that appear in a Grid JSON Object."""
+
+    height: int
+    width: int
+    orientation: str
+
+
+class RawTileSet(TypedDict):
+    """ The keys and their types that appear in a TileSet JSON Object."""
+
+    backgroundcolor: str
+    columns: int
+    firstgid: int
+    grid: RawGrid
+    image: str
+    imageheight: int
+    imagewidth: int
+    margin: int
+    name: str
+    properties: List[properties_.RawProperty]
+    source: str
+    spacing: int
+    terrains: List[RawTerrain]
+    tilecount: int
+    tiledversion: str
+    tileheight: int
+    tileoffset: RawTileOffset
+    tiles: List[RawTile]
+    tilewidth: int
+    transparentcolor: str
+    type: str
+    version: float
+
+
+def cast(raw_tileset: RawTileSet) -> TileSet:
+    """ Cast the raw tileset into a pytiled_parser type
+
+    Args:
+        raw_tileset: Raw Tileset to be cast.
+
+    Returns:
+        TileSet: a properly typed TileSet.
     pass
