@@ -36,7 +36,7 @@
         {
          "name":"file property",
          "type":"file",
-         "value":"..\/..\/..\/..\/..\/..\/..\/var\/log\/syslog"
+         "value":"..\/..\/..\/..\/..\/..\/var\/log\/syslog"
         }, 
         {
          "name":"float property",
@@ -59,7 +59,7 @@
  "tilesets":[
         {
          "firstgid":1,
-         "source":"tile_set.json"
+         "source":"tileset_image.json"
         }],
  "tilewidth":32,
  "type":"map",
