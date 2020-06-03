@@ -635,11 +635,11 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "source": "../../old_tests/test_data/tile_set_image_objects.tsx"
+      "source": "tileset_image_objects.json"
     },
     {
       "firstgid": 49,
-      "source": "../../old_tests/test_data/tile_set_image.tsx"
+      "source": "tileset_image.json"
     }
   ],
   "tilewidth": 32,
