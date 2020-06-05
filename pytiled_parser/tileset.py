@@ -138,30 +138,29 @@ class TileSet:
     name: str
     tile_width: int
     tile_height: int
-    firstgid: int
 
-    image: str
+    image: Path
     image_width: int
     image_height: int
 
     tile_count: int
     columns: int
 
-    background_color: Color
-
-    source_file: Path
-
-    tiled_version: int
+    tiled_version: str
+    version: float
 
     spacing: int = 0
     margin: int = 0
 
+    firstgid: Optional[int] = None
+    background_color: Optional[Color] = None
     tile_offset: Optional[OrderedPair] = None
     transparent_color: Optional[Color] = None
     grid: Optional[Grid] = None
     properties: Optional[properties_.Properties] = None
     terrain_types: Optional[List[Terrain]] = None
     tiles: Optional[List[Tile]] = None
+    source_file: Optional[Path] = None
 
 
 class RawFrame(TypedDict):
@@ -212,7 +211,7 @@ class RawGrid(TypedDict):
 class RawTileSet(TypedDict):
     """ The keys and their types that appear in a TileSet JSON Object."""
 
-    backgroundcolor: str
+    backgroundcolor: Color
     columns: int
     firstgid: int
     grid: RawGrid
@@ -231,7 +230,7 @@ class RawTileSet(TypedDict):
     tileoffset: RawTileOffset
     tiles: List[RawTile]
     tilewidth: int
-    transparentcolor: str
+    transparentcolor: Color
     type: str
     version: float
 
@@ -246,7 +245,72 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
         TileSet: a properly typed TileSet.
     """
 
-    pass
+    name = raw_tileset["name"]
+
+    tile_count = raw_tileset["tilecount"]
+    tile_width = raw_tileset["tilewidth"]
+    tile_height = raw_tileset["tileheight"]
+    columns = raw_tileset["columns"]
+
+    spacing = raw_tileset["spacing"]
+    margin = raw_tileset["margin"]
+
+    version = raw_tileset["version"]
+    tiled_version = raw_tileset["tiledversion"]
+
+    image = Path(raw_tileset["image"])
+    image_width = raw_tileset["imagewidth"]
+    image_height = raw_tileset["imageheight"]
+
+    tileset = TileSet(
+        name=name,
+        tile_count=tile_count,
+        tile_width=tile_width,
+        tile_height=tile_height,
+        columns=columns,
+        spacing=spacing,
+        margin=margin,
+        version=version,
+        tiled_version=tiled_version,
+        image=image,
+        image_width=image_width,
+        image_height=image_height,
+    )
+
+    if raw_tileset.get("firstgid") is not None:
+        tileset.firstgid = raw_tileset["firstgid"]
+
+    if raw_tileset.get("backgroundcolor") is not None:
+        tileset.background_color = raw_tileset["backgroundcolor"]
+
+    if raw_tileset.get("tileoffset") is not None:
+        tileset.tile_offset = _cast_tile_offset(raw_tileset["tileoffset"])
+
+    if raw_tileset.get("transparentcolor") is not None:
+        tileset.transparent_color = raw_tileset["transparentcolor"]
+
+    if raw_tileset.get("grid") is not None:
+        tileset.grid = _cast_grid(raw_tileset["grid"])
+
+    if raw_tileset.get("properties") is not None:
+        tileset.properties = properties_.cast(raw_tileset["properties"])
+
+    if raw_tileset.get("terrains") is not None:
+        terrains = []
+        for raw_terrain in raw_tileset["terrains"]:
+            terrains.append(_cast_terrain(raw_terrain))
+        tileset.terrain_types = terrains
+
+    if raw_tileset.get("tiles") is not None:
+        tiles = []
+        for raw_tile in raw_tileset["tiles"]:
+            tiles.append(_cast_tile(raw_tile))
+        tileset.tiles = tiles
+
+    if raw_tileset.get("source") is not None:
+        tileset.source_file = Path(raw_tileset["source"])
+
+    return tileset
 
 
 def _cast_frame(raw_frame: RawFrame) -> Frame:
