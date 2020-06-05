@@ -13,7 +13,12 @@ TEST_DATA = TESTS_DIR / "test_data"
 TILE_SETS = TEST_DATA / "tilesets"
 
 
-ALL_TILESET_DIRS = TILE_SETS.glob("*")
+ALL_TILESET_DIRS = [
+    TILE_SETS / "image",
+    TILE_SETS / "image_background_color",
+    TILE_SETS / "image_properties",
+    TILE_SETS / "image_transparent_color",
+]
 
 
 @pytest.mark.parametrize("tileset_dir", ALL_TILESET_DIRS)
