@@ -186,8 +186,9 @@ class RawTerrain(TypedDict):
 
 
 class RawTile(TypedDict):
-    """ The keys and their types that appear in a Tile JSON Object.
-        FIXME Implement objectgroup, can't be done until TileLayer's are implemented"""
+    """ The keys and their types that appear in a Tile JSON Object."""
+
+    # FIXME: Implement objectgroup, can't be done until TileLayer's are implemented
 
     animation: List[RawFrame]
     id: int
