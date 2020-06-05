@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from pytiled_parser import tileset
+from pytiled_parser.common_types import Color
 
 EXPECTED = tileset.TileSet(
     columns=8,
@@ -15,4 +16,11 @@ EXPECTED = tileset.TileSet(
     tile_height=32,
     tile_width=32,
     version=1.2,
+    properties={
+        "bool property": True,
+        "color property": Color("#ff0000ff"),
+        "float property": 5.6,
+        "int property": 5,
+        "string property": "testing",
+    },
 )
