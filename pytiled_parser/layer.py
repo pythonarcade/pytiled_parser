@@ -6,6 +6,7 @@ import attr
 
 from .common_types import OrderedPair, Size
 from .properties import Properties
+from .tiled_object import TiledObject
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -83,3 +84,41 @@ class TileLayer(Layer):
 
     size: Size
     layer_data: LayerData
+
+
+@attr.s(auto_attribs=True, kw_only=True)
+class ObjectLayer(Layer):
+    """
+    TiledObject Group Object.
+    The object group is in fact a map layer, and is hence called "object layer" in
+        Tiled.
+    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
+    Args:
+        tiled_objects: List of tiled_objects in the layer.
+        offset: Rendering offset of the layer object in pixels.
+        color: The color used to display the objects in this group. FIXME: editor only?
+        draworder: Whether the objects are drawn according to the order of the object
+            elements in the object group element ('manual'), or sorted by their
+            y-coordinate ('topdown'). Defaults to 'topdown'. See:
+            https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
+            for more info.
+    """
+
+    tiled_objects: List[TiledObject]
+
+    color: Optional[str] = None
+    draw_order: Optional[str] = "topdown"
+
+
+@attr.s(auto_attribs=True, kw_only=True)
+class LayerGroup(Layer):
+    """Layer Group.
+    A LayerGroup can be thought of as a layer that contains layers
+        (potentially including other LayerGroups).
+    Offset and opacity recursively affect child layers.
+    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#group
+    Attributes:
+        Layers: Layers in group.
+    """
+
+    layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
