@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from pytiled_parser import tileset
-from pytiled_parser.common_types import Color
+from pytiled_parser.common_types import Color, OrderedPair
 
 EXPECTED = tileset.TileSet(
     columns=8,
@@ -16,5 +16,5 @@ EXPECTED = tileset.TileSet(
     tile_height=32,
     tile_width=32,
     version=1.2,
-    background_color=Color("#5500ff"),
+    tile_offset=OrderedPair(3, 5),
 )
