@@ -3,10 +3,11 @@ from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional
 
 import attr
+from typing_extensions import TypedDict
 
-from pytiled_parser import OrderedPair, Size
-from pytiled_parser.properties import Properties, Property
-from pytiled_parser.tiled_object import TiledObject
+from . import properties as properties_
+from .common_types import Color, OrderedPair, Size
+from .tiled_object import TiledObject
 
 
 class Grid(NamedTuple):
@@ -27,29 +28,6 @@ class Grid(NamedTuple):
     height: int
 
 
-@attr.s(auto_attribs=True)
-class Image:
-    """Image object.
-
-    pytiled_parser does not support embedded data in image elements at this time,
-        even though the TMX format technically does.
-
-    Attributes:
-        source: The reference to the tileset image file. Note that this is a relative
-            path compared to FIXME
-        trans: Defines a specific color that is treated as transparent.
-        width: The image width in pixels (optional, used for tile index correction when
-            the image changes).
-        height: The image height in pixels (optional).
-    """
-
-    source: str
-    size: Optional[Size] = None
-    trans: Optional[str] = None
-    width: Optional[int] = None
-    height: Optional[int] = None
-
-
 class Terrain(NamedTuple):
     """Terrain object.
 
@@ -60,6 +38,7 @@ class Terrain(NamedTuple):
 
     name: str
     tile: int
+    properties: properties_.Properties = {}
 
 
 @attr.s(auto_attribs=True)
@@ -117,8 +96,10 @@ class Tile:
     terrain: Optional[TileTerrain] = None
     animation: Optional[List[Frame]] = None
     objectgroup: Optional[List[TiledObject]] = None
-    image: Optional[Image] = None
-    properties: Optional[List[Property]] = None
+    image: Optional[str] = None
+    image_width: Optional[int] = None
+    image_height: Optional[int] = None
+    properties: Optional[properties_.Properties] = None
     tileset: Optional["TileSet"] = None
     flipped_horizontally: bool = False
     flipped_diagonally: bool = False
@@ -155,21 +136,287 @@ class TileSet:
     """
 
     name: str
-    max_tile_size: Size
+    tile_width: int
+    tile_height: int
 
-    spacing: Optional[int] = None
-    margin: Optional[int] = None
-    tile_count: Optional[int] = None
-    columns: Optional[int] = None
+    image: Path
+    image_width: int
+    image_height: int
+
+    tile_count: int
+    columns: int
+
+    tiled_version: str
+    version: float
+
+    spacing: int = 0
+    margin: int = 0
+
+    firstgid: Optional[int] = None
+    background_color: Optional[Color] = None
     tile_offset: Optional[OrderedPair] = None
+    transparent_color: Optional[Color] = None
     grid: Optional[Grid] = None
-    properties: Optional[Properties] = None
-    image: Optional[Image] = None
+    properties: Optional[properties_.Properties] = None
     terrain_types: Optional[List[Terrain]] = None
-    tiles: Optional[Dict[int, Tile]] = None
-    tsx_file: Path = None
-    parent_dir: Path = None
+    tiles: Optional[List[Tile]] = None
+    source_file: Optional[Path] = None
 
 
-def cast():
-    pass
+class RawFrame(TypedDict):
+    """ The keys and their types that appear in a Frame JSON Object."""
+
+    duration: int
+    tileid: int
+
+
+class RawTileOffset(TypedDict):
+    """ The keys and their types that appear in a TileOffset JSON Object."""
+
+    x: int
+    y: int
+
+
+class RawTerrain(TypedDict):
+    """ The keys and their types that appear in a Terrain JSON Object."""
+
+    name: str
+    properties: List[properties_.RawProperty]
+    tile: int
+
+
+class RawTile(TypedDict):
+    """ The keys and their types that appear in a Tile JSON Object.
+        FIXME Implement objectgroup, can't be done until TileLayer's are implemented"""
+
+    animation: List[RawFrame]
+    id: int
+    image: str
+    imageheight: int
+    imagewidth: int
+    probability: float
+    properties: List[properties_.RawProperty]
+    terrain: List[int]
+    type: str
+
+
+class RawGrid(TypedDict):
+    """ The keys and their types that appear in a Grid JSON Object."""
+
+    height: int
+    width: int
+    orientation: str
+
+
+class RawTileSet(TypedDict):
+    """ The keys and their types that appear in a TileSet JSON Object."""
+
+    backgroundcolor: Color
+    columns: int
+    firstgid: int
+    grid: RawGrid
+    image: str
+    imageheight: int
+    imagewidth: int
+    margin: int
+    name: str
+    properties: List[properties_.RawProperty]
+    source: str
+    spacing: int
+    terrains: List[RawTerrain]
+    tilecount: int
+    tiledversion: str
+    tileheight: int
+    tileoffset: RawTileOffset
+    tiles: List[RawTile]
+    tilewidth: int
+    transparentcolor: Color
+    type: str
+    version: float
+
+
+def cast(raw_tileset: RawTileSet) -> TileSet:
+    """ Cast the raw tileset into a pytiled_parser type
+
+    Args:
+        raw_tileset: Raw Tileset to be cast.
+
+    Returns:
+        TileSet: a properly typed TileSet.
+    """
+
+    name = raw_tileset["name"]
+
+    tile_count = raw_tileset["tilecount"]
+    tile_width = raw_tileset["tilewidth"]
+    tile_height = raw_tileset["tileheight"]
+    columns = raw_tileset["columns"]
+
+    spacing = raw_tileset["spacing"]
+    margin = raw_tileset["margin"]
+
+    version = raw_tileset["version"]
+    tiled_version = raw_tileset["tiledversion"]
+
+    image = Path(raw_tileset["image"])
+    image_width = raw_tileset["imagewidth"]
+    image_height = raw_tileset["imageheight"]
+
+    tileset = TileSet(
+        name=name,
+        tile_count=tile_count,
+        tile_width=tile_width,
+        tile_height=tile_height,
+        columns=columns,
+        spacing=spacing,
+        margin=margin,
+        version=version,
+        tiled_version=tiled_version,
+        image=image,
+        image_width=image_width,
+        image_height=image_height,
+    )
+
+    if raw_tileset.get("firstgid") is not None:
+        tileset.firstgid = raw_tileset["firstgid"]
+
+    if raw_tileset.get("backgroundcolor") is not None:
+        tileset.background_color = raw_tileset["backgroundcolor"]
+
+    if raw_tileset.get("tileoffset") is not None:
+        tileset.tile_offset = _cast_tile_offset(raw_tileset["tileoffset"])
+
+    if raw_tileset.get("transparentcolor") is not None:
+        tileset.transparent_color = raw_tileset["transparentcolor"]
+
+    if raw_tileset.get("grid") is not None:
+        tileset.grid = _cast_grid(raw_tileset["grid"])
+
+    if raw_tileset.get("properties") is not None:
+        tileset.properties = properties_.cast(raw_tileset["properties"])
+
+    if raw_tileset.get("terrains") is not None:
+        terrains = []
+        for raw_terrain in raw_tileset["terrains"]:
+            terrains.append(_cast_terrain(raw_terrain))
+        tileset.terrain_types = terrains
+
+    if raw_tileset.get("tiles") is not None:
+        tiles = []
+        for raw_tile in raw_tileset["tiles"]:
+            tiles.append(_cast_tile(raw_tile))
+        tileset.tiles = tiles
+
+    if raw_tileset.get("source") is not None:
+        tileset.source_file = Path(raw_tileset["source"])
+
+    return tileset
+
+
+def _cast_frame(raw_frame: RawFrame) -> Frame:
+    """ Cast the raw_frame to a Frame.
+
+    Args:
+        raw_frame: RawFrame to be casted to a Frame
+
+    Returns:
+        Frame: The Frame created from the raw_frame
+    """
+
+    return Frame(duration=raw_frame["duration"], tile_id=raw_frame["tileid"])
+
+
+def _cast_tile_offset(raw_tile_offset: RawTileOffset) -> OrderedPair:
+    """ Cast the raw_tile_offset to an OrderedPair.
+
+    Args:
+        raw_tile_offset: RawTileOffset to be casted to an OrderedPair
+
+    Returns:
+        OrderedPair: The OrderedPair created from the raw_tile_offset
+    """
+
+    return OrderedPair(raw_tile_offset["x"], raw_tile_offset["y"])
+
+
+def _cast_terrain(raw_terrain: RawTerrain) -> Terrain:
+    """ Cast the raw_terrain to a Terrain object.
+
+    Args:
+        raw_terrain: RawTerrain to be casted to a Terrain
+
+    Returns:
+        Terrain: The Terrain created from the raw_terrain
+    """
+
+    if raw_terrain.get("properties") is not None:
+        return Terrain(
+            name=raw_terrain["name"],
+            tile=raw_terrain["tile"],
+            properties=properties_.cast(raw_terrain["properties"]),
+        )
+    else:
+        return Terrain(name=raw_terrain["name"], tile=raw_terrain["tile"],)
+
+
+def _cast_tile(raw_tile: RawTile) -> Tile:
+    """ Cast the raw_tile to a Tile object.
+
+    Args:
+        raw_tile: RawTile to be casted to a Tile
+
+    Returns:
+        Tile: The Tile created from the raw_tile
+    """
+
+    id_ = raw_tile["id"]
+    tile = Tile(id=id_)
+
+    if raw_tile.get("animation") is not None:
+        tile.animation = []
+        for frame in raw_tile["animation"]:
+            tile.animation.append(_cast_frame(frame))
+
+    if raw_tile.get("properties") is not None:
+        tile.properties = properties_.cast(raw_tile["properties"])
+
+    if raw_tile.get("image") is not None:
+        tile.image = raw_tile["image"]
+
+    if raw_tile.get("imagewidth") is not None:
+        tile.image_width = raw_tile["imagewidth"]
+
+    if raw_tile.get("imageheight") is not None:
+        tile.image_height = raw_tile["imageheight"]
+
+    if raw_tile.get("terrain") is not None:
+        raw_terrain = raw_tile["terrain"]
+        terrain = TileTerrain(
+            top_left=raw_terrain[0],
+            top_right=raw_terrain[1],
+            bottom_left=raw_terrain[2],
+            bottom_right=raw_terrain[3],
+        )
+        tile.terrain = terrain
+
+    if raw_tile.get("type") is not None:
+        tile.type = raw_tile["type"]
+
+    return tile
+
+
+def _cast_grid(raw_grid: RawGrid) -> Grid:
+    """ Cast the raw_grid to a Grid object.
+
+    Args:
+        raw_grid: RawGrid to be casted to a Grid
+
+    Returns:
+        Grid: The Grid created from the raw_grid
+    """
+
+    return Grid(
+        orientation=raw_grid["orientation"],
+        width=raw_grid["width"],
+        height=raw_grid["height"],
+    )
