@@ -171,5 +171,5 @@ class TileSet:
     parent_dir: Path = None
 
 
-def parse():
+def cast():
     pass
