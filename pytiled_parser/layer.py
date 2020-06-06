@@ -162,3 +162,7 @@ class RawLayer(TypedDict):
     width: int
     x: int
     y: int
+
+
+def cast(*args, **kwargs):
+    pass
