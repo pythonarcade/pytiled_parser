@@ -47,25 +47,23 @@ class Map:
         layers: List of layer objects by draw order.
     """
 
-    version: str
-    tiled_version: str
-    orientation: str
-    render_order: str
-    map_size: Size
-    tile_size: Size
     infinite: bool
+    layers: List[Layer]
+    map_size: Size
     next_layer_id: Optional[int]
     next_object_id: int
-
+    orientation: str
+    render_order: str
+    tiled_version: str
+    tile_size: Size
     tile_sets: List[TileSet]
-    layers: List[Layer]
+    version: str
 
+    background_color: Optional[Color] = None
+    properties: Optional[Properties] = None
     hex_side_length: Optional[int] = None
     stagger_axis: Optional[int] = None
     stagger_index: Optional[int] = None
-    background_color: Optional[Color] = None
-
-    properties: Optional[Properties] = None
 
 
 class _RawTiledMap(TypedDict):
