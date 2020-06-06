@@ -71,5 +71,5 @@ class Map:
     properties: Optional[Properties] = None
 
 
-def parse() -> Map:
+def cast() -> Map:
     pass
