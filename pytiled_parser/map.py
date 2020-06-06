@@ -7,7 +7,7 @@ import attr
 from typing_extensions import TypedDict
 
 from .common_types import Color, Size
-from .layer import Layer
+from .layer import Layer, RawLayer
 from .properties import Properties, RawProperty
 from .tileset import RawTileSet, TileSet
 
