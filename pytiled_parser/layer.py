@@ -136,7 +136,10 @@ class RawChunk(TypedDict):
 
 
 class RawLayer(TypedDict):
-    """ The keys and their types that appear in a Layer JSON Object."""
+    """ 
+    FIXME Make the layers attribute function
+    
+    The keys and their types that appear in a Layer JSON Object."""
 
     chunks: List[RawChunk]
     compression: str
@@ -146,7 +149,7 @@ class RawLayer(TypedDict):
     height: int
     id: int
     image: str
-    layers: List[RawLayer]
+    # layers: List[RawLayer]
     name: str
     objects: List[RawTiledObject]
     offsetx: float
