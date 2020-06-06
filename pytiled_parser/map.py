@@ -33,7 +33,7 @@ class Map:
         tiled_version: The Tiled version used to save the file. May be a date (for
             snapshot builds).
             drawn row-by-row. (only supported for orthogonal maps at the moment)
-        tile_size: The width of a tile.
+        tile_size: The size of a tile.
         tile_sets: Tilesets used in this map.
         version: The JSON format version.
         background_color: The background color of the map.
