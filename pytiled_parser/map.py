@@ -47,9 +47,6 @@ class Map:
         layers: List of layer objects by draw order.
     """
 
-    parent_dir: Path
-    tmx_file: Union[str, Path]
-
     version: str
     tiled_version: str
     orientation: str
