@@ -43,8 +43,7 @@ class Map:
         background_color: The background color of the map.
         next_layer_id: Stores the next available ID for new layers.
         next_object_id: Stores the next available ID for new objects.
-        tile_sets: Dict of tile sets used in this map. Key is the first GID for the
-            tile set. The value is a TileSet object.
+        tile_sets: Tilesets used in this map.
         layers: List of layer objects by draw order.
     """
 
@@ -61,7 +60,7 @@ class Map:
     next_layer_id: Optional[int]
     next_object_id: int
 
-    tile_sets: TileSetDict
+    tile_sets: List[TileSet]
     layers: List[Layer]
 
     hex_side_length: Optional[int] = None
