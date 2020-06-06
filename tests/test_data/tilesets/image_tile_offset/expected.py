@@ -5,7 +5,7 @@ from pytiled_parser.common_types import Color, OrderedPair
 
 EXPECTED = tileset.TileSet(
     columns=8,
-    image=Path("../../maps/images/tmw_desert_spacing.png"),
+    image=Path("../../images/tmw_desert_spacing.png"),
     image_height=199,
     image_width=265,
     margin=1,
