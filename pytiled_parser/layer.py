@@ -3,10 +3,11 @@
 from typing import List, Optional, Union
 
 import attr
+from typing_extensions import TypedDict
 
+from . import properties as properties_
 from .common_types import OrderedPair, Size
-from .properties import Properties
-from .tiled_object import TiledObject
+from .tiled_object import RawTiledObject, TiledObject
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -37,7 +38,7 @@ class Layer:
 
     offset: Optional[OrderedPair]
     opacity: Optional[float]
-    properties: Optional[Properties]
+    properties: Optional[properties_.Properties]
 
 
 TileLayerGrid = List[List[int]]
@@ -122,3 +123,41 @@ class LayerGroup(Layer):
     """
 
     layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
+
+
+class RawChunk(TypedDict):
+    """ The keys and their types that appear in a Chunk JSON Object."""
+
+    data: Union[List[int], str]
+    height: int
+    width: int
+    x: int
+    y: int
+
+
+class RawLayer(TypedDict):
+    """ The keys and their types that appear in a Layer JSON Object."""
+
+    chunks: List[RawChunk]
+    compression: str
+    data: Union[List[int], str]
+    draworder: str
+    encoding: str
+    height: int
+    id: int
+    image: str
+    layers: List[RawLayer]
+    name: str
+    objects: List[RawTiledObject]
+    offsetx: float
+    offsety: float
+    opacity: float
+    properties: List[properties_.RawProperty]
+    startx: int
+    starty: int
+    transparentcolor: str
+    type: str
+    visible: bool
+    width: int
+    x: int
+    y: int
