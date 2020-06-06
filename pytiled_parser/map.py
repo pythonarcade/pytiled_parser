@@ -21,30 +21,29 @@ class Map:
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#map
 
     Attributes:
-        parent_dir: The directory the TMX file is in. Used for finding relative paths
-            to TSX files and other assets.
-        version: The JSON format version.
-        tiled_version: The Tiled version used to save the file. May be a date (for
-            snapshot builds).
+        infinite: If the map is infinite or not.
+        layers: List of layer objects by draw order.
+        map_size: The map width in tiles.
+        next_layer_id: Stores the next available ID for new layers.
+        next_object_id: Stores the next available ID for new objects.
         orientation: Map orientation. Tiled supports "orthogonal", "isometric",
             "staggered" and "hexagonal"
         render_order: The order in which tiles on tile layers are rendered. Valid values
             are right-down, right-up, left-down and left-up. In all cases, the map is
+        tiled_version: The Tiled version used to save the file. May be a date (for
+            snapshot builds).
             drawn row-by-row. (only supported for orthogonal maps at the moment)
-        map_size: The map width in tiles.
         tile_size: The width of a tile.
-        infinite: If the map is infinite or not.
+        tile_sets: Tilesets used in this map.
+        version: The JSON format version.
+        background_color: The background color of the map.
+        properties: The properties of the Map.
         hex_side_length: Only for hexagonal maps. Determines the width or height
             (depending on the staggered axis) of the tile's edge, in pixels.
         stagger_axis: For staggered and hexagonal maps, determines which axis ("x" or
             "y") is staggered.
         stagger_index: For staggered and hexagonal maps, determines whether the "even"
             or "odd" indexes along the staggered axis are shifted.
-        background_color: The background color of the map.
-        next_layer_id: Stores the next available ID for new layers.
-        next_object_id: Stores the next available ID for new objects.
-        tile_sets: Tilesets used in this map.
-        layers: List of layer objects by draw order.
     """
 
     infinite: bool
