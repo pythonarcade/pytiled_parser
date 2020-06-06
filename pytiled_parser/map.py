@@ -4,11 +4,12 @@ from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Union
 
 import attr
+from typing_extensions import TypedDict
 
 from .common_types import Color, Size
 from .layer import Layer
-from .properties import Properties
-from .tileset import TileSet
+from .properties import Properties, RawProperty
+from .tileset import RawTileSet, TileSet
 
 TileSetDict = Dict[int, TileSet]
 
@@ -71,5 +72,41 @@ class Map:
     properties: Optional[Properties] = None
 
 
-def cast() -> Map:
-    pass
+class _RawTiledMap(TypedDict):
+    """ The keys and their types that appear in a Tiled JSON Map.
+    
+    Keys:
+        compressionlevel: not documented - https://github.com/bjorn/tiled/issues/2815
+        """
+
+    backgroundcolor: str
+    compressionlevel: int
+    height: int
+    hexsidelength: int
+    infinite: bool
+    layers: List[RawLayer]
+    nextlayerid: int
+    nextobjectid: int
+    orientation: str
+    properties: List[RawProperty]
+    renderorder: str
+    staggeraxis: str
+    staggerindex: str
+    tiledversion: str
+    tileheight: int
+    tilesets: List[RawTileSet]
+    tilewidth: int
+    type: str
+    version: str
+    width: int
+
+
+def cast(raw_tiled_map: _RawTiledMap) -> Map:
+    """ Cast the raw Tiled map into a pytiled_parser type
+
+    Args:
+        raw_tiled_map: Raw JSON Formatted Tiled Map to be cast.
+
+    Returns:
+        TileSet: a properly typed TileSet.
+    """
