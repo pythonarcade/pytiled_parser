@@ -1,12 +1,12 @@
 # pylint: disable=too-few-public-methods
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional
+from typing import List, NamedTuple, Optional
 
 import attr
 from typing_extensions import TypedDict
 
 from . import properties as properties_
-from .common_types import Color, OrderedPair, Size
+from .common_types import Color, OrderedPair
 from .tiled_object import TiledObject
 
 
@@ -355,36 +355,19 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
         TileSet: a properly typed TileSet.
     """
 
-    name = raw_tileset["name"]
-
-    tile_count = raw_tileset["tilecount"]
-    tile_width = raw_tileset["tilewidth"]
-    tile_height = raw_tileset["tileheight"]
-    columns = raw_tileset["columns"]
-
-    spacing = raw_tileset["spacing"]
-    margin = raw_tileset["margin"]
-
-    version = raw_tileset["version"]
-    tiled_version = raw_tileset["tiledversion"]
-
-    image = Path(raw_tileset["image"])
-    image_width = raw_tileset["imagewidth"]
-    image_height = raw_tileset["imageheight"]
-
     tileset = TileSet(
-        name=name,
-        tile_count=tile_count,
-        tile_width=tile_width,
-        tile_height=tile_height,
-        columns=columns,
-        spacing=spacing,
-        margin=margin,
-        version=version,
-        tiled_version=tiled_version,
-        image=image,
-        image_width=image_width,
-        image_height=image_height,
+        name=raw_tileset["name"],
+        tile_count=raw_tileset["tilecount"],
+        tile_width=raw_tileset["tilewidth"],
+        tile_height=raw_tileset["tileheight"],
+        columns=raw_tileset["columns"],
+        spacing=raw_tileset["spacing"],
+        margin=raw_tileset["margin"],
+        version=raw_tileset["version"],
+        tiled_version=raw_tileset["tiledversion"],
+        image=Path(raw_tileset["image"]),
+        image_width=raw_tileset["imagewidth"],
+        image_height=raw_tileset["imageheight"],
     )
 
     if raw_tileset.get("firstgid") is not None:
