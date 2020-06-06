@@ -23,7 +23,7 @@ class Map:
     Attributes:
         parent_dir: The directory the TMX file is in. Used for finding relative paths
             to TSX files and other assets.
-        version: The TMX format version.
+        version: The JSON format version.
         tiled_version: The Tiled version used to save the file. May be a date (for
             snapshot builds).
         orientation: Map orientation. Tiled supports "orthogonal", "isometric",
