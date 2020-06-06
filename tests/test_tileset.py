@@ -16,6 +16,7 @@ TILE_SETS = TEST_DATA / "tilesets"
 ALL_TILESET_DIRS = [
     TILE_SETS / "image",
     TILE_SETS / "image_background_color",
+    TILE_SETS / "image_grid",
     TILE_SETS / "image_properties",
     TILE_SETS / "image_transparent_color",
     TILE_SETS / "image_tile_offset",
