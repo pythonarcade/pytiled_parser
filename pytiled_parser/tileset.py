@@ -6,8 +6,8 @@ import attr
 from typing_extensions import TypedDict
 
 from . import properties as properties_
+from . import tiled_object
 from .common_types import Color, OrderedPair
-from .tiled_object import TiledObject
 
 
 class Grid(NamedTuple):
@@ -92,11 +92,12 @@ class Tile:
     """
 
     id: int
+    opacity: int = 1
     type: Optional[str] = None
     terrain: Optional[TileTerrain] = None
     animation: Optional[List[Frame]] = None
-    objectgroup: Optional[List[TiledObject]] = None
-    image: Optional[str] = None
+    objects: Optional[List[tiled_object.TiledObject]] = None
+    image: Optional[Path] = None
     image_width: Optional[int] = None
     image_height: Optional[int] = None
     properties: Optional[properties_.Properties] = None
@@ -139,10 +140,6 @@ class TileSet:
     tile_width: int
     tile_height: int
 
-    image: Path
-    image_width: int
-    image_height: int
-
     tile_count: int
     columns: int
 
@@ -152,6 +149,11 @@ class TileSet:
     spacing: int = 0
     margin: int = 0
 
+    image: Optional[Path] = None
+    image_width: Optional[int] = None
+    image_height: Optional[int] = None
+
+    type: Optional[str] = None
     firstgid: Optional[int] = None
     background_color: Optional[Color] = None
     tile_offset: Optional[OrderedPair] = None
@@ -160,7 +162,6 @@ class TileSet:
     properties: Optional[properties_.Properties] = None
     terrain_types: Optional[List[Terrain]] = None
     tiles: Optional[List[Tile]] = None
-    source_file: Optional[Path] = None
 
 
 class RawFrame(TypedDict):
@@ -195,8 +196,9 @@ class RawTile(TypedDict):
     image: str
     imageheight: int
     imagewidth: int
-    probability: float
+    opacity: float
     properties: List[properties_.RawProperty]
+    objects: List[tiled_object.RawTiledObject]
     terrain: List[int]
     type: str
 
@@ -300,11 +302,16 @@ def _cast_tile(raw_tile: RawTile) -> Tile:
         for frame in raw_tile["animation"]:
             tile.animation.append(_cast_frame(frame))
 
+    if raw_tile.get("objects") is not None:
+        tile.objects = []
+        for object_ in raw_tile["objects"]:
+            tile.objects.append(tiled_object.cast(object_))
+
     if raw_tile.get("properties") is not None:
         tile.properties = properties_.cast(raw_tile["properties"])
 
     if raw_tile.get("image") is not None:
-        tile.image = raw_tile["image"]
+        tile.image = Path(raw_tile["image"])
 
     if raw_tile.get("imagewidth") is not None:
         tile.image_width = raw_tile["imagewidth"]
@@ -365,10 +372,16 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
         margin=raw_tileset["margin"],
         version=raw_tileset["version"],
         tiled_version=raw_tileset["tiledversion"],
-        image=Path(raw_tileset["image"]),
-        image_width=raw_tileset["imagewidth"],
-        image_height=raw_tileset["imageheight"],
     )
+
+    if raw_tileset.get("image") is not None:
+        tileset.image = Path(raw_tileset["image"])
+
+    if raw_tileset.get("imagewidth") is not None:
+        tileset.image_width = raw_tileset["imagewidth"]
+
+    if raw_tileset.get("imageheight") is not None:
+        tileset.image_height = raw_tileset["imageheight"]
 
     if raw_tileset.get("firstgid") is not None:
         tileset.firstgid = raw_tileset["firstgid"]
@@ -381,6 +394,9 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
 
     if raw_tileset.get("transparentcolor") is not None:
         tileset.transparent_color = raw_tileset["transparentcolor"]
+
+    if raw_tileset.get("type") is not None:
+        tileset.type = raw_tileset["type"]
 
     if raw_tileset.get("grid") is not None:
         tileset.grid = _cast_grid(raw_tileset["grid"])
@@ -399,8 +415,5 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
         for raw_tile in raw_tileset["tiles"]:
             tiles.append(_cast_tile(raw_tile))
         tileset.tiles = tiles
-
-    if raw_tileset.get("source") is not None:
-        tileset.source_file = Path(raw_tileset["source"])
 
     return tileset
