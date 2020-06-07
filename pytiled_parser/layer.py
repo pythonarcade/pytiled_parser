@@ -1,12 +1,13 @@
 # pylint: disable=too-few-public-methods
 
-from typing import List, Optional, Union
+from pathlib import Path
+from typing import Any, List, Optional, Union
 
 import attr
 from typing_extensions import TypedDict
 
 from . import properties as properties_
-from .common_types import OrderedPair, Size
+from .common_types import Color, OrderedPair, Size
 from .tiled_object import RawTiledObject, TiledObject
 
 
@@ -36,9 +37,14 @@ class Layer:
     id_: int
     name: str
 
-    offset: Optional[OrderedPair]
-    opacity: Optional[float]
-    properties: Optional[properties_.Properties]
+    height: int
+    width: int
+
+    offset: Optional[OrderedPair] = None
+    opacity: Optional[float] = 1
+    properties: Optional[properties_.Properties] = None
+    start: Optional[OrderedPair] = None
+    visible: Optional[bool] = True
 
 
 TileLayerGrid = List[List[int]]
@@ -51,16 +57,15 @@ class Chunk:
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#chunk
 
     Attributes:
-        location: Location of chunk in tiles.
-        width: The width of the chunk in tiles.
-        height: The height of the chunk in tiles.
-        layer_data: The global tile IDs in chunky according to row.
+        coordinates: Location of chunk in tiles.
+        size: The size of the chunk in tiles.
+        data: The global tile IDs in chunky according to row.
     """
 
-    location: OrderedPair
-    width: int
-    height: int
-    chunk_data: TileLayerGrid
+    coordinates: OrderedPair
+    size: Size
+
+    data: Optional[Union[List[int], str]] = None
 
 
 LayerData = Union[TileLayerGrid, List[Chunk]]
@@ -83,8 +88,11 @@ class TileLayer(Layer):
             IDs for the map layer, or a list of chunks for an infinite map.
     """
 
-    size: Size
-    layer_data: LayerData
+    encoding: str = "csv"
+
+    compression: Optional[str] = None
+    chunks: Optional[List[Chunk]] = None
+    data: Optional[Union[List[int], str]] = None
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -107,8 +115,22 @@ class ObjectLayer(Layer):
 
     tiled_objects: List[TiledObject]
 
-    color: Optional[str] = None
     draw_order: Optional[str] = "topdown"
+
+
+@attr.s(auto_attribs=True, kw_only=True)
+class ImageLayer(Layer):
+    """Map layer containing images.
+
+    See: https://doc.mapeditor.org/en/stable/manual/layers/#image-layers
+
+    Attributes:
+        image: The image used by this layer.
+        transparent_color: Color that is to be made transparent on this layer.
+    """
+
+    image: Path
+    transparent_color: Optional[Color] = None
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -122,7 +144,7 @@ class LayerGroup(Layer):
         Layers: Layers in group.
     """
 
-    layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
+    layers: Optional[List[Union["LayerGroup", ImageLayer, ObjectLayer, TileLayer]]]
 
 
 class RawChunk(TypedDict):
@@ -147,7 +169,7 @@ class RawLayer(TypedDict):
     height: int
     id: int
     image: str
-    # layers: List[RawLayer]
+    layers: List[Any]
     name: str
     objects: List[RawTiledObject]
     offsetx: float
@@ -164,5 +186,63 @@ class RawLayer(TypedDict):
     y: int
 
 
-def cast(*args, **kwargs):
+def _cast_chunk(raw_chunk: RawChunk) -> Chunk:
+    """ Cast the raw_chunk to a Chunk.
+
+    Args:
+        raw_chunk: RawChunk to be casted to a Chunk
+
+    Returns:
+        Chunk: The Chunk created from the raw_chunk
+    """
+
+    chunk = Chunk(
+        coordinates=OrderedPair(raw_chunk["x"], raw_chunk["y"]),
+        size=Size(raw_chunk["width"], raw_chunk["height"]),
+    )
+
+    if raw_chunk.get("data") is not None:
+        chunk.data = raw_chunk["data"]
+
+    return chunk
+
+
+def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
     pass
+
+
+def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
+    pass
+
+
+def _cast_image_layer(raw_layer: RawLayer) -> ImageLayer:
+    pass
+
+
+def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
+    pass
+
+
+def cast(raw_layer: RawLayer) -> Layer:
+
+    layer: Layer
+
+    if raw_layer.get("type") is not None:
+        if raw_layer["type"] == "tilelayer":
+            # Tile Layer
+            layer = _cast_tile_layer(raw_layer)
+        elif raw_layer["type"] == "objectgroup":
+            # Object Layer
+            layer = _cast_object_layer(raw_layer)
+        elif raw_layer["type"] == "imagelayer":
+            # Image Layer
+            layer = _cast_image_layer(raw_layer)
+        elif raw_layer["type"] == "group":
+            # Layer Group
+            layer = _cast_group_layer(raw_layer)
+        else:
+            raise AttributeError
+    else:
+        raise AttributeError
+
+    return layer
