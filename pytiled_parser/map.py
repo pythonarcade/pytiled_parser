@@ -34,7 +34,7 @@ class Map:
             snapshot builds).
             drawn row-by-row. (only supported for orthogonal maps at the moment)
         tile_size: The size of a tile.
-        tile_sets: Tilesets used in this map.
+        tilesets: Dict of Tileset where Key is the firstgid and the value is the Tileset
         version: The JSON format version.
         background_color: The background color of the map.
         properties: The properties of the Map.
@@ -55,13 +55,13 @@ class Map:
     render_order: str
     tiled_version: str
     tile_size: Size
-    tile_sets: List[TileSet]
+    tilesets: TilesetDict
     version: str
 
     background_color: Optional[Color] = None
     properties: Optional[Properties] = None
     hex_side_length: Optional[int] = None
-    stagger_axis: Optional[int] = None
+    stagger_axis: Optional[str] = None
     stagger_index: Optional[int] = None
 
 
