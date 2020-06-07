@@ -109,6 +109,7 @@ class Tile:
 
 @attr.s(auto_attribs=True)
 class TileSet:
+    # FIXME: rename to Tileset
     """Object for storing a TSX with all associated collision data.
 
     Args:
