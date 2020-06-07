@@ -16,4 +16,5 @@ EXPECTED = tileset.TileSet(
     tile_width=32,
     version=1.2,
     grid=tileset.Grid(orientation="isometric", width=32, height=32),
+    type="tileset",
 )

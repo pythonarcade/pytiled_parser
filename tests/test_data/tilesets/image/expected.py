@@ -15,4 +15,5 @@ EXPECTED = tileset.TileSet(
     tile_height=32,
     tile_width=32,
     version=1.2,
+    type="tileset",
 )

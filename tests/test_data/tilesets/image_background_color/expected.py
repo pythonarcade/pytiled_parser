@@ -17,4 +17,5 @@ EXPECTED = tileset.TileSet(
     tile_width=32,
     version=1.2,
     background_color=Color("#5500ff"),
+    type="tileset",
 )

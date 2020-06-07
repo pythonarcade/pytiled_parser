@@ -23,4 +23,5 @@ EXPECTED = tileset.TileSet(
         "int property": 5,
         "string property": "testing",
     },
+    type="tileset",
 )

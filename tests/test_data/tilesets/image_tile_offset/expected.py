@@ -17,4 +17,5 @@ EXPECTED = tileset.TileSet(
     tile_width=32,
     version=1.2,
     tile_offset=OrderedPair(3, 5),
+    type="tileset",
 )
