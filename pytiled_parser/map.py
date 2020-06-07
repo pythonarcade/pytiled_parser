@@ -11,7 +11,7 @@ from .layer import Layer, RawLayer
 from .properties import Properties, RawProperty
 from .tileset import RawTileSet, TileSet
 
-TileSetDict = Dict[int, TileSet]
+TilesetDict = Dict[int, TileSet]
 
 
 @attr.s(auto_attribs=True)
