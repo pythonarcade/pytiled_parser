@@ -1,11 +1,14 @@
 # pylint: disable=too-few-public-methods
 
+import json
 from pathlib import Path
 from typing import Dict, List, NamedTuple, Optional, Union
+from typing import cast as typing_cast
 
 import attr
 from typing_extensions import TypedDict
 
+from . import layer, properties, tileset
 from .common_types import Color, Size
 from .layer import Layer, RawLayer
 from .properties import Properties, RawProperty
@@ -62,12 +65,19 @@ class Map:
     properties: Optional[Properties] = None
     hex_side_length: Optional[int] = None
     stagger_axis: Optional[str] = None
-    stagger_index: Optional[int] = None
+    stagger_index: Optional[str] = None
+
+
+class _RawTilesetMapping(TypedDict):
+    """ The way that tilesets are stored in the Tiled JSON formatted map."""
+
+    firstgid: int
+    source: str
 
 
 class _RawTiledMap(TypedDict):
     """ The keys and their types that appear in a Tiled JSON Map.
-    
+
     Keys:
         compressionlevel: not documented - https://github.com/bjorn/tiled/issues/2815
         """
@@ -87,11 +97,32 @@ class _RawTiledMap(TypedDict):
     staggerindex: str
     tiledversion: str
     tileheight: int
-    tilesets: List[RawTileSet]
+    tilesets: List[_RawTilesetMapping]
     tilewidth: int
     type: str
     version: str
     width: int
+
+
+def _cast_raw_tilesets(raw_tilesets: List[_RawTilesetMapping]) -> TilesetDict:
+    """ Cast a list of raw tileset mappings to a Tileset dictionary.
+
+    Args:
+        raw_tilesets: the list of Tileset mappings to be cast into a TilesetDict
+
+    Returns:
+        TilesetDict: containing all tilesets by `firstgid`
+    """
+
+    tilesets: TilesetDict = {}
+
+    for raw_tileset_mapping in raw_tilesets:
+        with open(Path(raw_tileset_mapping["source"])) as raw_tileset_file:
+            raw_tileset = typing_cast(RawTileSet, json.load(raw_tileset_file))
+
+        tilesets[raw_tileset_mapping["firstgid"]] = tileset.cast(raw_tileset)
+
+    return tilesets
 
 
 def cast(raw_tiled_map: _RawTiledMap) -> Map:
@@ -103,3 +134,35 @@ def cast(raw_tiled_map: _RawTiledMap) -> Map:
     Returns:
         TileSet: a properly typed TileSet.
     """
+
+    # `map` is a built-in function
+    map_ = Map(
+        infinite=raw_tiled_map["infinite"],
+        layers=[layer.cast(layer_) for layer_ in raw_tiled_map["layers"]],
+        map_size=Size(raw_tiled_map["width"], raw_tiled_map["height"]),
+        next_layer_id=raw_tiled_map["nextlayerid"],
+        next_object_id=raw_tiled_map["nextobjectid"],
+        orientation=raw_tiled_map["orientation"],
+        render_order=raw_tiled_map["renderorder"],
+        tiled_version=raw_tiled_map["tiledversion"],
+        tile_size=Size(raw_tiled_map["tilewidth"], raw_tiled_map["tileheight"]),
+        tilesets=_cast_raw_tilesets(raw_tiled_map["tilesets"]),
+        version=raw_tiled_map["version"],
+    )
+
+    if raw_tiled_map.get("backgroundcolor") is not None:
+        map_.background_color = raw_tiled_map["backgroundcolor"]
+
+    if raw_tiled_map.get("properties") is not None:
+        map_.properties = properties.cast(raw_tiled_map["properties"])
+
+    if raw_tiled_map.get("hexsidelength") is not None:
+        map_.hex_side_length = raw_tiled_map["hexsidelength"]
+
+    if raw_tiled_map.get("staggeraxis") is not None:
+        map_.stagger_axis = raw_tiled_map["staggeraxis"]
+
+    if raw_tiled_map.get("staggerindex") is not None:
+        map_.stagger_index = raw_tiled_map["staggerindex"]
+
+    return map_
