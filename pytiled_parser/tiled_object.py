@@ -35,7 +35,6 @@ class TiledObject:
     coordinates: OrderedPair
     size: Size = Size(0, 0)
     rotation: float = 0
-    opacity: float = 1
     visible: bool
 
     name: Optional[str] = None
@@ -179,7 +178,6 @@ class RawTiledObject(TypedDict):
     width: float
     height: float
     rotation: float
-    opacity: float
     visible: bool
     name: str
     type: str
@@ -216,9 +214,6 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
 
     if raw_tiled_object.get("rotation") is not None:
         common_attributes.rotation = raw_tiled_object["rotation"]
-
-    if raw_tiled_object.get("opacity") is not None:
-        common_attributes.opacity = raw_tiled_object["opacity"]
 
     if raw_tiled_object.get("name") is not None:
         common_attributes.name = raw_tiled_object["name"]
