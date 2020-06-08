@@ -206,6 +206,17 @@ def _cast_chunk(raw_chunk: RawChunk) -> Chunk:
     return chunk
 
 
+def _get_common_attributes(raw_layer: RawLayer) -> Layer:
+    """ Create a Layer containing all the attributes common to all layers
+
+    Args:
+        raw_layer: Raw Tiled object get common attributes from
+
+    Returns:
+        Layer: The attributes in common of all layers
+    """
+
+
 def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
     pass
 
