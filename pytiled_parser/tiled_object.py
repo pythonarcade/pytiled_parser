@@ -201,22 +201,14 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
     Returns:
         TiledObject: The attributes in common of all Tiled Objects
     """
-
-    # required attributes
-    id_ = raw_tiled_object["id"]
-    coordinates = OrderedPair(x=raw_tiled_object["x"], y=raw_tiled_object["y"])
-    size = Size(raw_tiled_object["width"], raw_tiled_object["height"])
-    visible = raw_tiled_object["visible"]
-
     common_attributes = TiledObject(
-        id=id_, coordinates=coordinates, visible=visible, size=size
+        id=raw_tiled_object["id"],
+        coordinates=OrderedPair(raw_tiled_object["x"], raw_tiled_object["y"]),
+        visible=raw_tiled_object["visible"],
+        size=Size(raw_tiled_object["width"], raw_tiled_object["height"]),
+        rotation=raw_tiled_object["rotation"],
+        name=raw_tiled_object["name"],
     )
-
-    if raw_tiled_object.get("rotation") is not None:
-        common_attributes.rotation = raw_tiled_object["rotation"]
-
-    if raw_tiled_object.get("name") is not None:
-        common_attributes.name = raw_tiled_object["name"]
 
     if raw_tiled_object.get("type") is not None:
         common_attributes.type = raw_tiled_object["type"]
