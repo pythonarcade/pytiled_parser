@@ -35,7 +35,6 @@ class Layer:
     """
 
     name: str
-
     height: int
     width: int
 
