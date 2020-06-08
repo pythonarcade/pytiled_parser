@@ -207,28 +207,12 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
     # required attributes
     id_ = raw_tiled_object["id"]
     coordinates = OrderedPair(x=raw_tiled_object["x"], y=raw_tiled_object["y"])
+    size = Size(raw_tiled_object["width"], raw_tiled_object["height"])
     visible = raw_tiled_object["visible"]
 
     common_attributes = TiledObject(
-        id=id_, coordinates=coordinates, visible=visible, properties={}
+        id=id_, coordinates=coordinates, visible=visible, size=size
     )
-
-    # optional attributes
-    if any([raw_tiled_object.get("width"), raw_tiled_object.get("height")]):
-        # we have to check if either are truthy before we proceed to create Size
-        _width = raw_tiled_object.get("width")
-        if _width:
-            width = _width
-        else:
-            width = 0
-
-        _height = raw_tiled_object.get("height")
-        if _height:
-            height = _height
-        else:
-            height = 0
-
-        common_attributes.size = Size(width, height)
 
     if raw_tiled_object.get("rotation") is not None:
         common_attributes.rotation = raw_tiled_object["rotation"]
