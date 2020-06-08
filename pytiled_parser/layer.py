@@ -1,7 +1,7 @@
 # pylint: disable=too-few-public-methods
 
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union
 
 import attr
 from typing_extensions import TypedDict
@@ -223,26 +223,17 @@ def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
     pass
 
 
+def _get_group_caster(type_: str) -> Callable[[RawLayer], Layer]:
+    casters = {
+        "tilelayer": _cast_tile_layer,
+        "objectgroup": _cast_object_layer,
+        "imagelayer": _cast_image_layer,
+        "group": _cast_group_layer,
+    }
+    return casters[type_]
+
+
 def cast(raw_layer: RawLayer) -> Layer:
+    caster = _get_group_caster(raw_layer["type"])
 
-    layer: Layer
-
-    if raw_layer.get("type") is not None:
-        if raw_layer["type"] == "tilelayer":
-            # Tile Layer
-            layer = _cast_tile_layer(raw_layer)
-        elif raw_layer["type"] == "objectgroup":
-            # Object Layer
-            layer = _cast_object_layer(raw_layer)
-        elif raw_layer["type"] == "imagelayer":
-            # Image Layer
-            layer = _cast_image_layer(raw_layer)
-        elif raw_layer["type"] == "group":
-            # Layer Group
-            layer = _cast_group_layer(raw_layer)
-        else:
-            raise AttributeError
-    else:
-        raise AttributeError
-
-    return layer
+    return caster(raw_layer)
