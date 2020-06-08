@@ -214,6 +214,29 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
     Returns:
         Layer: The attributes in common of all layers
     """
+    common_attributes = Layer(name=raw_layer["name"])
+
+    if raw_layer.get("startx") is not None:
+        common_attributes.coordinates = OrderedPair(
+            raw_layer["startx"], raw_layer["starty"]
+        )
+
+    if raw_layer.get("id") is not None:
+        common_attributes.id = raw_layer["id"]
+
+    # if either width or height is present, they both are
+    if raw_layer.get("width") is not None:
+        common_attributes.size = Size(raw_layer["width"], raw_layer["height"])
+
+    if raw_layer.get("offsetx") is not None:
+        common_attributes.offset = OrderedPair(
+            raw_layer["offsetx"], raw_layer["offsety"]
+        )
+
+    if raw_layer.get("properties") is not None:
+        common_attributes.properties = properties_.cast(raw_layer["properties"])
+
+    return common_attributes
 
 
 def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
