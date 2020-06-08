@@ -241,6 +241,14 @@ def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
 
 
 def cast(raw_layer: RawLayer) -> Layer:
+    """ Cast the raw Tiled layer into a pytiled_parser type
+
+    Args:
+        raw_layer: Raw layer to be cast.
+
+    Returns:
+        Layer: a properly typed Layer.
+    """
     caster = _get_caster(raw_layer["type"])
 
     return caster(raw_layer)
