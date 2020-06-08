@@ -34,12 +34,12 @@ class Layer:
             for more info.
     """
 
-    id: int
     name: str
 
     height: int
     width: int
 
+    id: Optional[int] = None
     offset: Optional[OrderedPair] = None
     opacity: Optional[float] = 1
     properties: Optional[properties_.Properties] = None
