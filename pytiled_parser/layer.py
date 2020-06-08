@@ -35,15 +35,14 @@ class Layer:
     """
 
     name: str
+    opacity: float
+    visible: bool
 
     id: Optional[int] = None
-    width: Optional[int] = 0
-    height: Optional[int] = 0
+    size: Optional[Size] = None
     offset: Optional[OrderedPair] = None
-    opacity: Optional[float] = 1
     properties: Optional[properties_.Properties] = None
-    start: Optional[OrderedPair] = None
-    visible: Optional[bool] = True
+    coordinates: Optional[OrderedPair] = None
 
 
 TileLayerGrid = List[List[int]]
