@@ -36,10 +36,9 @@ class Layer:
 
     name: str
 
-    height: int
-    width: int
-
     id: Optional[int] = None
+    width: Optional[int] = 0
+    height: Optional[int] = 0
     offset: Optional[OrderedPair] = None
     opacity: Optional[float] = 1
     properties: Optional[properties_.Properties] = None
