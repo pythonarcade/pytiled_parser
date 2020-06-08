@@ -5,6 +5,7 @@ from typing import List, NamedTuple, Optional
 import attr
 from typing_extensions import TypedDict
 
+from . import layer
 from . import properties as properties_
 from . import tiled_object
 from .common_types import Color, OrderedPair
@@ -96,7 +97,7 @@ class Tile:
     type: Optional[str] = None
     terrain: Optional[TileTerrain] = None
     animation: Optional[List[Frame]] = None
-    objects: Optional[List[tiled_object.TiledObject]] = None
+    objects: Optional[layer.Layer] = None
     image: Optional[Path] = None
     image_width: Optional[int] = None
     image_height: Optional[int] = None
@@ -199,7 +200,7 @@ class RawTile(TypedDict):
     imagewidth: int
     opacity: float
     properties: List[properties_.RawProperty]
-    objects: List[tiled_object.RawTiledObject]
+    objectgroup: layer.RawLayer
     terrain: List[int]
     type: str
 
@@ -303,10 +304,8 @@ def _cast_tile(raw_tile: RawTile) -> Tile:
         for frame in raw_tile["animation"]:
             tile.animation.append(_cast_frame(frame))
 
-    if raw_tile.get("objects") is not None:
-        tile.objects = []
-        for object_ in raw_tile["objects"]:
-            tile.objects.append(tiled_object.cast(object_))
+    if raw_tile.get("objectgroup") is not None:
+        tile.objects = layer.cast(raw_tile["objectgroup"])
 
     if raw_tile.get("properties") is not None:
         tile.properties = properties_.cast(raw_tile["properties"])
