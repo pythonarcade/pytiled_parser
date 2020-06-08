@@ -34,7 +34,7 @@ class Layer:
             for more info.
     """
 
-    id_: int
+    id: int
     name: str
 
     height: int
@@ -223,7 +223,15 @@ def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
     pass
 
 
-def _get_group_caster(type_: str) -> Callable[[RawLayer], Layer]:
+def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
+    """ Get the caster function for the raw layer.
+
+    Args:
+        type_: the type of the layer
+
+    Returns:
+        Callable[[RawLayer], Layer]: The caster function.
+    """
     casters = {
         "tilelayer": _cast_tile_layer,
         "objectgroup": _cast_object_layer,
@@ -234,6 +242,6 @@ def _get_group_caster(type_: str) -> Callable[[RawLayer], Layer]:
 
 
 def cast(raw_layer: RawLayer) -> Layer:
-    caster = _get_group_caster(raw_layer["type"])
+    caster = _get_caster(raw_layer["type"])
 
     return caster(raw_layer)
