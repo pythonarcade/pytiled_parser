@@ -223,7 +223,7 @@ def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
     pass
 
 
-def _get_group_caster(type_: str) -> Callable[[RawLayer], Layer]:
+def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
     casters = {
         "tilelayer": _cast_tile_layer,
         "objectgroup": _cast_object_layer,
@@ -234,6 +234,6 @@ def _get_group_caster(type_: str) -> Callable[[RawLayer], Layer]:
 
 
 def cast(raw_layer: RawLayer) -> Layer:
-    caster = _get_group_caster(raw_layer["type"])
+    caster = _get_caster(raw_layer["type"])
 
     return caster(raw_layer)
