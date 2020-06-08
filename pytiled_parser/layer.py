@@ -38,11 +38,11 @@ class Layer:
     opacity: float
     visible: bool
 
+    coordinates: Optional[OrderedPair] = None
     id: Optional[int] = None
     size: Optional[Size] = None
     offset: Optional[OrderedPair] = None
     properties: Optional[properties_.Properties] = None
-    coordinates: Optional[OrderedPair] = None
 
 
 TileLayerGrid = List[List[int]]
