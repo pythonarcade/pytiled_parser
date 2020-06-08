@@ -34,7 +34,7 @@ class Layer:
             for more info.
     """
 
-    id_: int
+    id: int
     name: str
 
     height: int
