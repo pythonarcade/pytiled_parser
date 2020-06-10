@@ -13,6 +13,7 @@ EXPECTED = tileset.TileSet(
     tile_width=32,
     version=1.2,
     type="tileset",
+    grid=tileset.Grid(orientation="orthogonal", width=1, height=1),
     tiles=[
         tileset.Tile(
             animation=[
