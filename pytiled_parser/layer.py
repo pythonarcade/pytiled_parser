@@ -311,7 +311,7 @@ def _cast_image_layer(raw_layer: RawLayer) -> ImageLayer:
 
 def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
     """ Cast the raw_layer to a LayerGroup.
-    
+
     Args:
         raw_layer: RawLayer to be casted to a LayerGroup
 
