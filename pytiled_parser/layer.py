@@ -244,7 +244,30 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
 
 
 def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
-    pass
+    """ Cast the raw_layer to a TileLayer.
+    
+    Args:
+        raw_layer: RawLayer to be casted to a TileLayer
+
+    Returns:
+        TileLayer: The TileLayer created from raw_layer
+    """
+    tile_layer = TileLayer(**_get_common_attributes(raw_layer).__dict__)
+
+    tile_layer.encoding = raw_layer["encoding"]
+
+    if raw_layer.get("compression") is not None:
+        tile_layer.compression = raw_layer["compression"]
+
+    if raw_layer.get("chunks") is not None:
+        tile_layer.chunks = []
+        for chunk in raw_layer["chunks"]:
+            tile_layer.chunks.append(_cast_chunk(chunk))
+
+    if raw_layer.get("data") is not None:
+        tile_layer.data = raw_layer["data"]
+
+    return tile_layer
 
 
 def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
