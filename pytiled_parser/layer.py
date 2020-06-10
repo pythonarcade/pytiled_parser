@@ -7,8 +7,8 @@ import attr
 from typing_extensions import TypedDict
 
 from . import properties as properties_
-from . import tiled_object
 from .common_types import Color, OrderedPair, Size
+from .tiled_object import RawTiledObject, TiledObject
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -111,7 +111,7 @@ class ObjectLayer(Layer):
             for more info.
     """
 
-    tiled_objects: List[tiled_object.TiledObject]
+    tiled_objects: List[TiledObject]
 
     draw_order: Optional[str] = "topdown"
 
@@ -252,7 +252,6 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
     Returns:
         TileLayer: The TileLayer created from raw_layer
     """
-
     tile_layer = TileLayer(**_get_common_attributes(raw_layer).__dict__)
 
     tile_layer.encoding = raw_layer["encoding"]
@@ -272,28 +271,26 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
 
 
 def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
-    """ Cast the raw_layer to an ObjectLayer.
-    
-    Args:
-        raw_layer: RawLayer to be casted to an ObjectLayer
-
-    Returns:
-        ObjectLayer: The ObjectLayer created from raw_layer
-    """
-
-    tiled_objects = []
-    for tiled_object_ in raw_layer["objects"]:
-        tiled_objects.append(tiled_object.cast(tiled_object_))
-
-    return ObjectLayer(
-        tiled_objects=tiled_objects,
-        draw_order=raw_layer["draworder"],
-        **_get_common_attributes(raw_layer).__dict__
-    )
+    pass
 
 
 def _cast_image_layer(raw_layer: RawLayer) -> ImageLayer:
-    pass
+    """ Cast the raw_layer to a ImageLayer.
+
+    Args:
+        raw_layer: RawLayer to be casted to a ImageLayer
+
+    Returns:
+        ImageLayer: The ImageLayer created from raw_layer
+    """
+    image_layer = ImageLayer(
+        image=Path(raw_layer["image"]), **_get_common_attributes(raw_layer).__dict__
+    )
+
+    if raw_layer.get("transparentcolor") is not None:
+        image_layer.transparent_color = Color(raw_layer["transparentcolor"])
+
+    return image_layer
 
 
 def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
