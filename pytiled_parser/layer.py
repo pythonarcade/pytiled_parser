@@ -214,7 +214,11 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
     Returns:
         Layer: The attributes in common of all layers
     """
-    common_attributes = Layer(name=raw_layer["name"])
+    common_attributes = Layer(
+        name=raw_layer["name"],
+        opacity=raw_layer["opacity"],
+        visible=raw_layer["visible"],
+    )
 
     if raw_layer.get("startx") is not None:
         common_attributes.coordinates = OrderedPair(
