@@ -142,7 +142,7 @@ class LayerGroup(Layer):
         Layers: Layers in group.
     """
 
-    layers: Optional[List[Union["LayerGroup", ImageLayer, ObjectLayer, TileLayer]]]
+    layers: Optional[List[Layer]]
 
 
 class RawChunk(TypedDict):
@@ -169,7 +169,7 @@ class RawLayer(TypedDict):
     image: str
     layers: List[Any]
     name: str
-    objects: List[RawTiledObject]
+    objects: List[tiled_object.RawTiledObject]
     offsetx: float
     offsety: float
     opacity: float
@@ -297,7 +297,21 @@ def _cast_image_layer(raw_layer: RawLayer) -> ImageLayer:
 
 
 def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
-    pass
+    """ Cast the raw_layer to a LayerGroup.
+    
+    Args:
+        raw_layer: RawLayer to be casted to a LayerGroup
+
+    Returns:
+        LayerGroup: The LayerGroup created from raw_layer
+    """
+
+    layers = []
+
+    for layer in raw_layer["layers"]:
+        layers.append(cast(layer))
+
+    return LayerGroup(layers=layers, **_get_common_attributes(raw_layer).__dict__)
 
 
 def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
