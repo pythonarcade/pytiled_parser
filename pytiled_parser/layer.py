@@ -272,7 +272,7 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
 
 def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
     """ Cast the raw_layer to an ObjectLayer.
-    
+
     Args:
         raw_layer: RawLayer to be casted to an ObjectLayer
     Returns:
