@@ -271,7 +271,23 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
 
 
 def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
-    pass
+    """ Cast the raw_layer to an ObjectLayer.
+    
+    Args:
+        raw_layer: RawLayer to be casted to an ObjectLayer
+    Returns:
+        ObjectLayer: The ObjectLayer created from raw_layer
+    """
+
+    tiled_objects = []
+    for tiled_object_ in raw_layer["objects"]:
+        tiled_objects.append(tiled_object.cast(tiled_object_))
+
+    return ObjectLayer(
+        tiled_objects=tiled_objects,
+        draw_order=raw_layer["draworder"],
+        **_get_common_attributes(raw_layer).__dict__
+    )
 
 
 def _cast_image_layer(raw_layer: RawLayer) -> ImageLayer:
