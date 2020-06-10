@@ -7,8 +7,8 @@ import attr
 from typing_extensions import TypedDict
 
 from . import properties as properties_
+from . import tiled_object
 from .common_types import Color, OrderedPair, Size
-from .tiled_object import RawTiledObject, TiledObject
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -111,7 +111,7 @@ class ObjectLayer(Layer):
             for more info.
     """
 
-    tiled_objects: List[TiledObject]
+    tiled_objects: List[tiled_object.TiledObject]
 
     draw_order: Optional[str] = "topdown"
 
