@@ -245,7 +245,7 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
 
 def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
     """ Cast the raw_layer to a TileLayer.
-    
+
     Args:
         raw_layer: RawLayer to be casted to a TileLayer
 
