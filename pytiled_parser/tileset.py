@@ -39,7 +39,7 @@ class Terrain(NamedTuple):
 
     name: str
     tile: int
-    properties: properties_.Properties = {}
+    properties: Optional[properties_.Properties] = None
 
 
 @attr.s(auto_attribs=True)
