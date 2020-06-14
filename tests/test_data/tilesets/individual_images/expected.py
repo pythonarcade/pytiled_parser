@@ -80,7 +80,6 @@ EXPECTED = tileset.TileSet(
             image=Path("../../images/tile_04.png"),
             image_height=32,
             image_width=32,
-            properties={"color property": common_types.Color("#ff5500ff")},
             type="tile",
         ),
     ],
