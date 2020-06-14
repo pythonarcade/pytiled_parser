@@ -21,6 +21,7 @@ ALL_TILESET_DIRS = [
     TILE_SETS / "image_transparent_color",
     TILE_SETS / "image_tile_offset",
     TILE_SETS / "individual_images",
+    TILE_SETS / "terrain",
 ]
 
 
