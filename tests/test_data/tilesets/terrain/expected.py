@@ -17,7 +17,11 @@ EXPECTED = tileset.TileSet(
     version=1.2,
     type="tileset",
     terrain_types=[
-        tileset.Terrain(name="Sand", tile=29),
+        tileset.Terrain(
+            name="Sand",
+            tile=29,
+            properties={"terrain property": "test terrain property"},
+        ),
         tileset.Terrain(name="Cobblestone", tile=29),
         tileset.Terrain(name="Pavement", tile=29),
         tileset.Terrain(name="Dirt", tile=29),
