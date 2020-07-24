@@ -39,7 +39,7 @@ class Terrain(NamedTuple):
 
     name: str
     tile: int
-    properties: properties_.Properties = {}
+    properties: Optional[properties_.Properties] = None
 
 
 @attr.s(auto_attribs=True)
@@ -139,6 +139,7 @@ class TileSet:
     """
 
     name: str
+    type: str
     tile_width: int
     tile_height: int
 
@@ -155,7 +156,6 @@ class TileSet:
     image_width: Optional[int] = None
     image_height: Optional[int] = None
 
-    type: Optional[str] = None
     firstgid: Optional[int] = None
     background_color: Optional[Color] = None
     tile_offset: Optional[OrderedPair] = None
@@ -372,6 +372,7 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
         margin=raw_tileset["margin"],
         version=raw_tileset["version"],
         tiled_version=raw_tileset["tiledversion"],
+        type=raw_tileset["type"],
     )
 
     if raw_tileset.get("image") is not None:
@@ -394,9 +395,6 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
 
     if raw_tileset.get("transparentcolor") is not None:
         tileset.transparent_color = raw_tileset["transparentcolor"]
-
-    if raw_tileset.get("type") is not None:
-        tileset.type = raw_tileset["type"]
 
     if raw_tileset.get("grid") is not None:
         tileset.grid = _cast_grid(raw_tileset["grid"])

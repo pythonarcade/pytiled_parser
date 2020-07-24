@@ -13,6 +13,7 @@ EXPECTED = tileset.TileSet(
     tile_width=32,
     version=1.2,
     type="tileset",
+    grid=tileset.Grid(orientation="orthogonal", width=1, height=1),
     tiles=[
         tileset.Tile(
             animation=[
@@ -79,7 +80,6 @@ EXPECTED = tileset.TileSet(
             image=Path("../../images/tile_04.png"),
             image_height=32,
             image_width=32,
-            properties={"color property": common_types.Color("#ff5500ff")},
             type="tile",
         ),
     ],

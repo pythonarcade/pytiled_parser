@@ -115,12 +115,6 @@
          "image":"..\/..\/images\/tile_04.png",
          "imageheight":32,
          "imagewidth":32,
-         "properties":[
-                {
-                 "name":"color property",
-                 "type":"color",
-                 "value":"#ff5500ff"
-                }],
          "type":"tile"
         }],
  "tilewidth":32,
