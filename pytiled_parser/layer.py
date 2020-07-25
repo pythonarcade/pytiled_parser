@@ -80,7 +80,7 @@ LayerData = Union[TileLayerGrid, List[Chunk]]
 class TileLayer(Layer):
     """Tile map layer containing tiles.
 
-    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#layer
+    See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
 
     Args:
         size: The width of the layer in tiles. The same as the map width unless map is
