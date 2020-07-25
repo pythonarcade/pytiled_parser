@@ -78,6 +78,7 @@ LayerData = Union[TileLayerGrid, List[Chunk]]
 
 @attr.s(auto_attribs=True, kw_only=True)
 class TileLayer(Layer):
+    # FIXME:this docstring appears to be innacurate
     """Tile map layer containing tiles.
 
     See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
