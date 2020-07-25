@@ -268,6 +268,7 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
         visible=raw_layer["visible"],
     )
 
+    # if startx is present, starty is present
     if raw_layer.get("startx") is not None:
         common_attributes.coordinates = OrderedPair(
             raw_layer["startx"], raw_layer["starty"]
