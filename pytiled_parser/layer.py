@@ -1,5 +1,8 @@
 # pylint: disable=too-few-public-methods
 
+import base64
+import gzip
+import zlib
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 
@@ -184,6 +187,50 @@ class RawLayer(TypedDict):
     y: int
 
 
+def _decode_tile_layer_data(tile_layer: TileLayer) -> TileLayer:
+    """Decode Base64 Encoded Tile Data. Supports gzip and zlib compression.
+
+    Args:
+        tile_layer: The TileLayer to decode the data for
+
+    Returns:
+        TileLayer: The TileLayer with the decoded data
+
+    Raises:
+        ValueError: For an unsupported compression type.
+    """
+    if not isinstance(tile_layer.data, str):
+        return tile_layer
+
+    unencoded_data = base64.b64decode(tile_layer.data)
+    if tile_layer.compression == "zlib":
+        unzipped_data = zlib.decompress(unencoded_data)
+    elif tile_layer.compression == "gzip":
+        unzipped_data = gzip.decompress(unencoded_data)
+    elif tile_layer.compression is None:
+        unzipped_data = unencoded_data
+    else:
+        raise ValueError(f"Unsupported compression type: '{tile_layer.compression}'.")
+
+    tile_grid = []
+
+    byte_count = 0
+    int_count = 0
+    int_value = 0
+    for byte in unzipped_data:
+        int_value += byte << (byte_count * 8)
+        byte_count += 1
+        if not byte_count % 4:
+            byte_count = 0
+            int_count += 1
+            tile_grid.append(int_value)
+            int_value = 0
+
+    tile_grid.pop()
+    tile_layer.data = tile_grid
+    return tile_layer
+
+
 def _cast_chunk(raw_chunk: RawChunk) -> Chunk:
     """ Cast the raw_chunk to a Chunk.
 
@@ -267,6 +314,9 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
     if raw_layer.get("data") is not None:
         tile_layer.data = raw_layer["data"]
 
+    if tile_layer.encoding == "base64":
+        _decode_tile_layer_data(tile_layer)
+
     return tile_layer
 
 
@@ -286,7 +336,7 @@ def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
     return ObjectLayer(
         tiled_objects=tiled_objects,
         draw_order=raw_layer["draworder"],
-        **_get_common_attributes(raw_layer).__dict__
+        **_get_common_attributes(raw_layer).__dict__,
     )
 
 
