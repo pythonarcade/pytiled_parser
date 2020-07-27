@@ -303,7 +303,8 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
     """
     tile_layer = TileLayer(**_get_common_attributes(raw_layer).__dict__)
 
-    tile_layer.encoding = raw_layer["encoding"]
+    if raw_layer.get("encoding") is not None:
+        tile_layer.encoding = raw_layer["encoding"]
 
     if raw_layer.get("compression") is not None:
         tile_layer.compression = raw_layer["compression"]
