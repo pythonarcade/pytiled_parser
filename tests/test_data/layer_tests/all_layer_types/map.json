@@ -7,7 +7,15 @@
          "height":6,
          "id":1,
          "name":"Tile Layer 1",
+         "offsetx":1,
+         "offsety":3,
          "opacity":1,
+         "properties":[
+                {
+                 "name":"test",
+                 "type":"string",
+                 "value":"test property"
+                }],
          "type":"tilelayer",
          "visible":true,
          "width":8,
@@ -56,8 +64,18 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "id":5,
+         "image":"..\/..\/images\/tile_04.png",
+         "name":"Image Layer 2",
+         "opacity":1,
+         "type":"imagelayer",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":5,
+ "nextlayerid":6,
  "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",

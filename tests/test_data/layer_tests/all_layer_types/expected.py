@@ -9,6 +9,8 @@ EXPECTED = [
         visible=True,
         id=1,
         size=common_types.Size(8, 6),
+        offset=common_types.OrderedPair(1, 3),
+        properties={"test": "test property",},
         data=[
             1,
             2,
@@ -93,5 +95,12 @@ EXPECTED = [
         id=3,
         image=Path("../../images/tile_04.png"),
         transparent_color=common_types.Color("#000000"),
+    ),
+    layer.ImageLayer(
+        name="Image Layer 2",
+        opacity=1,
+        visible=True,
+        id=5,
+        image=Path("../../images/tile_04.png"),
     ),
 ]
