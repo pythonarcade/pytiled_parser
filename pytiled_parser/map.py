@@ -153,11 +153,11 @@ def cast(raw_tiled_map: _RawTiledMap) -> Map:
     if raw_tiled_map.get("backgroundcolor") is not None:
         map_.background_color = raw_tiled_map["backgroundcolor"]
 
-    if raw_tiled_map.get("properties") is not None:
-        map_.properties = properties.cast(raw_tiled_map["properties"])
-
     if raw_tiled_map.get("hexsidelength") is not None:
         map_.hex_side_length = raw_tiled_map["hexsidelength"]
+
+    if raw_tiled_map.get("properties") is not None:
+        map_.properties = properties.cast(raw_tiled_map["properties"])
 
     if raw_tiled_map.get("staggeraxis") is not None:
         map_.stagger_axis = raw_tiled_map["staggeraxis"]
