@@ -10,7 +10,7 @@ EXPECTED = [
         id=1,
         size=common_types.Size(8, 6),
         encoding="base64",
-        compression="",
+        compression="zlib",
         data=[
             1,
             2,

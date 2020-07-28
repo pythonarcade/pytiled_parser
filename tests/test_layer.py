@@ -15,6 +15,9 @@ LAYER_TESTS = TEST_DATA / "layer_tests"
 
 ALL_LAYER_TESTS = [
     LAYER_TESTS / "all_layer_types",
+    LAYER_TESTS / "b64",
+    LAYER_TESTS / "b64_gzip",
+    LAYER_TESTS / "b64_zlib",
 ]
 
 

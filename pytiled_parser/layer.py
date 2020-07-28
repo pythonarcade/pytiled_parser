@@ -209,7 +209,7 @@ def _decode_tile_layer_data(tile_layer: TileLayer) -> TileLayer:
         unzipped_data = zlib.decompress(unencoded_data)
     elif tile_layer.compression == "gzip":
         unzipped_data = gzip.decompress(unencoded_data)
-    elif tile_layer.compression is None:
+    elif not tile_layer.compression:
         unzipped_data = unencoded_data
     else:
         raise ValueError(f"Unsupported compression type: '{tile_layer.compression}'.")
@@ -228,7 +228,6 @@ def _decode_tile_layer_data(tile_layer: TileLayer) -> TileLayer:
             tile_grid.append(int_value)
             int_value = 0
 
-    tile_grid.pop()
     tile_layer.data = tile_grid
     return tile_layer
 
