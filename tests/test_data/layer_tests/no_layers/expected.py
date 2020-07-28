@@ -1,3 +1,5 @@
-from pytiled_parser import common_types, layer
+from typing import List
 
-EXPECTED = []
+from pytiled_parser import layer
+
+EXPECTED: List[layer.Layer] = []
