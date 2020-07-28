@@ -18,6 +18,7 @@ ALL_LAYER_TESTS = [
     LAYER_TESTS / "b64",
     LAYER_TESTS / "b64_gzip",
     LAYER_TESTS / "b64_zlib",
+    LAYER_TESTS / "no_layers",
 ]
 
 
