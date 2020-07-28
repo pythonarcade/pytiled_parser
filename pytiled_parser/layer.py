@@ -41,7 +41,8 @@ class Layer:
     opacity: float
     visible: bool
 
-    coordinates: Optional[OrderedPair] = None
+    coordinates: OrderedPair = OrderedPair(0, 0)
+
     id: Optional[int] = None
     size: Optional[Size] = None
     offset: Optional[OrderedPair] = None
