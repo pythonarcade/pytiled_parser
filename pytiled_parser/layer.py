@@ -5,6 +5,7 @@ import gzip
 import zlib
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
+from typing import cast as type_cast
 
 import attr
 from typing_extensions import TypedDict
@@ -66,8 +67,7 @@ class Chunk:
 
     coordinates: OrderedPair
     size: Size
-
-    data: Optional[Union[List[int], str]] = None
+    data: List[int]
 
 
 LayerData = Union[TileLayerGrid, List[Chunk]]
@@ -90,18 +90,14 @@ class TileLayer(Layer):
         data: Either an 2 dimensional array of integers representing the global tile
             IDs for the map layer, or a list of chunks for an infinite map.
     """
-
-    encoding: str = "csv"
-
-    compression: Optional[str] = None
     chunks: Optional[List[Chunk]] = None
-    data: Optional[Union[List[int], str]] = None
+    data: Optional[List[int]] = None
 
 
 @attr.s(auto_attribs=True, kw_only=True)
 class ObjectLayer(Layer):
-    """
-    TiledObject Group Object.
+    """TiledObject Group Object.
+
     The object group is in fact a map layer, and is hence called "object layer" in
         Tiled.
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
@@ -189,11 +185,12 @@ class RawLayer(TypedDict):
     y: int
 
 
-def _decode_tile_layer_data(tile_layer: TileLayer) -> TileLayer:
+def _decode_tile_layer_data(data: str, compression: str) -> List[int]:
     """Decode Base64 Encoded Tile Data. Supports gzip and zlib compression.
 
     Args:
-        tile_layer: The TileLayer to decode the data for
+        data: The base64 encoded data
+        compression: Either zlib, gzip, or empty. If empty no decompression is done.
 
     Returns:
         TileLayer: The TileLayer with the decoded data
@@ -201,13 +198,10 @@ def _decode_tile_layer_data(tile_layer: TileLayer) -> TileLayer:
     Raises:
         ValueError: For an unsupported compression type.
     """
-    if not isinstance(tile_layer.data, str):
-        return tile_layer
-
-    unencoded_data = base64.b64decode(tile_layer.data)
-    if tile_layer.compression == "zlib":
+    unencoded_data = base64.b64decode(data)
+    if compression == "zlib":
         unzipped_data = zlib.decompress(unencoded_data)
-    elif tile_layer.compression == "gzip":
+    elif compression == "gzip":
         unzipped_data = gzip.decompress(unencoded_data)
     else:
         unzipped_data = unencoded_data
@@ -226,11 +220,12 @@ def _decode_tile_layer_data(tile_layer: TileLayer) -> TileLayer:
             tile_grid.append(int_value)
             int_value = 0
 
-    tile_layer.data = tile_grid
-    return tile_layer
+    return tile_grid
 
 
-def _cast_chunk(raw_chunk: RawChunk) -> Chunk:
+def _cast_chunk(
+    raw_chunk: RawChunk, encoding: str = None, compression: str = None
+) -> Chunk:
     """ Cast the raw_chunk to a Chunk.
 
     Args:
@@ -239,14 +234,17 @@ def _cast_chunk(raw_chunk: RawChunk) -> Chunk:
     Returns:
         Chunk: The Chunk created from the raw_chunk
     """
+    data = type_cast(List[int], raw_chunk["data"])
+
+    if encoding == "base64":
+        assert isinstance(compression, str)
+        data = _decode_tile_layer_data(type_cast(str, raw_chunk["data"]), compression)
 
     chunk = Chunk(
         coordinates=OrderedPair(raw_chunk["x"], raw_chunk["y"]),
         size=Size(raw_chunk["width"], raw_chunk["height"]),
+        data=data,
     )
-
-    if raw_chunk.get("data") is not None:
-        chunk.data = raw_chunk["data"]
 
     return chunk
 
@@ -301,22 +299,24 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
     """
     tile_layer = TileLayer(**_get_common_attributes(raw_layer).__dict__)
 
-    if raw_layer.get("encoding") is not None:
-        tile_layer.encoding = raw_layer["encoding"]
-
-    if raw_layer.get("compression") is not None:
-        tile_layer.compression = raw_layer["compression"]
-
     if raw_layer.get("chunks") is not None:
         tile_layer.chunks = []
         for chunk in raw_layer["chunks"]:
-            tile_layer.chunks.append(_cast_chunk(chunk))
+            if raw_layer.get("encoding") is not None:
+                tile_layer.chunks.append(
+                    _cast_chunk(chunk, raw_layer["encoding"], raw_layer["compression"])
+                )
+            else:
+                tile_layer.chunks.append(_cast_chunk(chunk))
 
     if raw_layer.get("data") is not None:
-        tile_layer.data = raw_layer["data"]
-
-    if tile_layer.encoding == "base64":
-        _decode_tile_layer_data(tile_layer)
+        if raw_layer.get("encoding") is not None:
+            tile_layer.data = _decode_tile_layer_data(
+                data=type_cast(str, raw_layer["data"]),
+                compression=raw_layer["compression"],
+            )
+        else:
+            tile_layer.data = type_cast(List[int], raw_layer["data"])
 
     return tile_layer
 
