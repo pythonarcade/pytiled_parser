@@ -18,8 +18,8 @@ class Size(NamedTuple):
     """Size NamedTuple.
 
     Attributes:
-        width: The width of the object.
-        height: The height of the object.
+        width: The width of the object in pixels.
+        height: The height of the object in pixels.
     """
 
     width: float
