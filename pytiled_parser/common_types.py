@@ -2,7 +2,7 @@
 
 # pylint: disable=too-few-public-methods
 
-from typing import NamedTuple, Union
+from typing import NamedTuple
 
 import attr
 
