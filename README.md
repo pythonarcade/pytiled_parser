@@ -1,7 +1,7 @@
 # PyTiled Parser
 
 PyTiled Parser is a Python Library for parsing JSON formatted
-[Tiled Map Editor](https://www.mapeditor.org/) maps and tilesets to be used as maps and levels for 2D top-down (orthogonal, hexogonal, or isometric) or side-scrolling games.
+[Tiled Map Editor](https://www.mapeditor.org/) maps and tilesets to be used as maps and levels for 2D top-down (orthogonal, hexogonal, or isometric) or side-scrolling games in a strictly typed fashion.
 
 PyTiled Parser is not tied to any particular graphics library, and can be used
 with [Arcade](http://arcade.academy), 
