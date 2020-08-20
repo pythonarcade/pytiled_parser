@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional, Union
+from typing import Dict, List, Optional, Union
 from typing import cast as typing_cast
 
 import attr
@@ -108,7 +108,7 @@ def cast(file: Path) -> Map:
     """ Cast the raw Tiled map into a pytiled_parser type
 
     Args:
-        raw_tiled_map: Raw JSON Formatted Tiled Map to be cast.
+        file: Path to the map's JSON file
 
     Returns:
         TileSet: a properly typed TileSet.
