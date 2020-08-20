@@ -1,4 +1,4 @@
-"""Module containing types that are common to multiple other modules."""
+"""Module containing types that are common to other modules."""
 
 # pylint: disable=too-few-public-methods
 
