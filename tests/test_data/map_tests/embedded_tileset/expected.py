@@ -13,7 +13,6 @@ EXPECTED = map.Map(
     tiled_version="1.4.1",
     tile_size=common_types.Size(32, 32),
     version=1.4,
-    background_color=common_types.Color("#ff0004"),
     tilesets={
         1: tileset.TileSet(
             columns=8,
@@ -22,21 +21,11 @@ EXPECTED = map.Map(
             image_height=199,
             margin=1,
             spacing=1,
-            name="tile_set_image",
+            name="tileset",
             tile_count=48,
-            tiled_version="1.3.1",
             tile_height=32,
             tile_width=32,
-            version=1.2,
-            type="tileset",
+            firstgid=1,
         )
-    },
-    properties={
-        "bool property - true": True,
-        "color property": common_types.Color("#ff49fcff"),
-        "file property": Path("../../../../../../var/log/syslog"),
-        "float property": 1.23456789,
-        "int property": 13,
-        "string property": "Hello, World!!",
     },
 )

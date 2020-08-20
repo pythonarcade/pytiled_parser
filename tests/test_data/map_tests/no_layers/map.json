@@ -1,4 +1,5 @@
-{ "compressionlevel":0,
+{ "backgroundcolor":"#ff0004",
+ "compressionlevel":0,
  "editorsettings":
     {
      "export":
@@ -13,11 +14,6 @@
  "nextobjectid":1,
  "orientation":"orthogonal",
  "properties":[
-        {
-         "name":"bool property - false",
-         "type":"bool",
-         "value":false
-        }, 
         {
          "name":"bool property - true",
          "type":"bool",
