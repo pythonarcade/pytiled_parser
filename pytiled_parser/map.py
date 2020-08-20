@@ -59,7 +59,7 @@ class Map:
     tiled_version: str
     tile_size: Size
     tilesets: TilesetDict
-    version: str
+    version: float
 
     background_color: Optional[Color] = None
     properties: Optional[Properties] = None
@@ -100,32 +100,11 @@ class _RawTiledMap(TypedDict):
     tilesets: List[_RawTilesetMapping]
     tilewidth: int
     type: str
-    version: str
+    version: float
     width: int
 
 
-def _cast_raw_tilesets(raw_tilesets: List[_RawTilesetMapping]) -> TilesetDict:
-    """ Cast a list of raw tileset mappings to a Tileset dictionary.
-
-    Args:
-        raw_tilesets: the list of Tileset mappings to be cast into a TilesetDict
-
-    Returns:
-        TilesetDict: containing all tilesets by `firstgid`
-    """
-
-    tilesets: TilesetDict = {}
-
-    for raw_tileset_mapping in raw_tilesets:
-        with open(Path(raw_tileset_mapping["source"])) as raw_tileset_file:
-            raw_tileset = typing_cast(RawTileSet, json.load(raw_tileset_file))
-
-        tilesets[raw_tileset_mapping["firstgid"]] = tileset.cast(raw_tileset)
-
-    return tilesets
-
-
-def cast(raw_tiled_map: _RawTiledMap) -> Map:
+def cast(file: Path) -> Map:
     """ Cast the raw Tiled map into a pytiled_parser type
 
     Args:
@@ -134,6 +113,28 @@ def cast(raw_tiled_map: _RawTiledMap) -> Map:
     Returns:
         TileSet: a properly typed TileSet.
     """
+
+    with open(file) as map_file:
+        raw_tiled_map = json.load(map_file)
+
+    parent_dir = file.parent
+
+    raw_tilesets: List[Union[RawTileSet, _RawTilesetMapping]] = raw_tiled_map[
+        "tilesets"
+    ]
+    tilesets: TilesetDict = {}
+
+    for raw_tileset in raw_tilesets:
+        if raw_tileset.get("source") is not None:
+            # Is an external Tileset
+            with open(parent_dir / raw_tileset["source"]) as raw_tileset_file:
+                tilesets[raw_tileset["firstgid"]] = tileset.cast(
+                    json.load(raw_tileset_file)
+                )
+        else:
+            # Is an embedded Tileset
+            raw_tileset = typing_cast(RawTileSet, raw_tileset)
+            tilesets[raw_tileset["firstgid"]] = tileset.cast(raw_tileset)
 
     # `map` is a built-in function
     map_ = Map(
@@ -146,7 +147,7 @@ def cast(raw_tiled_map: _RawTiledMap) -> Map:
         render_order=raw_tiled_map["renderorder"],
         tiled_version=raw_tiled_map["tiledversion"],
         tile_size=Size(raw_tiled_map["tilewidth"], raw_tiled_map["tileheight"]),
-        tilesets=_cast_raw_tilesets(raw_tiled_map["tilesets"]),
+        tilesets=tilesets,
         version=raw_tiled_map["version"],
     )
 

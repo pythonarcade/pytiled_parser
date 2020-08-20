@@ -139,18 +139,19 @@ class TileSet:
     """
 
     name: str
-    type: str
     tile_width: int
     tile_height: int
 
     tile_count: int
     columns: int
 
-    tiled_version: str
-    version: float
-
     spacing: int = 0
     margin: int = 0
+
+    type: Optional[str] = None
+
+    tiled_version: Optional[str] = None
+    version: Optional[float] = None
 
     image: Optional[Path] = None
     image_width: Optional[int] = None
@@ -370,10 +371,16 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
         columns=raw_tileset["columns"],
         spacing=raw_tileset["spacing"],
         margin=raw_tileset["margin"],
-        version=raw_tileset["version"],
-        tiled_version=raw_tileset["tiledversion"],
-        type=raw_tileset["type"],
     )
+
+    if raw_tileset.get("type") is not None:
+        tileset.type = raw_tileset["type"]
+
+    if raw_tileset.get("version") is not None:
+        tileset.version = raw_tileset["version"]
+
+    if raw_tileset.get("tiledversion") is not None:
+        tileset.tiled_version = raw_tileset["tiledversion"]
 
     if raw_tileset.get("image") is not None:
         tileset.image = Path(raw_tileset["image"])
