@@ -14,7 +14,7 @@ EXPECTED = tiled_map.Map(
     tile_size=common_types.Size(32, 32),
     version=1.4,
     tilesets={
-        1: tileset.TileSet(
+        1: tileset.Tileset(
             columns=8,
             image=Path("../../images/tmw_desert_spacing.png"),
             image_width=265,

@@ -7,7 +7,6 @@ from typing_extensions import TypedDict
 
 from . import layer
 from . import properties as properties_
-from . import tiled_object
 from .common_types import Color, OrderedPair
 
 
@@ -102,15 +101,14 @@ class Tile:
     image_width: Optional[int] = None
     image_height: Optional[int] = None
     properties: Optional[properties_.Properties] = None
-    tileset: Optional["TileSet"] = None
+    tileset: Optional["Tileset"] = None
     flipped_horizontally: bool = False
     flipped_diagonally: bool = False
     flipped_vertically: bool = False
 
 
 @attr.s(auto_attribs=True)
-class TileSet:
-    # FIXME: rename to Tileset
+class Tileset:
     """Object for storing a TSX with all associated collision data.
 
     Args:
@@ -353,7 +351,7 @@ def _cast_grid(raw_grid: RawGrid) -> Grid:
     )
 
 
-def cast(raw_tileset: RawTileSet) -> TileSet:
+def cast(raw_tileset: RawTileSet) -> Tileset:
     """ Cast the raw tileset into a pytiled_parser type
 
     Args:
@@ -363,7 +361,7 @@ def cast(raw_tileset: RawTileSet) -> TileSet:
         TileSet: a properly typed TileSet.
     """
 
-    tileset = TileSet(
+    tileset = Tileset(
         name=raw_tileset["name"],
         tile_count=raw_tileset["tilecount"],
         tile_width=raw_tileset["tilewidth"],

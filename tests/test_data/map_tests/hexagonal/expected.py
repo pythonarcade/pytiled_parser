@@ -127,7 +127,7 @@ EXPECTED = tiled_map.Map(
     tile_size=common_types.Size(14, 12),
     version=1.4,
     tilesets={
-        1: tileset.TileSet(
+        1: tileset.Tileset(
             columns=5,
             image=Path("../../images/hexmini.png"),
             image_width=106,

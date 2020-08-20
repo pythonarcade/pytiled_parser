@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pytiled_parser import common_types, layer, tileset
 
-EXPECTED = tileset.TileSet(
+EXPECTED = tileset.Tileset(
     columns=8,
     margin=1,
     spacing=1,

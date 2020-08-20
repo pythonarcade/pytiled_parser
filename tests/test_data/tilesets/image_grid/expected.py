@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pytiled_parser import tileset
 
-EXPECTED = tileset.TileSet(
+EXPECTED = tileset.Tileset(
     columns=8,
     image=Path("../../images/tmw_desert_spacing.png"),
     image_height=199,

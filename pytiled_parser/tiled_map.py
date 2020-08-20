@@ -12,9 +12,9 @@ from . import layer, properties, tileset
 from .common_types import Color, Size
 from .layer import Layer, RawLayer
 from .properties import Properties, RawProperty
-from .tileset import RawTileSet, TileSet
+from .tileset import RawTileSet, Tileset
 
-TilesetDict = Dict[int, TileSet]
+TilesetDict = Dict[int, Tileset]
 
 
 @attr.s(auto_attribs=True)
