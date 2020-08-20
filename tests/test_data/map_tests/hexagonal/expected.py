@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from pytiled_parser import common_types, layer, map, tileset
+from pytiled_parser import common_types, layer, tiled_map, tileset
 
-EXPECTED = map.Map(
+EXPECTED = tiled_map.Map(
     hex_side_length=6,
     stagger_axis="y",
     stagger_index="odd",

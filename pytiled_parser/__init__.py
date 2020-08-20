@@ -4,6 +4,6 @@
 
 from .common_types import OrderedPair, Size
 from .layer import Layer
-from .map import Map
 from .properties import Properties
+from .tiled_map import Map
 from .tileset import TileSet

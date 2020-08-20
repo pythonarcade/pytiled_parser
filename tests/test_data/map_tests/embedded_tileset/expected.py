@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from pytiled_parser import common_types, map, tileset
+from pytiled_parser import common_types, tiled_map, tileset
 
-EXPECTED = map.Map(
+EXPECTED = tiled_map.Map(
     infinite=False,
     layers=[],
     map_size=common_types.Size(8, 6),
