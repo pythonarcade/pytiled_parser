@@ -1,3 +1,11 @@
+"""This module handles parsing all types of layers.
+
+See:
+    - https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
+    - https://doc.mapeditor.org/en/stable/manual/layers/
+    - https://doc.mapeditor.org/en/stable/manual/editing-tile-layers/
+"""
+
 # pylint: disable=too-few-public-methods
 
 import base64
