@@ -157,7 +157,6 @@ class RawChunk(TypedDict):
 
 
 class RawLayer(TypedDict):
-    # FIXME Make the layers attribute function
     """ The keys and their types that appear in a Layer JSON Object."""
 
     chunks: List[RawChunk]
