@@ -18,7 +18,7 @@ TilesetDict = Dict[int, Tileset]
 
 
 @attr.s(auto_attribs=True)
-class Map:
+class TiledMap:
     """Object for storing a TMX with all associated layers and properties.
 
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#map
@@ -104,7 +104,7 @@ class _RawTiledMap(TypedDict):
     width: int
 
 
-def cast(file: Path) -> Map:
+def cast(file: Path) -> TiledMap:
     """ Cast the raw Tiled map into a pytiled_parser type
 
     Args:
@@ -137,7 +137,7 @@ def cast(file: Path) -> Map:
             tilesets[raw_tileset["firstgid"]] = tileset.cast(raw_tileset)
 
     # `map` is a built-in function
-    map_ = Map(
+    map_ = TiledMap(
         infinite=raw_tiled_map["infinite"],
         layers=[layer.cast(layer_) for layer_ in raw_tiled_map["layers"]],
         map_size=Size(raw_tiled_map["width"], raw_tiled_map["height"]),

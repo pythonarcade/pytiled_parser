@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pytiled_parser import common_types, tiled_map, tileset
 
-EXPECTED = tiled_map.Map(
+EXPECTED = tiled_map.TiledMap(
     infinite=False,
     layers=[],
     map_size=common_types.Size(8, 6),
