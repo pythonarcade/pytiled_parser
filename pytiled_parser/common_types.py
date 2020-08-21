@@ -1,4 +1,4 @@
-"""Module containing types that are common to multiple other modules."""
+"""Module containing types that are common to other modules."""
 
 # pylint: disable=too-few-public-methods
 
@@ -18,8 +18,8 @@ class Size(NamedTuple):
     """Size NamedTuple.
 
     Attributes:
-        width: The width of the object.
-        height: The height of the object.
+        width: The width of the object in pixels.
+        height: The height of the object in pixels.
     """
 
     width: float

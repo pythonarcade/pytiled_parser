@@ -1,3 +1,11 @@
+"""This module handles parsing all types of layers.
+
+See:
+    - https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
+    - https://doc.mapeditor.org/en/stable/manual/layers/
+    - https://doc.mapeditor.org/en/stable/manual/editing-tile-layers/
+"""
+
 # pylint: disable=too-few-public-methods
 
 import base64
@@ -17,25 +25,21 @@ from .common_types import Color, OrderedPair, Size
 
 @attr.s(auto_attribs=True, kw_only=True)
 class Layer:
-    # FIXME:this docstring appears to be innacurate
     """Class that all layers inherit from.
 
-    Args:
-        id: Unique ID of the layer. Each layer that added to a map gets a unique id.
-            Even if a layer is deleted, no layer ever gets the same ID.
+    See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
+
+    Attributes:
         name: The name of the layer object.
-        tiled_objects: List of tiled_objects in the layer.
-        offset: Rendering offset of the layer object in pixels.
         opacity: Decimal value between 0 and 1 to determine opacity. 1 is completely
             opaque, 0 is completely transparent.
+        visible: If the layer is visible in the Tiled Editor. (Do not use for games)
+        coordinates: Where layer content starts in tiles. (For infinite maps)
+        id: Unique ID of the layer. Each layer that added to a map gets a unique id.
+            Even if a layer is deleted, no layer ever gets the same ID.
+        size: Ordered pair of size of map in tiles.
+        offset: Rendering offset of the layer object in pixels.
         properties: Properties for the layer.
-        color: The color used to display the objects in this group.
-        draworder: Whether the objects are drawn according to the order of the object
-            elements in the object group element ('manual'), or sorted by their
-            y-coordinate ('topdown'). Defaults to 'topdown'.
-            See:
-            https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
-            for more info.
     """
 
     name: str
@@ -57,7 +61,7 @@ TileLayerGrid = List[List[int]]
 class Chunk:
     """Chunk object for infinite maps.
 
-    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#chunk
+    See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#chunk
 
     Attributes:
         coordinates: Location of chunk in tiles.
@@ -70,26 +74,26 @@ class Chunk:
     data: List[int]
 
 
-LayerData = Union[TileLayerGrid, List[Chunk]]
 # The tile data for one layer.
 #
 # Either a 2 dimensional array of integers representing the global tile IDs
 #     for a TileLayerGrid, or a list of chunks for an infinite map layer.
+LayerData = Union[TileLayerGrid, List[Chunk]]
 
 
 @attr.s(auto_attribs=True, kw_only=True)
 class TileLayer(Layer):
-    # FIXME:this docstring appears to be innacurate
     """Tile map layer containing tiles.
 
-    See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
+    See:
+        https://doc.mapeditor.org/en/stable/reference/json-map-format/#tile-layer-example
 
-    Args:
-        size: The width of the layer in tiles. The same as the map width unless map is
-            infitite.
+    Attributes:
+        chunks: list of chunks (infinite maps)
         data: Either an 2 dimensional array of integers representing the global tile
             IDs for the map layer, or a list of chunks for an infinite map.
     """
+
     chunks: Optional[List[Chunk]] = None
     data: Optional[List[int]] = None
 
@@ -100,11 +104,12 @@ class ObjectLayer(Layer):
 
     The object group is in fact a map layer, and is hence called "object layer" in
         Tiled.
-    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup
-    Args:
+
+    See:
+        https://doc.mapeditor.org/en/stable/reference/json-map-format/#object-layer-example
+
+    Attributes:
         tiled_objects: List of tiled_objects in the layer.
-        offset: Rendering offset of the layer object in pixels.
-        color: The color used to display the objects in this group. FIXME: editor only?
         draworder: Whether the objects are drawn according to the order of the object
             elements in the object group element ('manual'), or sorted by their
             y-coordinate ('topdown'). Defaults to 'topdown'. See:
@@ -134,20 +139,26 @@ class ImageLayer(Layer):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class LayerGroup(Layer):
-    """Layer Group.
-    A LayerGroup can be thought of as a layer that contains layers
-        (potentially including other LayerGroups).
+    """A layer that contains layers (potentially including other LayerGroups).
+
     Offset and opacity recursively affect child layers.
-    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#group
+
+    See:
+        - https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
+        - https://doc.mapeditor.org/en/stable/manual/layers/#group-layers
+
     Attributes:
-        Layers: Layers in group.
+        Layers: list of layers contained in the group.
     """
 
     layers: Optional[List[Layer]]
 
 
 class RawChunk(TypedDict):
-    """ The keys and their types that appear in a Chunk JSON Object."""
+    """ The keys and their types that appear in a Chunk JSON Object.
+
+    See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#chunk
+    """
 
     data: Union[List[int], str]
     height: int
@@ -157,7 +168,10 @@ class RawChunk(TypedDict):
 
 
 class RawLayer(TypedDict):
-    """ The keys and their types that appear in a Layer JSON Object."""
+    """ The keys and their types that appear in a Layer JSON Object.
+
+    See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
+    """
 
     chunks: List[RawChunk]
     compression: str
@@ -185,7 +199,7 @@ class RawLayer(TypedDict):
 
 
 def _decode_tile_layer_data(data: str, compression: str) -> List[int]:
-    """Decode Base64 Encoded Tile Data. Supports gzip and zlib compression.
+    """Decode Base64 Encoded tile data. Optionally supports gzip and zlib compression.
 
     Args:
         data: The base64 encoded data
@@ -223,12 +237,14 @@ def _decode_tile_layer_data(data: str, compression: str) -> List[int]:
 
 
 def _cast_chunk(
-    raw_chunk: RawChunk, encoding: str = None, compression: str = None
+    raw_chunk: RawChunk, encoding: Optional[str] = None, compression: str = None
 ) -> Chunk:
     """ Cast the raw_chunk to a Chunk.
 
     Args:
         raw_chunk: RawChunk to be casted to a Chunk
+        encoding: Encoding type. ("base64" or None)
+        compression: Either zlib, gzip, or empty. If empty no decompression is done.
 
     Returns:
         Chunk: The Chunk created from the raw_chunk
@@ -249,7 +265,10 @@ def _cast_chunk(
 
 
 def _get_common_attributes(raw_layer: RawLayer) -> Layer:
-    """ Create a Layer containing all the attributes common to all layers
+    """ Create a Layer containing all the attributes common to all layers.
+
+    This is to create the stub Layer object that can then be used to create the actual
+        specific sub-classes of Layer.
 
     Args:
         raw_layer: Raw Tiled object get common attributes from
@@ -396,7 +415,9 @@ def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
 
 
 def cast(raw_layer: RawLayer) -> Layer:
-    """ Cast the raw Tiled layer into a pytiled_parser type
+    """ Cast a raw Tiled layer into a pytiled_parser type.
+
+    This function will determine the type of layer and cast accordingly.
 
     Args:
         raw_layer: Raw layer to be cast.
