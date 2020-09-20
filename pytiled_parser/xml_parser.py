@@ -261,53 +261,107 @@ def _parse_tiled_objects(
     tiled_objects: List[objects.TiledObject] = []
 
     for object_element in object_elements:
-        id_ = int(object_element.attrib["id"])
-        location_x = float(object_element.attrib["x"])
-        location_y = float(object_element.attrib["y"])
-        location = objects.OrderedPair(location_x, location_y)
-
-        tiled_object = objects.TiledObject(id_=id_, location=location)
-
-        try:
-            tiled_object.gid = int(object_element.attrib["gid"])
-        except KeyError:
-            tiled_object.gid = None
-
-        try:
-            # If any dimension is provided, they both will be
-            width = float(object_element.attrib["width"])
-            height = float(object_element.attrib["height"])
-            tiled_object.size = objects.Size(width, height)
-        except KeyError:
-            pass
-
-        try:
-            tiled_object.opacity = float(object_element.attrib["opacity"])
-        except KeyError:
-            pass
-
-        try:
-            tiled_object.rotation = float(object_element.attrib["rotation"])
-        except KeyError:
-            pass
-
-        try:
-            tiled_object.name = object_element.attrib["name"]
-        except KeyError:
-            pass
-
-        try:
-            tiled_object.type = object_element.attrib["type"]
-        except KeyError:
-            pass
-
-        properties_element = object_element.find("./properties")
-        if properties_element is not None:
-            tiled_object.properties = _parse_properties_element(properties_element)
-
-        tiled_objects.append(tiled_object)
+        my_object = _parse_object(object_element)
+        if my_object is not None:
+            tiled_objects.append(my_object)
 
     return tiled_objects
+
+
+def _parse_object(obj):
+    my_id = obj.attrib["id"]
+    my_x = float(obj.attrib["x"])
+    my_y = float(obj.attrib["y"])
+    my_location = objects.OrderedPair(x=my_x, y=my_y)
+    if "width" in obj.attrib:
+        my_width = float(obj.attrib["width"])
+    else:
+        my_width = None
+    if "height" in obj.attrib:
+        my_height = float(obj.attrib["height"])
+    else:
+        my_height = None
+    my_name = obj.attrib["name"]
+
+    properties: Optional[objects.Properties]
+    properties_element = obj.find("./properties")
+    if properties_element is not None:
+        properties = _parse_properties_element(properties_element)
+    else:
+        properties = None
+
+    # This is where it would be nice if we could assume a walrus
+    # operator was part of our Python distribution.
+
+    my_object = None
+
+    polygon = obj.findall("./polygon")
+
+    if polygon and len(polygon) > 0:
+        points = _parse_points(polygon[0].attrib["points"])
+        my_object = objects.PolygonObject(
+            id_=my_id,
+            name=my_name,
+            location=my_location,
+            size=(my_width, my_height),
+            points=points,
+            properties=properties,
+        )
+
+    if my_object is None:
+        polyline = obj.findall("./polyline")
+
+        if polyline and len(polyline) > 0:
+            points = _parse_points(polyline[0].attrib["points"])
+            my_object = objects.PolylineObject(
+                id_=my_id,
+                name=my_name,
+                location=my_location,
+                size=(my_width, my_height),
+                points=points,
+                properties=properties,
+            )
+
+    if my_object is None:
+        ellipse = obj.findall("./ellipse")
+
+        if ellipse and len(ellipse):
+            my_object = objects.ElipseObject(
+                id_=my_id, 
+                name=my_name,
+                location=my_location, 
+                size=(my_width, my_height),
+                properties=properties,
+            )
+
+    if my_object is None:
+        if "template" in obj.attrib:
+            print(
+                "Warning, this .tmx file is using an unsupported"
+                "'template' attribute. Ignoring."
+            )
+
+    if my_object is None:
+        point = obj.findall("./point")
+        if point:
+            my_object = objects.PointObject(
+                id_=my_id, 
+                name=my_name, 
+                location=my_location,
+                properties=properties,
+            )
+
+    if my_object is None:
+        my_object = objects.RectangleObject(
+            id_=my_id, 
+            name=my_name,
+            location=my_location, 
+            size=(my_width, my_height),
+            properties=properties,
+        )
+    
+    return my_object
+
 
 
 def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
@@ -451,7 +505,7 @@ def _parse_points(point_string: str) -> List[objects.OrderedPair]:
         xys = str_pair.split(",")
         x = float(xys[0])
         y = float(xys[1])
-        points.append((x, y))
+        points.append(objects.OrderedPair(x, y))
 
     return points
 
@@ -531,69 +585,10 @@ def _parse_tiles(tile_element_list: List[etree.Element]) -> Dict[int, objects.Ti
         if objectgroup_element:
             objectgroup = []
             object_list = objectgroup_element.findall("./object")
-            for object in object_list:
-                my_id = object.attrib["id"]
-                my_x = float(object.attrib["x"])
-                my_y = float(object.attrib["y"])
-                if "width" in object.attrib:
-                    my_width = float(object.attrib["width"])
-                else:
-                    my_width = None
-                if "height" in object.attrib:
-                    my_height = float(object.attrib["height"])
-                else:
-                    my_height = None
-
-                # This is where it would be nice if we could assume a walrus
-                # operator was part of our Python distribution.
-
-                my_object = None
-
-                polygon = object.findall("./polygon")
-
-                if polygon and len(polygon) > 0:
-                    points = _parse_points(polygon[0].attrib["points"])
-                    my_object = objects.PolygonObject(
-                        id_=my_id,
-                        location=(my_x, my_y),
-                        size=(my_width, my_height),
-                        points=points,
-                    )
-
-                if my_object is None:
-                    polyline = object.findall("./polyline")
-
-                    if polyline and len(polyline) > 0:
-                        points = _parse_points(polyline[0].attrib["points"])
-                        my_object = objects.PolylineObject(
-                            id_=my_id,
-                            location=(my_x, my_y),
-                            size=(my_width, my_height),
-                            points=points,
-                        )
-
-                if my_object is None:
-                    ellipse = object.findall("./ellipse")
-
-                    if ellipse and len(ellipse):
-                        my_object = objects.ElipseObject(
-                            id_=my_id, location=(my_x, my_y), size=(my_width, my_height)
-                        )
-
-                if my_object is None:
-                    if "template" in object.attrib:
-                        print(
-                            "Warning, this .tmx file is using an unsupported"
-                            "'template' attribute. Ignoring."
-                        )
-                        continue
-
-                if my_object is None:
-                    my_object = objects.RectangleObject(
-                        id_=my_id, location=(my_x, my_y), size=(my_width, my_height)
-                    )
-
-                objectgroup.append(my_object)
+            for obj in object_list:
+                my_object = _parse_object(obj)
+                if my_object is not None:
+                    objectgroup.append(my_object)
 
         # if this is None, then the Tile is part of a spritesheet
         image = None
