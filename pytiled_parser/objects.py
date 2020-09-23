@@ -420,6 +420,21 @@ class LayerGroup(Layer):
     layers: Optional[List[Union["LayerGroup", Layer, ObjectLayer]]]
 
 
+@attr.s(auto_attribs=True, kw_only=True)
+class ImageLayer(Layer):
+    """Image Layer.
+
+    An image layer displays a single image.
+
+    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#imagelayer
+
+    Attributes:
+        image: the image to display for this layer.
+    """
+
+    image: Image
+
+
 @attr.s(auto_attribs=True)
 class TileSet:
     """Object for storing a TSX with all associated collision data.

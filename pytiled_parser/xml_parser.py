@@ -403,6 +403,29 @@ def _parse_object_layer(element: etree.Element,) -> objects.ObjectLayer:
     )
 
 
+def _parse_image_layer(element: etree.Element,) -> objects.ImageLayer:
+    """Parse the imagelayer element given.
+
+    Args:
+        element: Element to be parsed.
+
+    Returns:
+        ImageLayer: The image layer object.
+    """
+    id_, name, offset, opacity, properties = _parse_layer(element)
+
+    image = _parse_image_element(element.find("./image"))
+
+    return objects.ImageLayer(
+        id_=id_,
+        name=name,
+        offset=offset,
+        opacity=opacity,
+        properties=properties,
+        image=image,
+    )
+
+
 def _parse_layer_group(element: etree.Element,) -> objects.LayerGroup:
     """Parse the objectgroup element given.
 
@@ -447,6 +470,8 @@ def _get_layer_parser(
         return _parse_object_layer
     if layer_tag == "group":
         return _parse_layer_group
+    if layer_tag == "imagelayer":
+        return _parse_image_layer
     return None
 
 
