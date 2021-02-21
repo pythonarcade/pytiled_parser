@@ -10,8 +10,9 @@ See:
 
 import base64
 import gzip
+import importlib.util
+import sys
 import zlib
-import zstd
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 from typing import cast as type_cast
@@ -23,6 +24,12 @@ from . import properties as properties_
 from . import tiled_object
 from .common_types import Color, OrderedPair, Size
 from .util import parse_color
+
+zstd_spec = importlib.util.find_spec("zstd")
+if zstd_spec:
+    import zstd  # pylint: disable=import-outside-toplevel
+else:
+    zstd = None  # pylint: disable=invalid-name
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -244,6 +251,11 @@ def _decode_tile_layer_data(
         unzipped_data = zlib.decompress(unencoded_data)
     elif compression == "gzip":
         unzipped_data = gzip.decompress(unencoded_data)
+    elif compression == "zstd" and zstd is None:
+        raise ValueError(
+            "zstd compression support is not installed."
+            "To install use 'pip install pytiled-parser[zstd]'"
+        )
     elif compression == "zstd":
         unzipped_data = zstd.decompress(unencoded_data)
     else:
