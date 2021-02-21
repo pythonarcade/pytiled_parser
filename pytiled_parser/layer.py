@@ -11,6 +11,7 @@ See:
 import base64
 import gzip
 import zlib
+import zstd
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 from typing import cast as type_cast
@@ -243,6 +244,8 @@ def _decode_tile_layer_data(
         unzipped_data = zlib.decompress(unencoded_data)
     elif compression == "gzip":
         unzipped_data = gzip.decompress(unencoded_data)
+    elif compression == "zstd":
+        unzipped_data = zstd.decompress(unencoded_data)
     else:
         unzipped_data = unencoded_data
 
