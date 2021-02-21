@@ -6,10 +6,12 @@ properly typed Properties.
 
 from pathlib import Path
 from typing import Dict, List, Union
+from typing import cast as type_cast
 
 from typing_extensions import TypedDict
 
 from .common_types import Color
+from .util import parse_color
 
 Property = Union[float, Path, str, bool, Color]
 
@@ -29,7 +31,7 @@ class RawProperty(TypedDict):
 
 
 def cast(raw_properties: List[RawProperty]) -> Properties:
-    """ Cast a list of `RawProperty`s into `Properties`
+    """Cast a list of `RawProperty`s into `Properties`
 
     Args:
         raw_properties: The list of `RawProperty`s to cast.
@@ -43,11 +45,11 @@ def cast(raw_properties: List[RawProperty]) -> Properties:
 
     for property_ in raw_properties:
         if property_["type"] == "file":
-            value = Path(str(property_["value"]))
+            value = Path(type_cast(str, property_["value"]))
         elif property_["type"] == "color":
-            value = Color(str(property_["value"]))
+            value = parse_color(type_cast(str, property_["value"]))
         else:
             value = property_["value"]
-        final[str(property_["name"])] = value
+        final[property_["name"]] = value
 
     return final

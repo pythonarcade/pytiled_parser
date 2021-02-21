@@ -13,6 +13,7 @@ from .common_types import Color, Size
 from .layer import Layer, RawLayer
 from .properties import Properties, RawProperty
 from .tileset import RawTileSet, Tileset
+from .util import parse_color
 
 TilesetDict = Dict[int, Tileset]
 
@@ -61,6 +62,7 @@ class TiledMap:
     tilesets: TilesetDict
     version: float
 
+    map_file: Optional[Path] = None
     background_color: Optional[Color] = None
     properties: Optional[Properties] = None
     hex_side_length: Optional[int] = None
@@ -76,11 +78,11 @@ class _RawTilesetMapping(TypedDict):
 
 
 class _RawTiledMap(TypedDict):
-    """ The keys and their types that appear in a Tiled JSON Map.
+    """The keys and their types that appear in a Tiled JSON Map.
 
     Keys:
         compressionlevel: not documented - https://github.com/bjorn/tiled/issues/2815
-        """
+    """
 
     backgroundcolor: str
     compressionlevel: int
@@ -104,8 +106,8 @@ class _RawTiledMap(TypedDict):
     width: int
 
 
-def cast(file: Path) -> TiledMap:
-    """ Cast the raw Tiled map into a pytiled_parser type
+def parse_map(file: Path) -> TiledMap:
+    """Parse the raw Tiled map into a pytiled_parser type
 
     Args:
         file: Path to the map's JSON file
@@ -138,6 +140,7 @@ def cast(file: Path) -> TiledMap:
 
     # `map` is a built-in function
     map_ = TiledMap(
+        map_file=file,
         infinite=raw_tiled_map["infinite"],
         layers=[layer.cast(layer_) for layer_ in raw_tiled_map["layers"]],
         map_size=Size(raw_tiled_map["width"], raw_tiled_map["height"]),
@@ -152,7 +155,7 @@ def cast(file: Path) -> TiledMap:
     )
 
     if raw_tiled_map.get("backgroundcolor") is not None:
-        map_.background_color = raw_tiled_map["backgroundcolor"]
+        map_.background_color = parse_color(raw_tiled_map["backgroundcolor"])
 
     if raw_tiled_map.get("hexsidelength") is not None:
         map_.hex_side_length = raw_tiled_map["hexsidelength"]

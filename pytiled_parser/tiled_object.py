@@ -7,6 +7,7 @@ from typing_extensions import TypedDict
 
 from . import properties as properties_
 from .common_types import Color, OrderedPair, Size
+from .util import parse_color
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -119,7 +120,7 @@ class Text(TiledObject):
     """
 
     text: str
-    color: Color = "#000000"
+    color: Color = Color(255, 255, 255, 255)
 
     font_family: str = "sans-serif"
     font_size: float = 16
@@ -152,7 +153,7 @@ class RawTextDict(TypedDict):
     """ The keys and their types that appear in a Text JSON Object."""
 
     text: str
-    color: Color
+    color: str
 
     fontfamily: str
     pixelsize: float  # this is `font_size` in Text
@@ -193,7 +194,7 @@ RawTiledObjects = List[RawTiledObject]
 
 
 def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
-    """ Create a TiledObject containing all the attributes common to all tiled objects
+    """Create a TiledObject containing all the attributes common to all tiled objects
 
     Args:
         raw_tiled_object: Raw Tiled object get common attributes from
@@ -219,7 +220,7 @@ def _get_common_attributes(raw_tiled_object: RawTiledObject) -> TiledObject:
 
 
 def _cast_ellipse(raw_tiled_object: RawTiledObject) -> Ellipse:
-    """ Cast the raw_tiled_object to an Ellipse object.
+    """Cast the raw_tiled_object to an Ellipse object.
 
     Args:
         raw_tiled_object: Raw Tiled object to be casted to an Ellipse
@@ -231,7 +232,7 @@ def _cast_ellipse(raw_tiled_object: RawTiledObject) -> Ellipse:
 
 
 def _cast_rectangle(raw_tiled_object: RawTiledObject) -> Rectangle:
-    """ Cast the raw_tiled_object to a Rectangle object.
+    """Cast the raw_tiled_object to a Rectangle object.
 
     Args:
         raw_tiled_object: Raw Tiled object to be casted to a Rectangle
@@ -243,7 +244,7 @@ def _cast_rectangle(raw_tiled_object: RawTiledObject) -> Rectangle:
 
 
 def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
-    """ Cast the raw_tiled_object to a Point object.
+    """Cast the raw_tiled_object to a Point object.
 
     Args:
         raw_tiled_object: Raw Tiled object to be casted to a Point
@@ -255,7 +256,7 @@ def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
 
 
 def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
-    """ Cast the raw_tiled_object to a Tile object.
+    """Cast the raw_tiled_object to a Tile object.
 
     Args:
         raw_tiled_object: Raw Tiled object to be casted to a Tile
@@ -269,7 +270,7 @@ def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
 
 
 def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
-    """ Cast the raw_tiled_object to a Polygon object.
+    """Cast the raw_tiled_object to a Polygon object.
 
     Args:
         raw_tiled_object: Raw Tiled object to be casted to a Polygon
@@ -285,8 +286,8 @@ def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
 
 
 def _cast_polyline(raw_tiled_object: RawTiledObject) -> Polyline:
-    """ Cast the raw_tiled_object to a Polyline object.
-    
+    """Cast the raw_tiled_object to a Polyline object.
+
     Args:
         raw_tiled_object: Raw Tiled Object to be casted to a Polyline
 
@@ -303,7 +304,7 @@ def _cast_polyline(raw_tiled_object: RawTiledObject) -> Polyline:
 
 
 def _cast_text(raw_tiled_object: RawTiledObject) -> Text:
-    """ Cast the raw_tiled_object to a Text object.
+    """Cast the raw_tiled_object to a Text object.
 
     Args:
         raw_tiled_object: Raw Tiled object to be casted to a Text object
@@ -320,7 +321,7 @@ def _cast_text(raw_tiled_object: RawTiledObject) -> Text:
 
     # optional attributes
     if raw_text_dict.get("color") is not None:
-        text_object.color = raw_text_dict["color"]
+        text_object.color = parse_color(raw_text_dict["color"])
 
     if raw_text_dict.get("fontfamily") is not None:
         text_object.font_family = raw_text_dict["fontfamily"]
@@ -358,7 +359,7 @@ def _cast_text(raw_tiled_object: RawTiledObject) -> Text:
 def _get_caster(
     raw_tiled_object: RawTiledObject,
 ) -> Callable[[RawTiledObject], TiledObject]:
-    """ Get the caster function for the raw tiled object.
+    """Get the caster function for the raw tiled object.
 
     Args:
         raw_tiled_object: Raw Tiled object that is analysed to determine which caster
@@ -390,7 +391,7 @@ def _get_caster(
 
 
 def cast(raw_tiled_object: RawTiledObject) -> TiledObject:
-    """ Cast the raw tiled object into a pytiled_parser type
+    """Cast the raw tiled object into a pytiled_parser type
 
     Args:
         raw_tiled_object: Raw Tiled object that is to be cast.

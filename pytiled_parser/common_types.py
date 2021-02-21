@@ -6,7 +6,21 @@ from typing import NamedTuple
 
 import attr
 
-Color = str
+
+class Color(NamedTuple):
+    """Color NamedTuple.
+
+    Attributes:
+        red: Red, between 1 and 255.
+        green: Green, between 1 and 255.
+        blue: Blue, between 1 and 255.
+        alpha: Alpha, between 1 and 255.
+    """
+
+    red: int
+    green: int
+    blue: int
+    alpha: int
 
 
 @attr.s(auto_attribs=True)

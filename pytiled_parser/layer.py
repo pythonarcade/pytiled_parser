@@ -21,6 +21,7 @@ from typing_extensions import TypedDict
 from . import properties as properties_
 from . import tiled_object
 from .common_types import Color, OrderedPair, Size
+from .util import parse_color
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -71,7 +72,7 @@ class Chunk:
 
     coordinates: OrderedPair
     size: Size
-    data: List[int]
+    data: List[List[int]]
 
 
 # The tile data for one layer.
@@ -95,7 +96,7 @@ class TileLayer(Layer):
     """
 
     chunks: Optional[List[Chunk]] = None
-    data: Optional[List[int]] = None
+    data: Optional[List[List[int]]] = None
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -155,7 +156,7 @@ class LayerGroup(Layer):
 
 
 class RawChunk(TypedDict):
-    """ The keys and their types that appear in a Chunk JSON Object.
+    """The keys and their types that appear in a Chunk JSON Object.
 
     See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#chunk
     """
@@ -168,7 +169,7 @@ class RawChunk(TypedDict):
 
 
 class RawLayer(TypedDict):
-    """ The keys and their types that appear in a Layer JSON Object.
+    """The keys and their types that appear in a Layer JSON Object.
 
     See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
     """
@@ -198,7 +199,33 @@ class RawLayer(TypedDict):
     y: int
 
 
-def _decode_tile_layer_data(data: str, compression: str) -> List[int]:
+def _convert_raw_tile_layer_data(data: List[int], layer_width: int) -> List[List[int]]:
+    """Convert raw layer data into a nested lit based on the layer width
+
+    Args:
+        data: The data to convert
+        layer_width: Width of the layer
+
+    Returns:
+        List[List[int]]: A nested list containing the converted data
+    """
+    tile_grid: List[List[int]] = [[]]
+
+    column_count = 0
+    row_count = 0
+    for item in data:
+        column_count += 1
+        tile_grid[row_count].append(item)
+        if not column_count % layer_width and column_count < len(data):
+            row_count += 1
+            tile_grid.append([])
+
+    return tile_grid
+
+
+def _decode_tile_layer_data(
+    data: str, compression: str, layer_width: int
+) -> List[List[int]]:
     """Decode Base64 Encoded tile data. Optionally supports gzip and zlib compression.
 
     Args:
@@ -206,7 +233,7 @@ def _decode_tile_layer_data(data: str, compression: str) -> List[int]:
         compression: Either zlib, gzip, or empty. If empty no decompression is done.
 
     Returns:
-        TileLayer: The TileLayer with the decoded data
+        List[List[int]]: A nested list containing the decoded data
 
     Raises:
         ValueError: For an unsupported compression type.
@@ -219,7 +246,7 @@ def _decode_tile_layer_data(data: str, compression: str) -> List[int]:
     else:
         unzipped_data = unencoded_data
 
-    tile_grid = []
+    tile_grid: List[int] = []
 
     byte_count = 0
     int_count = 0
@@ -233,13 +260,13 @@ def _decode_tile_layer_data(data: str, compression: str) -> List[int]:
             tile_grid.append(int_value)
             int_value = 0
 
-    return tile_grid
+    return _convert_raw_tile_layer_data(tile_grid, layer_width)
 
 
 def _cast_chunk(
     raw_chunk: RawChunk, encoding: Optional[str] = None, compression: str = None
 ) -> Chunk:
-    """ Cast the raw_chunk to a Chunk.
+    """Cast the raw_chunk to a Chunk.
 
     Args:
         raw_chunk: RawChunk to be casted to a Chunk
@@ -249,11 +276,16 @@ def _cast_chunk(
     Returns:
         Chunk: The Chunk created from the raw_chunk
     """
-    data = type_cast(List[int], raw_chunk["data"])
-
     if encoding == "base64":
         assert isinstance(compression, str)
-        data = _decode_tile_layer_data(type_cast(str, raw_chunk["data"]), compression)
+        assert isinstance(raw_chunk["data"], str)
+        data = _decode_tile_layer_data(
+            raw_chunk["data"], compression, raw_chunk["width"]
+        )
+    else:
+        data = _convert_raw_tile_layer_data(
+            raw_chunk["data"], raw_chunk["width"]  # type: ignore
+        )
 
     chunk = Chunk(
         coordinates=OrderedPair(raw_chunk["x"], raw_chunk["y"]),
@@ -265,7 +297,7 @@ def _cast_chunk(
 
 
 def _get_common_attributes(raw_layer: RawLayer) -> Layer:
-    """ Create a Layer containing all the attributes common to all layers.
+    """Create a Layer containing all the attributes common to all layers.
 
     This is to create the stub Layer object that can then be used to create the actual
         specific sub-classes of Layer.
@@ -307,7 +339,7 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
 
 
 def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
-    """ Cast the raw_layer to a TileLayer.
+    """Cast the raw_layer to a TileLayer.
 
     Args:
         raw_layer: RawLayer to be casted to a TileLayer
@@ -332,15 +364,18 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
             tile_layer.data = _decode_tile_layer_data(
                 data=type_cast(str, raw_layer["data"]),
                 compression=raw_layer["compression"],
+                layer_width=raw_layer["width"],
             )
         else:
-            tile_layer.data = type_cast(List[int], raw_layer["data"])
+            tile_layer.data = _convert_raw_tile_layer_data(
+                raw_layer["data"], raw_layer["width"]  # type: ignore
+            )
 
     return tile_layer
 
 
 def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
-    """ Cast the raw_layer to an ObjectLayer.
+    """Cast the raw_layer to an ObjectLayer.
 
     Args:
         raw_layer: RawLayer to be casted to an ObjectLayer
@@ -360,7 +395,7 @@ def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
 
 
 def _cast_image_layer(raw_layer: RawLayer) -> ImageLayer:
-    """ Cast the raw_layer to a ImageLayer.
+    """Cast the raw_layer to a ImageLayer.
 
     Args:
         raw_layer: RawLayer to be casted to a ImageLayer
@@ -373,13 +408,13 @@ def _cast_image_layer(raw_layer: RawLayer) -> ImageLayer:
     )
 
     if raw_layer.get("transparentcolor") is not None:
-        image_layer.transparent_color = Color(raw_layer["transparentcolor"])
+        image_layer.transparent_color = parse_color(raw_layer["transparentcolor"])
 
     return image_layer
 
 
 def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
-    """ Cast the raw_layer to a LayerGroup.
+    """Cast the raw_layer to a LayerGroup.
 
     Args:
         raw_layer: RawLayer to be casted to a LayerGroup
@@ -397,7 +432,7 @@ def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
 
 
 def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
-    """ Get the caster function for the raw layer.
+    """Get the caster function for the raw layer.
 
     Args:
         type_: the type of the layer
@@ -415,7 +450,7 @@ def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
 
 
 def cast(raw_layer: RawLayer) -> Layer:
-    """ Cast a raw Tiled layer into a pytiled_parser type.
+    """Cast a raw Tiled layer into a pytiled_parser type.
 
     This function will determine the type of layer and cast accordingly.
 

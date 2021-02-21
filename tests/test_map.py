@@ -29,6 +29,7 @@ def test_map_integration(map_test):
 
     raw_maps_path = map_test / "map.json"
 
-    casted_map = tiled_map.cast(raw_maps_path)
+    casted_map = tiled_map.parse_map(raw_maps_path)
 
+    expected.EXPECTED.map_file = casted_map.map_file
     assert casted_map == expected.EXPECTED

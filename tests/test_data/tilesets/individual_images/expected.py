@@ -14,8 +14,8 @@ EXPECTED = tileset.Tileset(
     version=1.2,
     type="tileset",
     grid=tileset.Grid(orientation="orthogonal", width=1, height=1),
-    tiles=[
-        tileset.Tile(
+    tiles={
+        0: tileset.Tile(
             animation=[
                 tileset.Frame(duration=100, tile_id=0),
                 tileset.Frame(duration=100, tile_id=1),
@@ -29,7 +29,7 @@ EXPECTED = tileset.Tileset(
             properties={"float property": 2.2},
             type="tile",
         ),
-        tileset.Tile(
+        1: tileset.Tile(
             id=1,
             image=Path("../../images/tile_02.png"),
             image_height=32,
@@ -67,7 +67,7 @@ EXPECTED = tileset.Tileset(
             properties={"string property": "testing"},
             type="tile",
         ),
-        tileset.Tile(
+        2: tileset.Tile(
             id=2,
             image=Path("../../images/tile_03.png"),
             image_height=32,
@@ -75,12 +75,12 @@ EXPECTED = tileset.Tileset(
             properties={"bool property": True},
             type="tile",
         ),
-        tileset.Tile(
+        3: tileset.Tile(
             id=3,
             image=Path("../../images/tile_04.png"),
             image_height=32,
             image_width=32,
             type="tile",
         ),
-    ],
+    },
 )

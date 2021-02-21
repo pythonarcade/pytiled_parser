@@ -1,6 +1,6 @@
 # pylint: disable=too-few-public-methods
 from pathlib import Path
-from typing import List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Optional
 
 import attr
 from typing_extensions import TypedDict
@@ -8,6 +8,7 @@ from typing_extensions import TypedDict
 from . import layer
 from . import properties as properties_
 from .common_types import Color, OrderedPair
+from .util import parse_color
 
 
 class Grid(NamedTuple):
@@ -162,7 +163,7 @@ class Tileset:
     grid: Optional[Grid] = None
     properties: Optional[properties_.Properties] = None
     terrain_types: Optional[List[Terrain]] = None
-    tiles: Optional[List[Tile]] = None
+    tiles: Optional[Dict[int, Tile]] = None
 
 
 class RawFrame(TypedDict):
@@ -213,7 +214,7 @@ class RawGrid(TypedDict):
 class RawTileSet(TypedDict):
     """ The keys and their types that appear in a TileSet JSON Object."""
 
-    backgroundcolor: Color
+    backgroundcolor: str
     columns: int
     firstgid: int
     grid: RawGrid
@@ -232,13 +233,13 @@ class RawTileSet(TypedDict):
     tileoffset: RawTileOffset
     tiles: List[RawTile]
     tilewidth: int
-    transparentcolor: Color
+    transparentcolor: str
     type: str
     version: float
 
 
 def _cast_frame(raw_frame: RawFrame) -> Frame:
-    """ Cast the raw_frame to a Frame.
+    """Cast the raw_frame to a Frame.
 
     Args:
         raw_frame: RawFrame to be casted to a Frame
@@ -251,7 +252,7 @@ def _cast_frame(raw_frame: RawFrame) -> Frame:
 
 
 def _cast_tile_offset(raw_tile_offset: RawTileOffset) -> OrderedPair:
-    """ Cast the raw_tile_offset to an OrderedPair.
+    """Cast the raw_tile_offset to an OrderedPair.
 
     Args:
         raw_tile_offset: RawTileOffset to be casted to an OrderedPair
@@ -264,7 +265,7 @@ def _cast_tile_offset(raw_tile_offset: RawTileOffset) -> OrderedPair:
 
 
 def _cast_terrain(raw_terrain: RawTerrain) -> Terrain:
-    """ Cast the raw_terrain to a Terrain object.
+    """Cast the raw_terrain to a Terrain object.
 
     Args:
         raw_terrain: RawTerrain to be casted to a Terrain
@@ -280,11 +281,14 @@ def _cast_terrain(raw_terrain: RawTerrain) -> Terrain:
             properties=properties_.cast(raw_terrain["properties"]),
         )
     else:
-        return Terrain(name=raw_terrain["name"], tile=raw_terrain["tile"],)
+        return Terrain(
+            name=raw_terrain["name"],
+            tile=raw_terrain["tile"],
+        )
 
 
 def _cast_tile(raw_tile: RawTile) -> Tile:
-    """ Cast the raw_tile to a Tile object.
+    """Cast the raw_tile to a Tile object.
 
     Args:
         raw_tile: RawTile to be casted to a Tile
@@ -333,7 +337,7 @@ def _cast_tile(raw_tile: RawTile) -> Tile:
 
 
 def _cast_grid(raw_grid: RawGrid) -> Grid:
-    """ Cast the raw_grid to a Grid object.
+    """Cast the raw_grid to a Grid object.
 
     Args:
         raw_grid: RawGrid to be casted to a Grid
@@ -350,7 +354,7 @@ def _cast_grid(raw_grid: RawGrid) -> Grid:
 
 
 def cast(raw_tileset: RawTileSet) -> Tileset:
-    """ Cast the raw tileset into a pytiled_parser type
+    """Cast the raw tileset into a pytiled_parser type
 
     Args:
         raw_tileset: Raw Tileset to be cast.
@@ -391,13 +395,13 @@ def cast(raw_tileset: RawTileSet) -> Tileset:
         tileset.firstgid = raw_tileset["firstgid"]
 
     if raw_tileset.get("backgroundcolor") is not None:
-        tileset.background_color = raw_tileset["backgroundcolor"]
+        tileset.background_color = parse_color(raw_tileset["backgroundcolor"])
 
     if raw_tileset.get("tileoffset") is not None:
         tileset.tile_offset = _cast_tile_offset(raw_tileset["tileoffset"])
 
     if raw_tileset.get("transparentcolor") is not None:
-        tileset.transparent_color = raw_tileset["transparentcolor"]
+        tileset.transparent_color = parse_color(raw_tileset["transparentcolor"])
 
     if raw_tileset.get("grid") is not None:
         tileset.grid = _cast_grid(raw_tileset["grid"])
@@ -412,9 +416,9 @@ def cast(raw_tileset: RawTileSet) -> Tileset:
         tileset.terrain_types = terrains
 
     if raw_tileset.get("tiles") is not None:
-        tiles = []
+        tiles = {}
         for raw_tile in raw_tileset["tiles"]:
-            tiles.append(_cast_tile(raw_tile))
+            tiles[raw_tile["id"]] = _cast_tile(raw_tile)
         tileset.tiles = tiles
 
     return tileset

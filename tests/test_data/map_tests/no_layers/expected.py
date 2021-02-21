@@ -13,7 +13,7 @@ EXPECTED = tiled_map.TiledMap(
     tiled_version="1.4.1",
     tile_size=common_types.Size(32, 32),
     version=1.4,
-    background_color=common_types.Color("#ff0004"),
+    background_color=common_types.Color(255, 0, 4, 255),
     tilesets={
         1: tileset.Tileset(
             columns=8,
@@ -33,7 +33,7 @@ EXPECTED = tiled_map.TiledMap(
     },
     properties={
         "bool property - true": True,
-        "color property": common_types.Color("#ff49fcff"),
+        "color property": common_types.Color(255, 73, 252, 255),
         "file property": Path("../../../../../../var/log/syslog"),
         "float property": 1.23456789,
         "int property": 13,
