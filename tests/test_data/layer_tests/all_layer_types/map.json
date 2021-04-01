@@ -18,6 +18,7 @@
                  "type":"string",
                  "value":"test property"
                 }],
+         "tintcolor":"#aaffff",
          "type":"tilelayer",
          "visible":true,
          "width":8,
@@ -53,6 +54,7 @@
          "opacity":1,
          "parallaxx":2.3,
          "parallaxy":1.2,
+         "tintcolor":"#0000ff",
          "type":"group",
          "visible":true,
          "x":0,
@@ -63,6 +65,7 @@
          "image":"..\/..\/images\/tile_04.png",
          "name":"Image Layer 1",
          "opacity":1,
+         "tintcolor":"#ff0000",
          "transparentcolor":"#000000",
          "type":"imagelayer",
          "visible":true,

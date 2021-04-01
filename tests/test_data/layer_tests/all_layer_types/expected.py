@@ -14,6 +14,7 @@ EXPECTED = [
         properties={
             "test": "test property",
         },
+        tint_color=common_types.Color(170, 255, 255, 255),
         data=[
             [
                 1,
@@ -83,6 +84,7 @@ EXPECTED = [
         visible=True,
         id=4,
         parallax_factor=common_types.OrderedPair(2.3, 1.2),
+        tint_color=common_types.Color(0, 0, 255, 255),
         layers=[
             layer.ObjectLayer(
                 name="Object Layer 1",
@@ -111,6 +113,7 @@ EXPECTED = [
         id=3,
         image=Path("../../images/tile_04.png"),
         transparent_color=common_types.Color(0, 0, 0, 255),
+        tint_color=common_types.Color(255, 0, 0, 255),
     ),
     layer.ImageLayer(
         name="Image Layer 2",
