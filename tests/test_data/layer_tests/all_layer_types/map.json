@@ -10,6 +10,8 @@
          "offsetx":1,
          "offsety":3,
          "opacity":1,
+         "parallaxx":1.4,
+         "parallaxy":1.3,
          "properties":[
                 {
                  "name":"test",
@@ -49,6 +51,8 @@
                 }],
          "name":"Group 1",
          "opacity":1,
+         "parallaxx":2.3,
+         "parallaxy":1.2,
          "type":"group",
          "visible":true,
          "x":0,
@@ -70,6 +74,8 @@
          "image":"..\/..\/images\/tile_04.png",
          "name":"Image Layer 2",
          "opacity":1,
+         "parallaxx":1.5,
+         "parallaxy":1.2,
          "type":"imagelayer",
          "visible":true,
          "x":0,
@@ -79,7 +85,7 @@
  "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.4.1",
+ "tiledversion":"1.5.0",
  "tileheight":32,
  "tilesets":[
         {
@@ -88,6 +94,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":1.5,
  "width":8
 }

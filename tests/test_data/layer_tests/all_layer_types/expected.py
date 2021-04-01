@@ -10,6 +10,7 @@ EXPECTED = [
         id=1,
         size=common_types.Size(8, 6),
         offset=common_types.OrderedPair(1, 3),
+        parallax_factor=common_types.OrderedPair(1.4, 1.3),
         properties={
             "test": "test property",
         },
@@ -81,6 +82,7 @@ EXPECTED = [
         opacity=1,
         visible=True,
         id=4,
+        parallax_factor=common_types.OrderedPair(2.3, 1.2),
         layers=[
             layer.ObjectLayer(
                 name="Object Layer 1",
@@ -115,6 +117,7 @@ EXPECTED = [
         opacity=1,
         visible=True,
         id=5,
+        parallax_factor=common_types.OrderedPair(1.5, 1.2),
         image=Path("../../images/tile_04.png"),
     ),
 ]

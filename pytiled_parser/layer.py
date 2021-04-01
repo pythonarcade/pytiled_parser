@@ -56,6 +56,7 @@ class Layer:
     visible: bool
 
     coordinates: OrderedPair = OrderedPair(0, 0)
+    parallax_factor: OrderedPair = OrderedPair(1, 1)
 
     id: Optional[int] = None
     size: Optional[Size] = None
@@ -195,6 +196,8 @@ class RawLayer(TypedDict):
     objects: List[tiled_object.RawTiledObject]
     offsetx: float
     offsety: float
+    parallaxx: float
+    parallaxy: float
     opacity: float
     properties: List[properties_.RawProperty]
     startx: int
@@ -349,6 +352,11 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
 
     if raw_layer.get("properties") is not None:
         common_attributes.properties = properties_.cast(raw_layer["properties"])
+
+    if raw_layer.get("parallaxx") is not None:
+        common_attributes.parallax_factor = OrderedPair(
+            raw_layer["parallaxx"], raw_layer["parallaxy"]
+        )
 
     return common_attributes
 
