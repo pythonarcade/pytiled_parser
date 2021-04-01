@@ -10,9 +10,11 @@ EXPECTED = [
         id=1,
         size=common_types.Size(8, 6),
         offset=common_types.OrderedPair(1, 3),
+        parallax_factor=common_types.OrderedPair(1.4, 1.3),
         properties={
             "test": "test property",
         },
+        tint_color=common_types.Color(170, 255, 255, 255),
         data=[
             [
                 1,
@@ -81,6 +83,8 @@ EXPECTED = [
         opacity=1,
         visible=True,
         id=4,
+        parallax_factor=common_types.OrderedPair(2.3, 1.2),
+        tint_color=common_types.Color(0, 0, 255, 255),
         layers=[
             layer.ObjectLayer(
                 name="Object Layer 1",
@@ -109,12 +113,14 @@ EXPECTED = [
         id=3,
         image=Path("../../images/tile_04.png"),
         transparent_color=common_types.Color(0, 0, 0, 255),
+        tint_color=common_types.Color(255, 0, 0, 255),
     ),
     layer.ImageLayer(
         name="Image Layer 2",
         opacity=1,
         visible=True,
         id=5,
+        parallax_factor=common_types.OrderedPair(1.5, 1.2),
         image=Path("../../images/tile_04.png"),
     ),
 ]

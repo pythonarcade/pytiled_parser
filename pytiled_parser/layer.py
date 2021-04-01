@@ -56,11 +56,13 @@ class Layer:
     visible: bool
 
     coordinates: OrderedPair = OrderedPair(0, 0)
+    parallax_factor: OrderedPair = OrderedPair(1, 1)
 
     id: Optional[int] = None
     size: Optional[Size] = None
     offset: Optional[OrderedPair] = None
     properties: Optional[properties_.Properties] = None
+    tint_color: Optional[Color] = None
 
 
 TileLayerGrid = List[List[int]]
@@ -195,10 +197,13 @@ class RawLayer(TypedDict):
     objects: List[tiled_object.RawTiledObject]
     offsetx: float
     offsety: float
+    parallaxx: float
+    parallaxy: float
     opacity: float
     properties: List[properties_.RawProperty]
     startx: int
     starty: int
+    tintcolor: str
     transparentcolor: str
     type: str
     visible: bool
@@ -349,6 +354,14 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
 
     if raw_layer.get("properties") is not None:
         common_attributes.properties = properties_.cast(raw_layer["properties"])
+
+    if raw_layer.get("parallaxx") is not None:
+        common_attributes.parallax_factor = OrderedPair(
+            raw_layer["parallaxx"], raw_layer["parallaxy"]
+        )
+
+    if raw_layer.get("tintcolor") is not None:
+        common_attributes.tint_color = parse_color(raw_layer["tintcolor"])
 
     return common_attributes
 
