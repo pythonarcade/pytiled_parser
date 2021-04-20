@@ -20,8 +20,9 @@ integrate PyTiled with that 2D libary, and
 Original module by [Beefy-Swain](https://github.com/Beefy-Swain). 
 Significant contributions from [pvcraven](https://github.com/pvcraven) and [Cleptomania](https://github.com/Cleptomania).
 
-## Developement
+## Development
 To develop pytiled parser, clone the repo, create a `venv` using a supported Python version, and activate it. Then install the package as well as all testing dependencies with the command `python -m pip install -e ".[tests]"`.
 
 ### Testing
 Run `pytest --cov=pytiled_parser` to run the test harness and report coverage.
+ioi
