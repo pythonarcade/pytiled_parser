@@ -25,4 +25,3 @@ To develop pytiled parser, clone the repo, create a `venv` using a supported Pyt
 
 ### Testing
 Run `pytest --cov=pytiled_parser` to run the test harness and report coverage.
-ioi
