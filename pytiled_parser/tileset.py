@@ -287,7 +287,7 @@ def _cast_terrain(raw_terrain: RawTerrain) -> Terrain:
         )
 
 
-def _cast_tile(raw_tile: RawTile) -> Tile:
+def _cast_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile:
     """Cast the raw_tile to a Tile object.
 
     Args:
@@ -312,7 +312,10 @@ def _cast_tile(raw_tile: RawTile) -> Tile:
         tile.properties = properties_.cast(raw_tile["properties"])
 
     if raw_tile.get("image") is not None:
-        tile.image = Path(raw_tile["image"])
+        if external_path:
+            tile.image = Path(external_path / raw_tile["image"]).absolute().resolve()
+        else:
+            tile.image = Path(raw_tile["image"])
 
     if raw_tile.get("imagewidth") is not None:
         tile.image_width = raw_tile["imagewidth"]
@@ -353,7 +356,7 @@ def _cast_grid(raw_grid: RawGrid) -> Grid:
     )
 
 
-def cast(raw_tileset: RawTileSet) -> Tileset:
+def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tileset:
     """Cast the raw tileset into a pytiled_parser type
 
     Args:
@@ -383,7 +386,12 @@ def cast(raw_tileset: RawTileSet) -> Tileset:
         tileset.tiled_version = raw_tileset["tiledversion"]
 
     if raw_tileset.get("image") is not None:
-        tileset.image = Path(raw_tileset["image"])
+        if external_path:
+            tileset.image = (
+                Path(external_path / raw_tileset["image"]).absolute().resolve()
+            )
+        else:
+            tileset.image = Path(raw_tileset["image"])
 
     if raw_tileset.get("imagewidth") is not None:
         tileset.image_width = raw_tileset["imagewidth"]
@@ -418,7 +426,7 @@ def cast(raw_tileset: RawTileSet) -> Tileset:
     if raw_tileset.get("tiles") is not None:
         tiles = {}
         for raw_tile in raw_tileset["tiles"]:
-            tiles[raw_tile["id"]] = _cast_tile(raw_tile)
+            tiles[raw_tile["id"]] = _cast_tile(raw_tile, external_path=external_path)
         tileset.tiles = tiles
 
     return tileset

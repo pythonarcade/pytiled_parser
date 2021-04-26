@@ -129,9 +129,10 @@ def parse_map(file: Path) -> TiledMap:
     for raw_tileset in raw_tilesets:
         if raw_tileset.get("source") is not None:
             # Is an external Tileset
-            with open(parent_dir / raw_tileset["source"]) as raw_tileset_file:
+            tileset_path = Path(parent_dir / raw_tileset["source"])
+            with open(tileset_path) as raw_tileset_file:
                 tilesets[raw_tileset["firstgid"]] = tileset.cast(
-                    json.load(raw_tileset_file)
+                    json.load(raw_tileset_file), external_path=tileset_path.parent
                 )
         else:
             # Is an embedded Tileset

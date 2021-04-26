@@ -17,7 +17,9 @@ EXPECTED = tiled_map.TiledMap(
     tilesets={
         1: tileset.Tileset(
             columns=8,
-            image=Path("../../images/tmw_desert_spacing.png"),
+            image=Path(Path(__file__).parent / "../../images/tmw_desert_spacing.png")
+            .absolute()
+            .resolve(),
             image_width=265,
             image_height=199,
             margin=1,
