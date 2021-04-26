@@ -138,7 +138,9 @@ EXPECTED = tiled_map.TiledMap(
     tilesets={
         1: tileset.Tileset(
             columns=5,
-            image=Path("../../images/hexmini.png"),
+            image=Path(Path(__file__).parent / "../../images/hexmini.png")
+            .absolute()
+            .resolve(),
             image_width=106,
             image_height=72,
             margin=0,

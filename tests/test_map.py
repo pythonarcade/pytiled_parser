@@ -12,6 +12,7 @@ TEST_DATA = TESTS_DIR / "test_data"
 MAP_TESTS = TEST_DATA / "map_tests"
 
 ALL_MAP_TESTS = [
+    MAP_TESTS / "external_tileset_dif_dir",
     MAP_TESTS / "no_layers",
     MAP_TESTS / "no_background_color",
     MAP_TESTS / "hexagonal",
