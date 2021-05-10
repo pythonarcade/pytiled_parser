@@ -1,11 +1,4 @@
 { "compressionlevel":0,
- "editorsettings":
-    {
-     "export":
-        {
-         "target":"."
-        }
-    },
  "height":6,
  "infinite":false,
  "layers":[],
@@ -13,24 +6,24 @@
  "nextobjectid":1,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.4.1",
+ "tiledversion":"1.6.0",
  "tileheight":32,
  "tilesets":[
         {
          "columns":8,
          "firstgid":1,
-         "image":"..\/..\/images\/tmw_desert_spacing.png",
+         "image":"..\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/images\/tmw_desert_spacing.png",
          "imageheight":199,
          "imagewidth":265,
          "margin":1,
          "name":"tileset",
          "spacing":1,
-         "tilecount":48,
+         "tilecount":0,
          "tileheight":32,
          "tilewidth":32
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":8
 }

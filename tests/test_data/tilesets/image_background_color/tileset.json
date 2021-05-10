@@ -1,13 +1,5 @@
 { "backgroundcolor":"#5500ff",
  "columns":8,
- "editorsettings":
-    {
-     "export":
-        {
-         "format":"",
-         "target":"."
-        }
-    },
  "image":"..\/..\/images\/tmw_desert_spacing.png",
  "imageheight":199,
  "imagewidth":265,
@@ -15,9 +7,9 @@
  "name":"tile_set_image",
  "spacing":1,
  "tilecount":48,
- "tiledversion":"1.3.5",
+ "tiledversion":"1.6.0",
  "tileheight":32,
  "tilewidth":32,
  "type":"tileset",
- "version":1.2
+ "version":"1.6"
 }

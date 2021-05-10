@@ -12,10 +12,10 @@ EXPECTED = tileset.Tileset(
     spacing=1,
     name="tile_set_image",
     tile_count=48,
-    tiled_version="1.3.5",
+    tiled_version="1.6.0",
     tile_height=32,
     tile_width=32,
-    version=1.2,
+    version="1.6",
     properties={
         "bool property": True,
         "color property": Color(255, 0, 0, 255),

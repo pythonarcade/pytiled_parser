@@ -132,9 +132,9 @@ EXPECTED = tiled_map.TiledMap(
     next_object_id=1,
     orientation="hexagonal",
     render_order="right-down",
-    tiled_version="1.4.1",
+    tiled_version="1.6.0",
     tile_size=common_types.Size(14, 12),
-    version=1.4,
+    version="1.6",
     tilesets={
         1: tileset.Tileset(
             columns=5,

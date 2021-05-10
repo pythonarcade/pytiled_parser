@@ -62,7 +62,7 @@
         }, 
         {
          "id":3,
-         "image":"..\/..\/images\/tile_04.png",
+         "image":"..\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/images\/tile_04.png",
          "name":"Image Layer 1",
          "opacity":1,
          "tintcolor":"#ff0000",
@@ -74,7 +74,7 @@
         }, 
         {
          "id":5,
-         "image":"..\/..\/images\/tile_04.png",
+         "image":"..\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/images\/tile_04.png",
          "name":"Image Layer 2",
          "opacity":1,
          "parallaxx":1.5,
@@ -88,7 +88,7 @@
  "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.5.0",
+ "tiledversion":"1.6.0",
  "tileheight":32,
  "tilesets":[
         {
@@ -97,6 +97,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.5,
+ "version":"1.6",
  "width":8
 }

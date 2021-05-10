@@ -9,9 +9,9 @@ EXPECTED = tiled_map.TiledMap(
     next_object_id=1,
     orientation="orthogonal",
     render_order="right-down",
-    tiled_version="1.5.0",
+    tiled_version="1.6.0",
     tile_size=common_types.Size(32, 32),
-    version=1.5,
+    version="1.6",
     background_color=common_types.Color(255, 0, 4, 255),
     layers=[
         layer.TileLayer(

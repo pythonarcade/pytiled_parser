@@ -8,7 +8,7 @@
         },
      "export":
         {
-         "target":"..\/all_layer_types"
+         "target":"..\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/all_layer_types"
         }
     },
  "height":6,
@@ -54,7 +54,7 @@
  "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.4.1",
+ "tiledversion":"1.6.0",
  "tileheight":32,
  "tilesets":[
         {
@@ -63,6 +63,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":8
 }

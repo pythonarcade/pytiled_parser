@@ -21,7 +21,7 @@
  "renderorder":"right-down",
  "staggeraxis":"y",
  "staggerindex":"odd",
- "tiledversion":"1.4.1",
+ "tiledversion":"1.6.0",
  "tileheight":12,
  "tilesets":[
         {
@@ -30,6 +30,6 @@
         }],
  "tilewidth":14,
  "type":"map",
- "version":1.4,
+ "version":"1.6",
  "width":10
 }
