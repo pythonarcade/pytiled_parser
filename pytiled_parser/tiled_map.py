@@ -60,7 +60,7 @@ class TiledMap:
     tiled_version: str
     tile_size: Size
     tilesets: TilesetDict
-    version: float
+    version: str
 
     map_file: Optional[Path] = None
     background_color: Optional[Color] = None
@@ -102,7 +102,7 @@ class _RawTiledMap(TypedDict):
     tilesets: List[_RawTilesetMapping]
     tilewidth: int
     type: str
-    version: float
+    version: Union[str, float]
     width: int
 
 
@@ -139,6 +139,11 @@ def parse_map(file: Path) -> TiledMap:
             raw_tileset = typing_cast(RawTileSet, raw_tileset)
             tilesets[raw_tileset["firstgid"]] = tileset.cast(raw_tileset)
 
+    if isinstance(raw_tiled_map["version"], float):
+        version = str(raw_tiled_map["version"])
+    else:
+        version = raw_tiled_map["version"]
+
     # `map` is a built-in function
     map_ = TiledMap(
         map_file=file,
@@ -152,7 +157,7 @@ def parse_map(file: Path) -> TiledMap:
         tiled_version=raw_tiled_map["tiledversion"],
         tile_size=Size(raw_tiled_map["tilewidth"], raw_tiled_map["tileheight"]),
         tilesets=tilesets,
-        version=raw_tiled_map["version"],
+        version=version,
     )
 
     if raw_tiled_map.get("backgroundcolor") is not None:
