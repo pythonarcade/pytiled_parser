@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import attr
 from typing_extensions import TypedDict
@@ -31,7 +31,7 @@ class WangSet:
     name: str
     tile: int
     wang_type: str
-    wang_tiles: List[WangTile]
+    wang_tiles: Dict[int, WangTile]
     wang_colors: List[WangColor]
     properties: Optional[properties_.Properties] = None
 
@@ -114,9 +114,9 @@ def cast(raw_wangset: RawWangSet) -> WangSet:
     for raw_wang_color in raw_wangset["colors"]:
         colors.append(_cast_wang_color(raw_wang_color))
 
-    tiles = []
+    tiles = {}
     for raw_wang_tile in raw_wangset["wangtiles"]:
-        tiles.append(_cast_wang_tile(raw_wang_tile))
+        tiles[raw_wang_tile["tileid"]] = _cast_wang_tile(raw_wang_tile)
 
     wangset = WangSet(
         name=raw_wangset["name"],
