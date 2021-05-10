@@ -1,6 +1,6 @@
 # pylint: disable=too-few-public-methods
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Optional, Union
 
 import attr
 from typing_extensions import TypedDict
@@ -9,6 +9,8 @@ from . import layer
 from . import properties as properties_
 from .common_types import Color, OrderedPair
 from .util import parse_color
+from .wang_set import RawWangSet, WangSet
+from .wang_set import cast as cast_wangset
 
 
 class Grid(NamedTuple):
@@ -150,7 +152,7 @@ class Tileset:
     type: Optional[str] = None
 
     tiled_version: Optional[str] = None
-    version: Optional[float] = None
+    version: Optional[str] = None
 
     image: Optional[Path] = None
     image_width: Optional[int] = None
@@ -164,6 +166,7 @@ class Tileset:
     properties: Optional[properties_.Properties] = None
     terrain_types: Optional[List[Terrain]] = None
     tiles: Optional[Dict[int, Tile]] = None
+    wang_sets: Optional[List[WangSet]] = None
 
 
 class RawFrame(TypedDict):
@@ -235,7 +238,8 @@ class RawTileSet(TypedDict):
     tilewidth: int
     transparentcolor: str
     type: str
-    version: float
+    version: Union[str, float]
+    wangsets: List[RawWangSet]
 
 
 def _cast_frame(raw_frame: RawFrame) -> Frame:
@@ -361,6 +365,7 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
 
     Args:
         raw_tileset: Raw Tileset to be cast.
+        external_path: The path to the tileset if it is not an embedded one.
 
     Returns:
         TileSet: a properly typed TileSet.
@@ -380,7 +385,10 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
         tileset.type = raw_tileset["type"]
 
     if raw_tileset.get("version") is not None:
-        tileset.version = raw_tileset["version"]
+        if isinstance(raw_tileset["version"], float):
+            tileset.version = str(raw_tileset["version"])
+        else:
+            tileset.version = raw_tileset["version"]
 
     if raw_tileset.get("tiledversion") is not None:
         tileset.tiled_version = raw_tileset["tiledversion"]
@@ -428,5 +436,11 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
         for raw_tile in raw_tileset["tiles"]:
             tiles[raw_tile["id"]] = _cast_tile(raw_tile, external_path=external_path)
         tileset.tiles = tiles
+
+    if raw_tileset.get("wangsets") is not None:
+        wangsets = []
+        for raw_wangset in raw_tileset["wangsets"]:
+            wangsets.append(cast_wangset(raw_wangset))
+        tileset.wang_sets = wangsets
 
     return tileset
