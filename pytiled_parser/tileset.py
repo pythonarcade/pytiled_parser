@@ -31,39 +31,6 @@ class Grid(NamedTuple):
     height: int
 
 
-class Terrain(NamedTuple):
-    """Terrain object.
-
-    Args:
-        name: The name of the terrain type.
-        tile: The local tile-id of the tile that represents the terrain visually.
-    """
-
-    name: str
-    tile: int
-    properties: Optional[properties_.Properties] = None
-
-
-@attr.s(auto_attribs=True)
-class TileTerrain:
-    """Defines each corner of a tile by Terrain index in
-        'TileSet.terrain_types'.
-
-    Defaults to 'None'. 'None' means that corner has no terrain.
-
-    Attributes:
-        top_left: Top left terrain type.
-        top_right: Top right terrain type.
-        bottom_left: Bottom left terrain type.
-        bottom_right: Bottom right terrain type.
-    """
-
-    top_left: Optional[int] = None
-    top_right: Optional[int] = None
-    bottom_left: Optional[int] = None
-    bottom_right: Optional[int] = None
-
-
 class Frame(NamedTuple):
     """Animation Frame object.
 
@@ -97,7 +64,6 @@ class Tile:
     id: int
     opacity: int = 1
     type: Optional[str] = None
-    terrain: Optional[TileTerrain] = None
     animation: Optional[List[Frame]] = None
     objects: Optional[layer.Layer] = None
     image: Optional[Path] = None
@@ -129,9 +95,6 @@ class Tileset:
         tileoffset: Used to specify an offset in pixels when drawing a tile from the
             tileset. When not present, no offset is applied.
         image: Used for spritesheet tile sets.
-        terrain_types: List of of terrain types which can be referenced from the
-            terrain attribute of the tile object. Ordered according to the terrain
-            element's appearance in the TSX file.
         tiles: Dict of Tile objects by Tile.id.
         tsx_file: Path of the file containing the tileset, None if loaded internally
             from a map
@@ -164,7 +127,6 @@ class Tileset:
     transparent_color: Optional[Color] = None
     grid: Optional[Grid] = None
     properties: Optional[properties_.Properties] = None
-    terrain_types: Optional[List[Terrain]] = None
     tiles: Optional[Dict[int, Tile]] = None
     wang_sets: Optional[List[WangSet]] = None
 
@@ -183,14 +145,6 @@ class RawTileOffset(TypedDict):
     y: int
 
 
-class RawTerrain(TypedDict):
-    """ The keys and their types that appear in a Terrain JSON Object."""
-
-    name: str
-    properties: List[properties_.RawProperty]
-    tile: int
-
-
 class RawTile(TypedDict):
     """ The keys and their types that appear in a Tile JSON Object."""
 
@@ -202,7 +156,6 @@ class RawTile(TypedDict):
     opacity: float
     properties: List[properties_.RawProperty]
     objectgroup: layer.RawLayer
-    terrain: List[int]
     type: str
 
 
@@ -229,7 +182,6 @@ class RawTileSet(TypedDict):
     properties: List[properties_.RawProperty]
     source: str
     spacing: int
-    terrains: List[RawTerrain]
     tilecount: int
     tiledversion: str
     tileheight: int
@@ -268,29 +220,6 @@ def _cast_tile_offset(raw_tile_offset: RawTileOffset) -> OrderedPair:
     return OrderedPair(raw_tile_offset["x"], raw_tile_offset["y"])
 
 
-def _cast_terrain(raw_terrain: RawTerrain) -> Terrain:
-    """Cast the raw_terrain to a Terrain object.
-
-    Args:
-        raw_terrain: RawTerrain to be casted to a Terrain
-
-    Returns:
-        Terrain: The Terrain created from the raw_terrain
-    """
-
-    if raw_terrain.get("properties") is not None:
-        return Terrain(
-            name=raw_terrain["name"],
-            tile=raw_terrain["tile"],
-            properties=properties_.cast(raw_terrain["properties"]),
-        )
-    else:
-        return Terrain(
-            name=raw_terrain["name"],
-            tile=raw_terrain["tile"],
-        )
-
-
 def _cast_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile:
     """Cast the raw_tile to a Tile object.
 
@@ -326,16 +255,6 @@ def _cast_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile:
 
     if raw_tile.get("imageheight") is not None:
         tile.image_height = raw_tile["imageheight"]
-
-    if raw_tile.get("terrain") is not None:
-        raw_terrain = raw_tile["terrain"]
-        terrain = TileTerrain(
-            top_left=raw_terrain[0],
-            top_right=raw_terrain[1],
-            bottom_left=raw_terrain[2],
-            bottom_right=raw_terrain[3],
-        )
-        tile.terrain = terrain
 
     if raw_tile.get("type") is not None:
         tile.type = raw_tile["type"]
@@ -424,12 +343,6 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
 
     if raw_tileset.get("properties") is not None:
         tileset.properties = properties_.cast(raw_tileset["properties"])
-
-    if raw_tileset.get("terrains") is not None:
-        terrains = []
-        for raw_terrain in raw_tileset["terrains"]:
-            terrains.append(_cast_terrain(raw_terrain))
-        tileset.terrain_types = terrains
 
     if raw_tileset.get("tiles") is not None:
         tiles = {}
