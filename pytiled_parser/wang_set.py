@@ -30,6 +30,7 @@ class WangSet:
 
     name: str
     tile: int
+    wang_type: str
     wang_tiles: List[WangTile]
     wang_colors: List[WangColor]
     properties: Optional[properties_.Properties] = None
@@ -39,6 +40,8 @@ class RawWangTile(TypedDict):
     """ The keys and their types that appear in a Wang Tile JSON Object."""
 
     tileid: int
+    # Tiled stores these IDs as a list represented like so:
+    # [top, top_right, right, bottom_right, bottom, bottom_left, left, top_left]
     wangid: List[int]
 
 
@@ -59,6 +62,7 @@ class RawWangSet(TypedDict):
     name: str
     properties: List[properties_.RawProperty]
     tile: int
+    type: str
     wangtiles: List[RawWangTile]
 
 
@@ -117,6 +121,7 @@ def cast(raw_wangset: RawWangSet) -> WangSet:
     wangset = WangSet(
         name=raw_wangset["name"],
         tile=raw_wangset["tile"],
+        wang_type=raw_wangset["type"],
         wang_colors=colors,
         wang_tiles=tiles,
     )
