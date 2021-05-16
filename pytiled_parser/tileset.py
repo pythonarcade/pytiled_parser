@@ -130,10 +130,10 @@ class Tileset:
     tile_count: int
     columns: int
 
+    type: str = "tileset"
+
     spacing: int = 0
     margin: int = 0
-
-    type: Optional[str] = None
 
     tiled_version: Optional[str] = None
     version: Optional[str] = None
@@ -349,9 +349,6 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
         spacing=raw_tileset["spacing"],
         margin=raw_tileset["margin"],
     )
-
-    if raw_tileset.get("type") is not None:
-        tileset.type = raw_tileset["type"]
 
     if raw_tileset.get("version") is not None:
         if isinstance(raw_tileset["version"], float):
