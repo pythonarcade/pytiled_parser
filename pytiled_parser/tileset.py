@@ -47,6 +47,27 @@ class Frame(NamedTuple):
 
 
 @attr.s(auto_attribs=True, kw_only=True)
+class Transformations:
+    """Transformations Object.
+
+    This is used to store what transformations may be performed on Tiles
+    within a tileset. (This is primarily used with wang sets, however could
+    be used for any means a game wants really.)
+
+    Args:
+        hflip: Allow horizontal flip?
+        vflip: Allow vertical flip?
+        rotate: Allow rotation?
+        prefer_untransformed: Should untransformed tiles be preferred?
+    """
+
+    hflip: Optional[bool] = None
+    vflip: Optional[bool] = None
+    rotate: Optional[bool] = None
+    prefer_untransformed: Optional[bool] = None
+
+
+@attr.s(auto_attribs=True, kw_only=True)
 class Tile:
     # FIXME: args
     """Individual tile object.
@@ -121,6 +142,8 @@ class Tileset:
     image_width: Optional[int] = None
     image_height: Optional[int] = None
 
+    transformations: Optional[Transformations] = None
+
     firstgid: Optional[int] = None
     background_color: Optional[Color] = None
     tile_offset: Optional[OrderedPair] = None
@@ -143,6 +166,15 @@ class RawTileOffset(TypedDict):
 
     x: int
     y: int
+
+
+class RawTransformations(TypedDict):
+    """ The keys and their types that appear in a Transformations JSON Object."""
+
+    hflip: bool
+    vflip: bool
+    rotate: bool
+    preferuntransformed: bool
 
 
 class RawTile(TypedDict):
@@ -189,7 +221,7 @@ class RawTileSet(TypedDict):
     tiles: List[RawTile]
     tilewidth: int
     transparentcolor: str
-    type: str
+    transformations: RawTransformations
     version: Union[str, float]
     wangsets: List[RawWangSet]
 
@@ -260,6 +292,24 @@ def _cast_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile:
         tile.type = raw_tile["type"]
 
     return tile
+
+
+def _cast_transformations(raw_transformations: RawTransformations) -> Transformations:
+    """Cast the raw_transformations to a Transformations object.
+
+    Args:
+        raw_transformations: RawTransformations to be casted to a Transformations
+
+    Returns:
+        Transformations: The Transformations created from the raw_transformations
+    """
+
+    return Transformations(
+        hflip=raw_transformations["hflip"],
+        vflip=raw_transformations["vflip"],
+        rotate=raw_transformations["rotate"],
+        prefer_untransformed=raw_transformations["preferuntransformed"],
+    )
 
 
 def _cast_grid(raw_grid: RawGrid) -> Grid:
@@ -355,5 +405,8 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
         for raw_wangset in raw_tileset["wangsets"]:
             wangsets.append(cast_wangset(raw_wangset))
         tileset.wang_sets = wangsets
+
+    if raw_tileset.get("transformations") is not None:
+        tileset.transformations = _cast_transformations(raw_tileset["transformations"])
 
     return tileset
