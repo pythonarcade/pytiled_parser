@@ -1,5 +1,6 @@
 # pylint: disable=too-few-public-methods
-
+import json
+from pathlib import Path
 from typing import Callable, Dict, List, Optional, Union
 
 import attr
@@ -174,6 +175,7 @@ class RawTiledObject(TypedDict):
 
     id: int
     gid: int
+    template: str
     x: float
     y: float
     width: float
@@ -390,7 +392,9 @@ def _get_caster(
     return _cast_rectangle
 
 
-def cast(raw_tiled_object: RawTiledObject) -> TiledObject:
+def cast(
+    raw_tiled_object: RawTiledObject, parent_dir: Optional[Path] = None
+) -> TiledObject:
     """Cast the raw tiled object into a pytiled_parser type
 
     Args:
@@ -399,6 +403,18 @@ def cast(raw_tiled_object: RawTiledObject) -> TiledObject:
     Returns:
         TiledObject: a properly typed Tiled object.
     """
+    if raw_tiled_object.get("template"):
+        if not parent_dir:
+            raise RuntimeError(
+                "A parent directory must be specified when using object templates"
+            )
+        template_path = Path(parent_dir / raw_tiled_object["template"])
+        with open(template_path) as raw_template_file:
+            loaded_template = json.load(raw_template_file)["object"]
+            for key in loaded_template:
+                if key != "id":
+                    raw_tiled_object[key] = loaded_template[key]  # type: ignore
+
     caster = _get_caster(raw_tiled_object)
 
     tiled_object = caster(raw_tiled_object)

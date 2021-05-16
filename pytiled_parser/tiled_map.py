@@ -148,7 +148,7 @@ def parse_map(file: Path) -> TiledMap:
     map_ = TiledMap(
         map_file=file,
         infinite=raw_tiled_map["infinite"],
-        layers=[layer.cast(layer_) for layer_ in raw_tiled_map["layers"]],
+        layers=[layer.cast(layer_, parent_dir) for layer_ in raw_tiled_map["layers"]],
         map_size=Size(raw_tiled_map["width"], raw_tiled_map["height"]),
         next_layer_id=raw_tiled_map["nextlayerid"],
         next_object_id=raw_tiled_map["nextobjectid"],

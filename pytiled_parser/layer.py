@@ -402,7 +402,9 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
     return tile_layer
 
 
-def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
+def _cast_object_layer(
+    raw_layer: RawLayer, parent_dir: Optional[Path] = None
+) -> ObjectLayer:
     """Cast the raw_layer to an ObjectLayer.
 
     Args:
@@ -413,7 +415,7 @@ def _cast_object_layer(raw_layer: RawLayer) -> ObjectLayer:
 
     tiled_objects = []
     for tiled_object_ in raw_layer["objects"]:
-        tiled_objects.append(tiled_object.cast(tiled_object_))
+        tiled_objects.append(tiled_object.cast(tiled_object_, parent_dir))
 
     return ObjectLayer(
         tiled_objects=tiled_objects,
@@ -441,7 +443,9 @@ def _cast_image_layer(raw_layer: RawLayer) -> ImageLayer:
     return image_layer
 
 
-def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
+def _cast_group_layer(
+    raw_layer: RawLayer, parent_dir: Optional[Path] = None
+) -> LayerGroup:
     """Cast the raw_layer to a LayerGroup.
 
     Args:
@@ -454,7 +458,7 @@ def _cast_group_layer(raw_layer: RawLayer) -> LayerGroup:
     layers = []
 
     for layer in raw_layer["layers"]:
-        layers.append(cast(layer))
+        layers.append(cast(layer, parent_dir))
 
     return LayerGroup(layers=layers, **_get_common_attributes(raw_layer).__dict__)
 
@@ -477,7 +481,7 @@ def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
     return casters[type_]
 
 
-def cast(raw_layer: RawLayer) -> Layer:
+def cast(raw_layer: RawLayer, parent_dir: Optional[Path] = None) -> Layer:
     """Cast a raw Tiled layer into a pytiled_parser type.
 
     This function will determine the type of layer and cast accordingly.
@@ -490,4 +494,10 @@ def cast(raw_layer: RawLayer) -> Layer:
     """
     caster = _get_caster(raw_layer["type"])
 
-    return caster(raw_layer)
+    if (
+        caster.__name__ == "_cast_object_layer"
+        or caster.__name__ == "_cast_group_layer"
+    ):
+        return caster(raw_layer, parent_dir)
+    else:
+        return caster(raw_layer)
