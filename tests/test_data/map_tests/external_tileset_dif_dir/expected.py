@@ -9,9 +9,9 @@ EXPECTED = tiled_map.TiledMap(
     next_object_id=1,
     orientation="orthogonal",
     render_order="right-down",
-    tiled_version="1.5.0",
+    tiled_version="1.6.0",
     tile_size=common_types.Size(32, 32),
-    version=1.5,
+    version="1.6",
     background_color=common_types.Color(255, 0, 4, 255),
     layers=[
         layer.TileLayer(
@@ -82,10 +82,10 @@ EXPECTED = tiled_map.TiledMap(
             spacing=0,
             name="tileset",
             tile_count=4,
-            tiled_version="1.3.5",
+            tiled_version="1.6.0",
             tile_height=32,
             tile_width=32,
-            version=1.2,
+            version="1.6",
             type="tileset",
             grid=tileset.Grid(orientation="orthogonal", width=1, height=1),
             tiles={

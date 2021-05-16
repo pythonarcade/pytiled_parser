@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pytiled_parser import common_types, layer, tileset
+from pytiled_parser import common_types, tileset, wang_set
 
 EXPECTED = tileset.Tileset(
     columns=8,
@@ -11,261 +11,84 @@ EXPECTED = tileset.Tileset(
     image_height=199,
     image_width=265,
     tile_count=48,
-    tiled_version="1.3.5",
+    tiled_version="1.6.0",
     tile_height=32,
     tile_width=32,
-    version=1.2,
+    version="1.6",
     type="tileset",
-    terrain_types=[
-        tileset.Terrain(
-            name="Sand",
-            tile=29,
-            properties={"terrain property": "test terrain property"},
-        ),
-        tileset.Terrain(name="Cobblestone", tile=29),
-        tileset.Terrain(name="Pavement", tile=29),
-        tileset.Terrain(name="Dirt", tile=29),
+    wang_sets=[
+        wang_set.WangSet(
+            name="Terrains",
+            tile=-1,
+            wang_type="mixed",
+            wang_colors=[
+                wang_set.WangColor(
+                    name="Sand",
+                    probability=1,
+                    tile=-1,
+                    color=common_types.Color(255, 0, 0, 255),
+                ),
+                wang_set.WangColor(
+                    name="Cobblestone",
+                    probability=1,
+                    tile=-1,
+                    color=common_types.Color(0, 255, 0, 255),
+                ),
+                wang_set.WangColor(
+                    name="Pavement",
+                    probability=1,
+                    tile=-1,
+                    color=common_types.Color(0, 0, 255, 255),
+                ),
+                wang_set.WangColor(
+                    name="Dirt",
+                    probability=1,
+                    tile=-1,
+                    color=common_types.Color(255, 119, 0, 255),
+                ),
+            ],
+            wang_tiles={
+                0: wang_set.WangTile(tile_id=0, wang_id=[1, 1, 0, 2, 0, 1, 1, 1]),
+                1: wang_set.WangTile(tile_id=1, wang_id=[1, 1, 0, 2, 2, 2, 0, 1]),
+                2: wang_set.WangTile(tile_id=2, wang_id=[1, 1, 1, 1, 0, 2, 0, 1]),
+                3: wang_set.WangTile(tile_id=3, wang_id=[4, 4, 0, 1, 0, 4, 4, 4]),
+                4: wang_set.WangTile(tile_id=4, wang_id=[4, 4, 4, 4, 0, 1, 0, 4]),
+                5: wang_set.WangTile(tile_id=5, wang_id=[1, 1, 0, 4, 0, 1, 1, 1]),
+                6: wang_set.WangTile(tile_id=6, wang_id=[1, 1, 0, 4, 4, 4, 0, 1]),
+                7: wang_set.WangTile(tile_id=7, wang_id=[1, 1, 1, 1, 0, 4, 0, 1]),
+                8: wang_set.WangTile(tile_id=8, wang_id=[0, 2, 2, 2, 0, 1, 1, 1]),
+                9: wang_set.WangTile(tile_id=9, wang_id=[2, 2, 2, 2, 2, 2, 2, 2]),
+                10: wang_set.WangTile(tile_id=10, wang_id=[0, 1, 1, 1, 0, 2, 2, 2]),
+                11: wang_set.WangTile(tile_id=11, wang_id=[0, 1, 0, 4, 4, 4, 4, 4]),
+                12: wang_set.WangTile(tile_id=12, wang_id=[0, 4, 4, 4, 4, 4, 0, 1]),
+                13: wang_set.WangTile(tile_id=13, wang_id=[0, 4, 4, 4, 0, 1, 1, 1]),
+                14: wang_set.WangTile(tile_id=14, wang_id=[4, 4, 4, 4, 4, 4, 4, 4]),
+                15: wang_set.WangTile(tile_id=15, wang_id=[0, 1, 1, 1, 0, 4, 4, 4]),
+                16: wang_set.WangTile(tile_id=16, wang_id=[0, 2, 0, 1, 1, 1, 1, 1]),
+                17: wang_set.WangTile(tile_id=17, wang_id=[2, 2, 0, 1, 1, 1, 0, 2]),
+                18: wang_set.WangTile(tile_id=18, wang_id=[0, 1, 1, 1, 1, 1, 0, 2]),
+                19: wang_set.WangTile(tile_id=19, wang_id=[2, 2, 0, 1, 0, 2, 2, 2]),
+                20: wang_set.WangTile(tile_id=20, wang_id=[2, 2, 2, 2, 0, 1, 0, 2]),
+                21: wang_set.WangTile(tile_id=21, wang_id=[0, 4, 0, 1, 1, 1, 1, 1]),
+                22: wang_set.WangTile(tile_id=22, wang_id=[4, 4, 0, 1, 1, 1, 0, 4]),
+                23: wang_set.WangTile(tile_id=23, wang_id=[0, 1, 1, 1, 1, 1, 0, 4]),
+                24: wang_set.WangTile(tile_id=24, wang_id=[1, 1, 0, 3, 0, 1, 1, 1]),
+                25: wang_set.WangTile(tile_id=25, wang_id=[1, 1, 0, 3, 3, 3, 0, 1]),
+                26: wang_set.WangTile(tile_id=26, wang_id=[1, 1, 1, 1, 0, 3, 0, 1]),
+                27: wang_set.WangTile(tile_id=27, wang_id=[0, 1, 0, 2, 2, 2, 2, 2]),
+                28: wang_set.WangTile(tile_id=28, wang_id=[0, 2, 2, 2, 2, 2, 0, 1]),
+                29: wang_set.WangTile(tile_id=29, wang_id=[1, 1, 1, 1, 1, 1, 1, 1]),
+                32: wang_set.WangTile(tile_id=32, wang_id=[0, 3, 3, 3, 0, 1, 1, 1]),
+                33: wang_set.WangTile(tile_id=33, wang_id=[3, 3, 3, 3, 3, 3, 3, 3]),
+                34: wang_set.WangTile(tile_id=34, wang_id=[0, 1, 1, 1, 0, 3, 3, 3]),
+                35: wang_set.WangTile(tile_id=35, wang_id=[3, 3, 0, 1, 0, 3, 3, 3]),
+                36: wang_set.WangTile(tile_id=36, wang_id=[3, 3, 3, 3, 0, 1, 0, 3]),
+                40: wang_set.WangTile(tile_id=40, wang_id=[0, 3, 0, 1, 1, 1, 1, 1]),
+                41: wang_set.WangTile(tile_id=41, wang_id=[3, 3, 0, 1, 1, 1, 0, 3]),
+                42: wang_set.WangTile(tile_id=42, wang_id=[0, 1, 1, 1, 1, 1, 0, 3]),
+                43: wang_set.WangTile(tile_id=43, wang_id=[0, 1, 0, 3, 3, 3, 3, 3]),
+                44: wang_set.WangTile(tile_id=44, wang_id=[0, 3, 3, 3, 3, 3, 0, 1]),
+            },
+        )
     ],
-    tiles={
-        0: tileset.Tile(
-            id=0,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=0, bottom_right=1
-            ),
-        ),
-        1: tileset.Tile(
-            id=1,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=1, bottom_right=1
-            ),
-        ),
-        2: tileset.Tile(
-            id=2,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=1, bottom_right=0
-            ),
-        ),
-        3: tileset.Tile(
-            id=3,
-            terrain=tileset.TileTerrain(
-                top_left=3, top_right=3, bottom_left=3, bottom_right=0
-            ),
-        ),
-        4: tileset.Tile(
-            id=4,
-            terrain=tileset.TileTerrain(
-                top_left=3, top_right=3, bottom_left=0, bottom_right=3
-            ),
-        ),
-        5: tileset.Tile(
-            id=5,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=0, bottom_right=3
-            ),
-        ),
-        6: tileset.Tile(
-            id=6,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=3, bottom_right=3
-            ),
-        ),
-        7: tileset.Tile(
-            id=7,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=3, bottom_right=0
-            ),
-        ),
-        8: tileset.Tile(
-            id=8,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=1, bottom_left=0, bottom_right=1
-            ),
-        ),
-        9: tileset.Tile(
-            id=9,
-            terrain=tileset.TileTerrain(
-                top_left=1, top_right=1, bottom_left=1, bottom_right=1
-            ),
-        ),
-        10: tileset.Tile(
-            id=10,
-            terrain=tileset.TileTerrain(
-                top_left=1, top_right=0, bottom_left=1, bottom_right=0
-            ),
-        ),
-        11: tileset.Tile(
-            id=11,
-            terrain=tileset.TileTerrain(
-                top_left=3, top_right=0, bottom_left=3, bottom_right=3
-            ),
-        ),
-        12: tileset.Tile(
-            id=12,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=3, bottom_left=3, bottom_right=3
-            ),
-        ),
-        13: tileset.Tile(
-            id=13,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=3, bottom_left=0, bottom_right=3
-            ),
-        ),
-        14: tileset.Tile(
-            id=14,
-            terrain=tileset.TileTerrain(
-                top_left=3, top_right=3, bottom_left=3, bottom_right=3
-            ),
-        ),
-        15: tileset.Tile(
-            id=15,
-            terrain=tileset.TileTerrain(
-                top_left=3, top_right=0, bottom_left=3, bottom_right=0
-            ),
-        ),
-        16: tileset.Tile(
-            id=16,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=1, bottom_left=0, bottom_right=0
-            ),
-        ),
-        17: tileset.Tile(
-            id=17,
-            terrain=tileset.TileTerrain(
-                top_left=1, top_right=1, bottom_left=0, bottom_right=0
-            ),
-        ),
-        18: tileset.Tile(
-            id=18,
-            terrain=tileset.TileTerrain(
-                top_left=1, top_right=0, bottom_left=0, bottom_right=0
-            ),
-        ),
-        19: tileset.Tile(
-            id=19,
-            terrain=tileset.TileTerrain(
-                top_left=1, top_right=1, bottom_left=1, bottom_right=0
-            ),
-        ),
-        20: tileset.Tile(
-            id=20,
-            terrain=tileset.TileTerrain(
-                top_left=1, top_right=1, bottom_left=0, bottom_right=1
-            ),
-        ),
-        21: tileset.Tile(
-            id=21,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=3, bottom_left=0, bottom_right=0
-            ),
-        ),
-        22: tileset.Tile(
-            id=22,
-            terrain=tileset.TileTerrain(
-                top_left=3, top_right=3, bottom_left=0, bottom_right=0
-            ),
-        ),
-        23: tileset.Tile(
-            id=23,
-            terrain=tileset.TileTerrain(
-                top_left=3, top_right=0, bottom_left=0, bottom_right=0
-            ),
-        ),
-        24: tileset.Tile(
-            id=24,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=0, bottom_right=2
-            ),
-        ),
-        25: tileset.Tile(
-            id=25,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=2, bottom_right=2
-            ),
-        ),
-        26: tileset.Tile(
-            id=26,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=2, bottom_right=0
-            ),
-        ),
-        27: tileset.Tile(
-            id=27,
-            terrain=tileset.TileTerrain(
-                top_left=1, top_right=0, bottom_left=1, bottom_right=1
-            ),
-        ),
-        28: tileset.Tile(
-            id=28,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=1, bottom_left=1, bottom_right=1
-            ),
-        ),
-        29: tileset.Tile(
-            id=29,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=0, bottom_left=0, bottom_right=0
-            ),
-        ),
-        32: tileset.Tile(
-            id=32,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=2, bottom_left=0, bottom_right=2
-            ),
-        ),
-        33: tileset.Tile(
-            id=33,
-            terrain=tileset.TileTerrain(
-                top_left=2, top_right=2, bottom_left=2, bottom_right=2
-            ),
-        ),
-        34: tileset.Tile(
-            id=34,
-            terrain=tileset.TileTerrain(
-                top_left=2, top_right=0, bottom_left=2, bottom_right=0
-            ),
-        ),
-        35: tileset.Tile(
-            id=35,
-            terrain=tileset.TileTerrain(
-                top_left=2, top_right=2, bottom_left=2, bottom_right=0
-            ),
-        ),
-        36: tileset.Tile(
-            id=36,
-            terrain=tileset.TileTerrain(
-                top_left=2, top_right=2, bottom_left=0, bottom_right=2
-            ),
-        ),
-        40: tileset.Tile(
-            id=40,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=2, bottom_left=0, bottom_right=0
-            ),
-        ),
-        41: tileset.Tile(
-            id=41,
-            terrain=tileset.TileTerrain(
-                top_left=2, top_right=2, bottom_left=0, bottom_right=0
-            ),
-        ),
-        42: tileset.Tile(
-            id=42,
-            terrain=tileset.TileTerrain(
-                top_left=2, top_right=0, bottom_left=0, bottom_right=0
-            ),
-        ),
-        43: tileset.Tile(
-            id=43,
-            terrain=tileset.TileTerrain(
-                top_left=2, top_right=0, bottom_left=2, bottom_right=2
-            ),
-        ),
-        44: tileset.Tile(
-            id=44,
-            terrain=tileset.TileTerrain(
-                top_left=0, top_right=2, bottom_left=2, bottom_right=2
-            ),
-        ),
-    },
 )

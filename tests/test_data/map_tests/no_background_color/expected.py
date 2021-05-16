@@ -10,9 +10,9 @@ EXPECTED = tiled_map.TiledMap(
     next_object_id=1,
     orientation="orthogonal",
     render_order="right-down",
-    tiled_version="1.4.1",
+    tiled_version="1.6.0",
     tile_size=common_types.Size(32, 32),
-    version=1.4,
+    version="1.6",
     tilesets={
         1: tileset.Tileset(
             columns=8,
@@ -25,10 +25,10 @@ EXPECTED = tiled_map.TiledMap(
             spacing=1,
             name="tile_set_image",
             tile_count=48,
-            tiled_version="1.3.1",
+            tiled_version="1.6.0",
             tile_height=32,
             tile_width=32,
-            version=1.2,
+            version="1.6",
             type="tileset",
         )
     },

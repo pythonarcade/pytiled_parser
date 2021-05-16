@@ -17,6 +17,7 @@ ALL_MAP_TESTS = [
     MAP_TESTS / "no_background_color",
     MAP_TESTS / "hexagonal",
     MAP_TESTS / "embedded_tileset",
+    MAP_TESTS / "template",
 ]
 
 

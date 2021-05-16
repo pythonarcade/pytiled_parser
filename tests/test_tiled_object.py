@@ -1103,3 +1103,19 @@ def test_parse_layer(raw_object_json, expected):
     result = tiled_object.cast(raw_object)
 
     assert result == expected
+
+
+def test_parse_no_parent_dir():
+
+    raw_object = """
+        {
+        "id":1,
+        "template": "mytemplate.json",
+        "x":27.7185404115039,
+        "y":23.571672160964
+        }
+        """
+
+    json_object = json.loads(raw_object)
+    with pytest.raises(RuntimeError):
+        tiled_object.cast(json_object)

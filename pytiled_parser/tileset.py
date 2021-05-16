@@ -1,6 +1,6 @@
 # pylint: disable=too-few-public-methods
 from pathlib import Path
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Optional, Union
 
 import attr
 from typing_extensions import TypedDict
@@ -9,6 +9,8 @@ from . import layer
 from . import properties as properties_
 from .common_types import Color, OrderedPair
 from .util import parse_color
+from .wang_set import RawWangSet, WangSet
+from .wang_set import cast as cast_wangset
 
 
 class Grid(NamedTuple):
@@ -29,39 +31,6 @@ class Grid(NamedTuple):
     height: int
 
 
-class Terrain(NamedTuple):
-    """Terrain object.
-
-    Args:
-        name: The name of the terrain type.
-        tile: The local tile-id of the tile that represents the terrain visually.
-    """
-
-    name: str
-    tile: int
-    properties: Optional[properties_.Properties] = None
-
-
-@attr.s(auto_attribs=True)
-class TileTerrain:
-    """Defines each corner of a tile by Terrain index in
-        'TileSet.terrain_types'.
-
-    Defaults to 'None'. 'None' means that corner has no terrain.
-
-    Attributes:
-        top_left: Top left terrain type.
-        top_right: Top right terrain type.
-        bottom_left: Bottom left terrain type.
-        bottom_right: Bottom right terrain type.
-    """
-
-    top_left: Optional[int] = None
-    top_right: Optional[int] = None
-    bottom_left: Optional[int] = None
-    bottom_right: Optional[int] = None
-
-
 class Frame(NamedTuple):
     """Animation Frame object.
 
@@ -75,6 +44,27 @@ class Frame(NamedTuple):
 
     tile_id: int
     duration: int
+
+
+@attr.s(auto_attribs=True, kw_only=True)
+class Transformations:
+    """Transformations Object.
+
+    This is used to store what transformations may be performed on Tiles
+    within a tileset. (This is primarily used with wang sets, however could
+    be used for any means a game wants really.)
+
+    Args:
+        hflip: Allow horizontal flip?
+        vflip: Allow vertical flip?
+        rotate: Allow rotation?
+        prefer_untransformed: Should untransformed tiles be preferred?
+    """
+
+    hflip: Optional[bool] = None
+    vflip: Optional[bool] = None
+    rotate: Optional[bool] = None
+    prefer_untransformed: Optional[bool] = None
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -95,7 +85,6 @@ class Tile:
     id: int
     opacity: int = 1
     type: Optional[str] = None
-    terrain: Optional[TileTerrain] = None
     animation: Optional[List[Frame]] = None
     objects: Optional[layer.Layer] = None
     image: Optional[Path] = None
@@ -127,9 +116,6 @@ class Tileset:
         tileoffset: Used to specify an offset in pixels when drawing a tile from the
             tileset. When not present, no offset is applied.
         image: Used for spritesheet tile sets.
-        terrain_types: List of of terrain types which can be referenced from the
-            terrain attribute of the tile object. Ordered according to the terrain
-            element's appearance in the TSX file.
         tiles: Dict of Tile objects by Tile.id.
         tsx_file: Path of the file containing the tileset, None if loaded internally
             from a map
@@ -144,17 +130,19 @@ class Tileset:
     tile_count: int
     columns: int
 
+    type: str = "tileset"
+
     spacing: int = 0
     margin: int = 0
 
-    type: Optional[str] = None
-
     tiled_version: Optional[str] = None
-    version: Optional[float] = None
+    version: Optional[str] = None
 
     image: Optional[Path] = None
     image_width: Optional[int] = None
     image_height: Optional[int] = None
+
+    transformations: Optional[Transformations] = None
 
     firstgid: Optional[int] = None
     background_color: Optional[Color] = None
@@ -162,8 +150,8 @@ class Tileset:
     transparent_color: Optional[Color] = None
     grid: Optional[Grid] = None
     properties: Optional[properties_.Properties] = None
-    terrain_types: Optional[List[Terrain]] = None
     tiles: Optional[Dict[int, Tile]] = None
+    wang_sets: Optional[List[WangSet]] = None
 
 
 class RawFrame(TypedDict):
@@ -180,12 +168,13 @@ class RawTileOffset(TypedDict):
     y: int
 
 
-class RawTerrain(TypedDict):
-    """ The keys and their types that appear in a Terrain JSON Object."""
+class RawTransformations(TypedDict):
+    """ The keys and their types that appear in a Transformations JSON Object."""
 
-    name: str
-    properties: List[properties_.RawProperty]
-    tile: int
+    hflip: bool
+    vflip: bool
+    rotate: bool
+    preferuntransformed: bool
 
 
 class RawTile(TypedDict):
@@ -199,7 +188,6 @@ class RawTile(TypedDict):
     opacity: float
     properties: List[properties_.RawProperty]
     objectgroup: layer.RawLayer
-    terrain: List[int]
     type: str
 
 
@@ -226,7 +214,6 @@ class RawTileSet(TypedDict):
     properties: List[properties_.RawProperty]
     source: str
     spacing: int
-    terrains: List[RawTerrain]
     tilecount: int
     tiledversion: str
     tileheight: int
@@ -234,8 +221,9 @@ class RawTileSet(TypedDict):
     tiles: List[RawTile]
     tilewidth: int
     transparentcolor: str
-    type: str
-    version: float
+    transformations: RawTransformations
+    version: Union[str, float]
+    wangsets: List[RawWangSet]
 
 
 def _cast_frame(raw_frame: RawFrame) -> Frame:
@@ -262,29 +250,6 @@ def _cast_tile_offset(raw_tile_offset: RawTileOffset) -> OrderedPair:
     """
 
     return OrderedPair(raw_tile_offset["x"], raw_tile_offset["y"])
-
-
-def _cast_terrain(raw_terrain: RawTerrain) -> Terrain:
-    """Cast the raw_terrain to a Terrain object.
-
-    Args:
-        raw_terrain: RawTerrain to be casted to a Terrain
-
-    Returns:
-        Terrain: The Terrain created from the raw_terrain
-    """
-
-    if raw_terrain.get("properties") is not None:
-        return Terrain(
-            name=raw_terrain["name"],
-            tile=raw_terrain["tile"],
-            properties=properties_.cast(raw_terrain["properties"]),
-        )
-    else:
-        return Terrain(
-            name=raw_terrain["name"],
-            tile=raw_terrain["tile"],
-        )
 
 
 def _cast_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile:
@@ -323,20 +288,28 @@ def _cast_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile:
     if raw_tile.get("imageheight") is not None:
         tile.image_height = raw_tile["imageheight"]
 
-    if raw_tile.get("terrain") is not None:
-        raw_terrain = raw_tile["terrain"]
-        terrain = TileTerrain(
-            top_left=raw_terrain[0],
-            top_right=raw_terrain[1],
-            bottom_left=raw_terrain[2],
-            bottom_right=raw_terrain[3],
-        )
-        tile.terrain = terrain
-
     if raw_tile.get("type") is not None:
         tile.type = raw_tile["type"]
 
     return tile
+
+
+def _cast_transformations(raw_transformations: RawTransformations) -> Transformations:
+    """Cast the raw_transformations to a Transformations object.
+
+    Args:
+        raw_transformations: RawTransformations to be casted to a Transformations
+
+    Returns:
+        Transformations: The Transformations created from the raw_transformations
+    """
+
+    return Transformations(
+        hflip=raw_transformations["hflip"],
+        vflip=raw_transformations["vflip"],
+        rotate=raw_transformations["rotate"],
+        prefer_untransformed=raw_transformations["preferuntransformed"],
+    )
 
 
 def _cast_grid(raw_grid: RawGrid) -> Grid:
@@ -361,6 +334,7 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
 
     Args:
         raw_tileset: Raw Tileset to be cast.
+        external_path: The path to the tileset if it is not an embedded one.
 
     Returns:
         TileSet: a properly typed TileSet.
@@ -376,11 +350,11 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
         margin=raw_tileset["margin"],
     )
 
-    if raw_tileset.get("type") is not None:
-        tileset.type = raw_tileset["type"]
-
     if raw_tileset.get("version") is not None:
-        tileset.version = raw_tileset["version"]
+        if isinstance(raw_tileset["version"], float):
+            tileset.version = str(raw_tileset["version"])
+        else:
+            tileset.version = raw_tileset["version"]
 
     if raw_tileset.get("tiledversion") is not None:
         tileset.tiled_version = raw_tileset["tiledversion"]
@@ -417,16 +391,19 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
     if raw_tileset.get("properties") is not None:
         tileset.properties = properties_.cast(raw_tileset["properties"])
 
-    if raw_tileset.get("terrains") is not None:
-        terrains = []
-        for raw_terrain in raw_tileset["terrains"]:
-            terrains.append(_cast_terrain(raw_terrain))
-        tileset.terrain_types = terrains
-
     if raw_tileset.get("tiles") is not None:
         tiles = {}
         for raw_tile in raw_tileset["tiles"]:
             tiles[raw_tile["id"]] = _cast_tile(raw_tile, external_path=external_path)
         tileset.tiles = tiles
+
+    if raw_tileset.get("wangsets") is not None:
+        wangsets = []
+        for raw_wangset in raw_tileset["wangsets"]:
+            wangsets.append(cast_wangset(raw_wangset))
+        tileset.wang_sets = wangsets
+
+    if raw_tileset.get("transformations") is not None:
+        tileset.transformations = _cast_transformations(raw_tileset["transformations"])
 
     return tileset
