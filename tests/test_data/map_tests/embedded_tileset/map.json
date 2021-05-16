@@ -12,13 +12,13 @@
         {
          "columns":8,
          "firstgid":1,
-         "image":"..\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/images\/tmw_desert_spacing.png",
+         "image":"..\/..\/images\/tmw_desert_spacing.png",
          "imageheight":199,
          "imagewidth":265,
          "margin":1,
          "name":"tileset",
          "spacing":1,
-         "tilecount":0,
+         "tilecount":48,
          "tileheight":32,
          "tilewidth":32
         }],

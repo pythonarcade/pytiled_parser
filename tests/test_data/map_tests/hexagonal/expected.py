@@ -147,10 +147,10 @@ EXPECTED = tiled_map.TiledMap(
             spacing=0,
             name="tileset",
             tile_count=20,
-            tiled_version="1.4.1",
+            tiled_version="1.6.0",
             tile_height=18,
             tile_width=18,
-            version=1.4,
+            version="1.6",
             type="tileset",
             tile_offset=common_types.OrderedPair(0, 1),
         )

@@ -82,10 +82,10 @@ EXPECTED = tiled_map.TiledMap(
             spacing=0,
             name="tileset",
             tile_count=4,
-            tiled_version="1.3.5",
+            tiled_version="1.6.0",
             tile_height=32,
             tile_width=32,
-            version=1.2,
+            version="1.6",
             type="tileset",
             grid=tileset.Grid(orientation="orthogonal", width=1, height=1),
             tiles={

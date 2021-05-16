@@ -50,7 +50,7 @@
         }, 
         {
          "id":3,
-         "image":"..\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/images\/tile_04.png",
+         "image":"..\/..\/images\/tile_04.png",
          "name":"Image Layer 1",
          "opacity":1,
          "transparentcolor":"#000000",

@@ -20,7 +20,7 @@
         {
          "name":"file property",
          "type":"file",
-         "value":"..\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/test_data\/map_tests\/tests\/var\/log\/syslog"
+         "value":"..\/..\/..\/..\/..\/..\/var\/log\/syslog"
         }, 
         {
          "name":"float property",

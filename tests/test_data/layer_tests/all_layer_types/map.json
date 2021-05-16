@@ -62,7 +62,7 @@
         }, 
         {
          "id":3,
-         "image":"..\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/images\/tile_04.png",
+         "image":"..\/..\/images\/tile_04.png",
          "name":"Image Layer 1",
          "opacity":1,
          "tintcolor":"#ff0000",
@@ -74,7 +74,7 @@
         }, 
         {
          "id":5,
-         "image":"..\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/images\/tile_04.png",
+         "image":"..\/..\/images\/tile_04.png",
          "name":"Image Layer 2",
          "opacity":1,
          "parallaxx":1.5,
