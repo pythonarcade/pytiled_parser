@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.5.1] - 2021-07-09
+
+This release contains two bugfixes:
+
+- Pinned minimum attrs version to usage of `kw_only` which was introduced in 18.2.0. See https://github.com/Beefy-Swain/pytiled_parser/pull/39
+- Fixed color parsing to be correct. Tiled saves it's colors in either RGB or ARGB format. We were previously parsing RGB correctly, but if an alpha value was present it would be parsed if it were RGBA and so all the values would be offset by one. 
+
 ## [1.5.0] - 2021-05-16
 
 This release contains several new features. As of this release pytiled-parser supports 100% of Tiled's feature-set as of Tiled 1.6.
