@@ -20,10 +20,10 @@ def parse_color(color: str) -> Color:
         return Color(int(color[0:2], 16), int(color[2:4], 16), int(color[4:6], 16), 255)
     elif len(color) == 8:
         return Color(
-            int(color[0:2], 16),
             int(color[2:4], 16),
             int(color[4:6], 16),
             int(color[6:8], 16),
+            int(color[0:2], 16),
         )
 
     raise ValueError("Improperly formatted color passed to parse_color")

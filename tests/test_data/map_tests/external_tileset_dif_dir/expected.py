@@ -173,7 +173,7 @@ EXPECTED = tiled_map.TiledMap(
     },
     properties={
         "bool property - true": True,
-        "color property": common_types.Color(255, 73, 252, 255),
+        "color property": common_types.Color(73, 252, 255, 255),
         "file property": Path("../../../../../../var/log/syslog"),
         "float property": 1.23456789,
         "int property": 13,

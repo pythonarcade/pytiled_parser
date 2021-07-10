@@ -18,7 +18,7 @@ EXPECTED = tileset.Tileset(
     version="1.6",
     properties={
         "bool property": True,
-        "color property": Color(255, 0, 0, 255),
+        "color property": Color(0, 0, 255, 255),
         "float property": 5.6,
         "int property": 5,
         "string property": "testing",
