@@ -261,7 +261,7 @@ RECTANGLES = [
             coordinates=common_types.OrderedPair(39.0678640445606, 131.826759122428),
             properties={
                 "bool property": False,
-                "color property": common_types.Color(255, 170, 0, 0),
+                "color property": common_types.Color(170, 0, 0, 255),
                 "file property": Path("../../../../../../dev/null"),
                 "float property": 42.1,
                 "int property": 8675309,
