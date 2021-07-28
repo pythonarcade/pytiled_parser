@@ -35,15 +35,25 @@ EXPECTED = tiled_map.TiledMap(
                     size=common_types.Size(32, 32),
                     gid=30,
                 ),
+                tiled_object.Tile(
+                    id=5,
+                    coordinates=common_types.OrderedPair(116, 145),
+                    name="",
+                    rotation=0,
+                    type="",
+                    visible=True,
+                    size=common_types.Size(32, 32),
+                    gid=1,
+                ),
             ],
         )
     ],
     map_size=common_types.Size(8, 6),
     next_layer_id=3,
-    next_object_id=4,
+    next_object_id=6,
     orientation="orthogonal",
     render_order="right-down",
-    tiled_version="1.6.0",
+    tiled_version="1.7.1",
     tile_size=common_types.Size(32, 32),
     version="1.6",
     background_color=common_types.Color(255, 0, 4, 255),
@@ -64,7 +74,30 @@ EXPECTED = tiled_map.TiledMap(
             tile_width=32,
             version="1.6",
             type="tileset",
-        )
+        ),
+        49: tileset.Tileset(
+            columns=0,
+            margin=0,
+            spacing=0,
+            name="tileset_single_image",
+            grid=tileset.Grid(orientation="orthogonal", width=1, height=1),
+            tiles={
+                0: tileset.Tile(
+                    id=0,
+                    image=Path(Path(__file__).parent / "../../images/tile_01.png")
+                    .absolute()
+                    .resolve(),
+                    image_height=32,
+                    image_width=32,
+                )
+            },
+            tile_count=1,
+            tiled_version="1.7.1",
+            tile_height=32,
+            tile_width=32,
+            type="tileset",
+            version="1.6",
+        ),
     },
     properties={
         "bool property - true": True,
