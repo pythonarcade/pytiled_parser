@@ -143,6 +143,7 @@ EXPECTED = tiled_map.TiledMap(
             .resolve(),
             image_width=106,
             image_height=72,
+            firstgid=1,
             margin=0,
             spacing=0,
             name="tileset",

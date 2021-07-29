@@ -7,6 +7,7 @@ EXPECTED = tileset.Tileset(
     image=Path("../../images/tmw_desert_spacing.png"),
     image_height=199,
     image_width=265,
+    firstgid=1,
     margin=1,
     spacing=1,
     name="tile_set_image",

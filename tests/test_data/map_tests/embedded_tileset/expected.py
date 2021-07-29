@@ -21,11 +21,11 @@ EXPECTED = tiled_map.TiledMap(
             image_height=199,
             margin=1,
             spacing=1,
+            firstgid=1,
             name="tileset",
             tile_count=48,
             tile_height=32,
             tile_width=32,
-            firstgid=1,
         )
     },
 )

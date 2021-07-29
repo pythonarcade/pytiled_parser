@@ -1,8 +1,8 @@
 { "object":
     {
-     "gid":30,
+     "gid":1,
      "height":32,
-     "id":3,
+     "id":6,
      "name":"",
      "rotation":0,
      "type":"",
@@ -12,7 +12,7 @@
  "tileset":
     {
      "firstgid":1,
-     "source":"tileset.json"
+     "source":"tile_set_image_for_template.json"
     },
  "type":"template"
 }

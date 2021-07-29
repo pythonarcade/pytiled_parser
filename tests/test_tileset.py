@@ -39,6 +39,6 @@ def test_tilesets_integration(tileset_dir):
     raw_tileset_path = tileset_dir / "tileset.json"
 
     with open(raw_tileset_path) as raw_tileset:
-        tileset_ = tileset.cast(json.loads(raw_tileset.read()))
+        tileset_ = tileset.cast(json.loads(raw_tileset.read()), 1)
 
     assert tileset_ == expected.EXPECTED

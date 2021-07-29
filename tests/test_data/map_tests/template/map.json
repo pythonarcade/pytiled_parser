@@ -10,21 +10,21 @@
          "objects":[
                 {
                  "id":2,
-                 "template":"template.json",
+                 "template":"template-rectangle.json",
                  "x":98.4987608686521,
                  "y":46.2385012811358
                 }, 
                 {
-                 "id":3,
-                 "template":"template_tile.json",
-                 "x":46.3682110303692,
-                 "y":112.993321292057
+                 "id":6,
+                 "template":"template-tile-spritesheet.json",
+                 "x":46,
+                 "y":136.666666666667
                 }, 
                 {
-                 "id":5,
-                 "template":"template_tile_image.json",
-                 "x":116,
-                 "y":145
+                 "id":7,
+                 "template":"template-tile-image.json",
+                 "x":141.333333333333,
+                 "y":148
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -33,7 +33,7 @@
          "y":0
         }],
  "nextlayerid":3,
- "nextobjectid":6,
+ "nextobjectid":8,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -76,7 +76,7 @@
         }, 
         {
          "firstgid":49,
-         "source":"tileset_single_image.json"
+         "source":"tile_set_image_for_template.json"
         }],
  "tilewidth":32,
  "type":"map",

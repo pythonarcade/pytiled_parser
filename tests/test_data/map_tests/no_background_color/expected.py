@@ -21,6 +21,7 @@ EXPECTED = tiled_map.TiledMap(
             .resolve(),
             image_width=265,
             image_height=199,
+            firstgid=1,
             margin=1,
             spacing=1,
             name="tile_set_image",
