@@ -11,10 +11,9 @@ See:
 import base64
 import gzip
 import importlib.util
-import sys
 import zlib
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, List, Optional, Union
 from typing import cast as type_cast
 
 import attr
@@ -284,7 +283,9 @@ def _decode_tile_layer_data(
 
 
 def _cast_chunk(
-    raw_chunk: RawChunk, encoding: Optional[str] = None, compression: str = None
+    raw_chunk: RawChunk,
+    encoding: Optional[str] = None,
+    compression: Optional[str] = None,
 ) -> Chunk:
     """Cast the raw_chunk to a Chunk.
 
@@ -403,7 +404,8 @@ def _cast_tile_layer(raw_layer: RawLayer) -> TileLayer:
 
 
 def _cast_object_layer(
-    raw_layer: RawLayer, parent_dir: Optional[Path] = None
+    raw_layer: RawLayer,
+    parent_dir: Optional[Path] = None,
 ) -> ObjectLayer:
     """Cast the raw_layer to an ObjectLayer.
 
@@ -458,46 +460,38 @@ def _cast_group_layer(
     layers = []
 
     for layer in raw_layer["layers"]:
-        layers.append(cast(layer, parent_dir))
+        layers.append(cast(layer, parent_dir=parent_dir))
 
     return LayerGroup(layers=layers, **_get_common_attributes(raw_layer).__dict__)
 
 
-def _get_caster(type_: str) -> Callable[[RawLayer], Layer]:
-    """Get the caster function for the raw layer.
-
-    Args:
-        type_: the type of the layer
-
-    Returns:
-        Callable[[RawLayer], Layer]: The caster function.
-    """
-    casters = {
-        "tilelayer": _cast_tile_layer,
-        "objectgroup": _cast_object_layer,
-        "imagelayer": _cast_image_layer,
-        "group": _cast_group_layer,
-    }
-    return casters[type_]
-
-
-def cast(raw_layer: RawLayer, parent_dir: Optional[Path] = None) -> Layer:
+def cast(
+    raw_layer: RawLayer,
+    parent_dir: Optional[Path] = None,
+) -> Layer:
     """Cast a raw Tiled layer into a pytiled_parser type.
 
     This function will determine the type of layer and cast accordingly.
 
     Args:
         raw_layer: Raw layer to be cast.
+        parent_dir: The parent directory that the map file is in.
 
     Returns:
         Layer: a properly typed Layer.
-    """
-    caster = _get_caster(raw_layer["type"])
 
-    if (
-        caster.__name__ == "_cast_object_layer"
-        or caster.__name__ == "_cast_group_layer"
-    ):
-        return caster(raw_layer, parent_dir)
-    else:
-        return caster(raw_layer)
+    Raises:
+        RuntimeError: For an invalid layer type being provided
+    """
+    type_ = raw_layer["type"]
+
+    if type_ == "objectgroup":
+        return _cast_object_layer(raw_layer, parent_dir)
+    elif type_ == "group":
+        return _cast_group_layer(raw_layer, parent_dir)
+    elif type_ == "imagelayer":
+        return _cast_image_layer(raw_layer)
+    elif type_ == "tilelayer":
+        return _cast_tile_layer(raw_layer)
+
+    raise RuntimeError(f"An invalid layer type of {type_} was supplied")
