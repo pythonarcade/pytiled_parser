@@ -130,6 +130,8 @@ class Tileset:
     tile_count: int
     columns: int
 
+    firstgid: int
+
     type: str = "tileset"
 
     spacing: int = 0
@@ -144,7 +146,6 @@ class Tileset:
 
     transformations: Optional[Transformations] = None
 
-    firstgid: Optional[int] = None
     background_color: Optional[Color] = None
     tile_offset: Optional[OrderedPair] = None
     transparent_color: Optional[Color] = None
@@ -329,11 +330,16 @@ def _cast_grid(raw_grid: RawGrid) -> Grid:
     )
 
 
-def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tileset:
+def cast(
+    raw_tileset: RawTileSet,
+    firstgid: int,
+    external_path: Optional[Path] = None,
+) -> Tileset:
     """Cast the raw tileset into a pytiled_parser type
 
     Args:
         raw_tileset: Raw Tileset to be cast.
+        firstgid: GID corresponding the first tile in the set.
         external_path: The path to the tileset if it is not an embedded one.
 
     Returns:
@@ -348,6 +354,7 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
         columns=raw_tileset["columns"],
         spacing=raw_tileset["spacing"],
         margin=raw_tileset["margin"],
+        firstgid=firstgid,
     )
 
     if raw_tileset.get("version") is not None:
@@ -372,9 +379,6 @@ def cast(raw_tileset: RawTileSet, external_path: Optional[Path] = None) -> Tiles
 
     if raw_tileset.get("imageheight") is not None:
         tileset.image_height = raw_tileset["imageheight"]
-
-    if raw_tileset.get("firstgid") is not None:
-        tileset.firstgid = raw_tileset["firstgid"]
 
     if raw_tileset.get("backgroundcolor") is not None:
         tileset.background_color = parse_color(raw_tileset["backgroundcolor"])

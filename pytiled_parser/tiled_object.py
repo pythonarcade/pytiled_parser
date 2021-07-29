@@ -1,7 +1,7 @@
 # pylint: disable=too-few-public-methods
 import json
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import attr
 from typing_extensions import TypedDict
@@ -148,6 +148,8 @@ class Tile(TiledObject):
     """
 
     gid: int
+    new_tileset: Optional[Dict[str, Any]] = None
+    new_tileset_path: Optional[Path] = None
 
 
 class RawTextDict(TypedDict):
@@ -257,7 +259,11 @@ def _cast_point(raw_tiled_object: RawTiledObject) -> Point:
     return Point(**_get_common_attributes(raw_tiled_object).__dict__)
 
 
-def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
+def _cast_tile(
+    raw_tiled_object: RawTiledObject,
+    new_tileset: Optional[Dict[str, Any]] = None,
+    new_tileset_path: Optional[Path] = None,
+) -> Tile:
     """Cast the raw_tiled_object to a Tile object.
 
     Args:
@@ -268,7 +274,12 @@ def _cast_tile(raw_tiled_object: RawTiledObject) -> Tile:
     """
     gid = raw_tiled_object["gid"]
 
-    return Tile(gid=gid, **_get_common_attributes(raw_tiled_object).__dict__)
+    return Tile(
+        gid=gid,
+        new_tileset=new_tileset,
+        new_tileset_path=new_tileset_path,
+        **_get_common_attributes(raw_tiled_object).__dict__
+    )
 
 
 def _cast_polygon(raw_tiled_object: RawTiledObject) -> Polygon:
@@ -393,16 +404,24 @@ def _get_caster(
 
 
 def cast(
-    raw_tiled_object: RawTiledObject, parent_dir: Optional[Path] = None
+    raw_tiled_object: RawTiledObject,
+    parent_dir: Optional[Path] = None,
 ) -> TiledObject:
     """Cast the raw tiled object into a pytiled_parser type
 
     Args:
         raw_tiled_object: Raw Tiled object that is to be cast.
+        parent_dir: The parent directory that the map file is in.
 
     Returns:
         TiledObject: a properly typed Tiled object.
+
+    Raises:
+        RuntimeError: When a required parameter was not sent based on a condition.
     """
+    new_tileset = None
+    new_tileset_path = None
+
     if raw_tiled_object.get("template"):
         if not parent_dir:
             raise RuntimeError(
@@ -410,12 +429,21 @@ def cast(
             )
         template_path = Path(parent_dir / raw_tiled_object["template"])
         with open(template_path) as raw_template_file:
-            loaded_template = json.load(raw_template_file)["object"]
+            template = json.load(raw_template_file)
+            if "tileset" in template:
+                tileset_path = Path(
+                    template_path.parent / template["tileset"]["source"]
+                )
+                with open(tileset_path) as raw_tileset_file:
+                    new_tileset = json.load(raw_tileset_file)
+                    new_tileset_path = tileset_path.parent
+
+            loaded_template = template["object"]
             for key in loaded_template:
                 if key != "id":
                     raw_tiled_object[key] = loaded_template[key]  # type: ignore
 
-    caster = _get_caster(raw_tiled_object)
+    if raw_tiled_object.get("gid"):
+        return _cast_tile(raw_tiled_object, new_tileset, new_tileset_path)
 
-    tiled_object = caster(raw_tiled_object)
-    return tiled_object
+    return _get_caster(raw_tiled_object)(raw_tiled_object)

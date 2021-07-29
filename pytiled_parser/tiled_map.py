@@ -132,12 +132,16 @@ def parse_map(file: Path) -> TiledMap:
             tileset_path = Path(parent_dir / raw_tileset["source"])
             with open(tileset_path) as raw_tileset_file:
                 tilesets[raw_tileset["firstgid"]] = tileset.cast(
-                    json.load(raw_tileset_file), external_path=tileset_path.parent
+                    json.load(raw_tileset_file),
+                    raw_tileset["firstgid"],
+                    external_path=tileset_path.parent,
                 )
         else:
             # Is an embedded Tileset
             raw_tileset = typing_cast(RawTileSet, raw_tileset)
-            tilesets[raw_tileset["firstgid"]] = tileset.cast(raw_tileset)
+            tilesets[raw_tileset["firstgid"]] = tileset.cast(
+                raw_tileset, raw_tileset["firstgid"]
+            )
 
     if isinstance(raw_tiled_map["version"], float):
         version = str(raw_tiled_map["version"])
@@ -159,6 +163,37 @@ def parse_map(file: Path) -> TiledMap:
         tilesets=tilesets,
         version=version,
     )
+
+    layers = [layer for layer in map_.layers if hasattr(layer, "tiled_objects")]
+
+    for my_layer in layers:
+        for tiled_object in my_layer.tiled_objects:  # type: ignore
+            if hasattr(tiled_object, "new_tileset"):
+                if tiled_object.new_tileset:
+                    already_loaded = None
+                    for val in map_.tilesets.values():
+                        if val.name == tiled_object.new_tileset["name"]:
+                            already_loaded = val
+                            break
+
+                    if not already_loaded:
+                        highest_firstgid = max(map_.tilesets.keys())
+                        last_tileset_count = map_.tilesets[highest_firstgid].tile_count
+                        new_firstgid = highest_firstgid + last_tileset_count
+                        map_.tilesets[new_firstgid] = tileset.cast(
+                            tiled_object.new_tileset,
+                            new_firstgid,
+                            tiled_object.new_tileset_path,
+                        )
+                        tiled_object.gid = tiled_object.gid + (new_firstgid - 1)
+
+                    else:
+                        tiled_object.gid = tiled_object.gid + (
+                            already_loaded.firstgid - 1
+                        )
+
+                    tiled_object.new_tileset = None
+                    tiled_object.new_tileset_path = None
 
     if raw_tiled_map.get("backgroundcolor") is not None:
         map_.background_color = parse_color(raw_tiled_map["backgroundcolor"])

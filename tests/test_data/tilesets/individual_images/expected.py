@@ -11,6 +11,7 @@ EXPECTED = tileset.Tileset(
     tiled_version="1.6.0",
     tile_height=32,
     tile_width=32,
+    firstgid=1,
     version="1.6",
     type="tileset",
     grid=tileset.Grid(orientation="orthogonal", width=1, height=1),
