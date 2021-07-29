@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.5.2] - 2021-07-28
+
+This release contains some re-working to properly support templates.
+
+Previously templates were supposedly fully supported, however they were broken for tile objects. Now there should be out of the box support for auto-loading tile objects from templates. Regardless of where the tileset is defined. See Issue https://github.com/benjamin-kirkbride/pytiled_parser/issues/41 for details
+
+There are no API changes as far as usage is concerned, these were all internal changes to properly support the feature.
+
+This release also contains some minor fixes to docstrings and typing annotations/linting problems.
+
 ## [1.5.1] - 2021-07-09
 
 This release contains two bugfixes:
