@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.5.3] - 2021-08-28
+
+Just a small bugfix in this release. Previously if a layer's offset was (0, 0), the values for it would not appear in the JSON file, so the `offset` value in the
+Layer class would be `None`. This can cause some unexpected behavior in engines or games, and puts the responsibility of checking if this value exists onto the game or engine using it.
+
+This value has been changed to default to (0, 0) if it is not present in the JSON so that games can apply it easily in one line and always get the same result without error.
+
 ## [1.5.2] - 2021-07-28
 
 This release contains some re-working to properly support templates.
