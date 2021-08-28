@@ -56,10 +56,10 @@ class Layer:
 
     coordinates: OrderedPair = OrderedPair(0, 0)
     parallax_factor: OrderedPair = OrderedPair(1, 1)
+    offset: OrderedPair = OrderedPair(0, 0)
 
     id: Optional[int] = None
     size: Optional[Size] = None
-    offset: Optional[OrderedPair] = None
     properties: Optional[properties_.Properties] = None
     tint_color: Optional[Color] = None
 
