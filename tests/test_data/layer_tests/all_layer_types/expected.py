@@ -108,6 +108,7 @@ EXPECTED = [
     ),
     layer.ImageLayer(
         name="Image Layer 1",
+        offset=common_types.OrderedPair(1, 4),
         opacity=1,
         visible=True,
         id=3,
@@ -117,6 +118,7 @@ EXPECTED = [
     ),
     layer.ImageLayer(
         name="Image Layer 2",
+        offset=common_types.OrderedPair(0, 0),
         opacity=1,
         visible=True,
         id=5,
