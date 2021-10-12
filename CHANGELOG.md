@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [1.5.4] - 2021-10-12
+
+Previously if only one parallax value(x or y) on a layer had been set, it would fail because pytiled-parser was assuming that if one was set then the other would be. This is not actually the case in the Tiled map file.
+
+The value for them now defaults to 1.0 if it is not specified in the map file(This is the Tiled default value).
+
 ## [1.5.3] - 2021-08-28
 
 Just a small bugfix in this release. Previously if a layer's offset was (0, 0), the values for it would not appear in the JSON file, so the `offset` value in the

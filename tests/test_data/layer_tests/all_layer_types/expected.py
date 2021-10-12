@@ -83,7 +83,7 @@ EXPECTED = [
         opacity=1,
         visible=True,
         id=4,
-        parallax_factor=common_types.OrderedPair(2.3, 1.2),
+        parallax_factor=common_types.OrderedPair(1.4, 1.0),
         tint_color=common_types.Color(0, 0, 255, 255),
         layers=[
             layer.ObjectLayer(
@@ -122,7 +122,7 @@ EXPECTED = [
         opacity=1,
         visible=True,
         id=5,
-        parallax_factor=common_types.OrderedPair(1.5, 1.2),
+        parallax_factor=common_types.OrderedPair(1.0, 1.4),
         image=Path("../../images/tile_04.png"),
     ),
 ]
