@@ -356,10 +356,15 @@ def _get_common_attributes(raw_layer: RawLayer) -> Layer:
     if raw_layer.get("properties") is not None:
         common_attributes.properties = properties_.cast(raw_layer["properties"])
 
+    parallax = [1.0, 1.0]
+
     if raw_layer.get("parallaxx") is not None:
-        common_attributes.parallax_factor = OrderedPair(
-            raw_layer["parallaxx"], raw_layer["parallaxy"]
-        )
+        parallax[0] = raw_layer["parallaxx"]
+
+    if raw_layer.get("parallaxy") is not None:
+        parallax[1] = raw_layer["parallaxy"]
+
+    common_attributes.parallax_factor = OrderedPair(parallax[0], parallax[1])
 
     if raw_layer.get("tintcolor") is not None:
         common_attributes.tint_color = parse_color(raw_layer["tintcolor"])
