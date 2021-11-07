@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from pytiled_parser import tiled_map
+from pytiled_parser import parse_map
 
 TESTS_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 TEST_DATA = TESTS_DIR / "test_data"
@@ -31,7 +31,7 @@ def test_map_integration(map_test):
 
     raw_maps_path = map_test / "map.json"
 
-    casted_map = tiled_map.parse_map(raw_maps_path)
+    casted_map = parse_map(raw_maps_path)
 
     expected.EXPECTED.map_file = casted_map.map_file
     assert casted_map == expected.EXPECTED

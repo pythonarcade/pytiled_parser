@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pytiled_parser import tileset
+from pytiled_parser.parsers.json.tileset import parse
 
 TESTS_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 TEST_DATA = TESTS_DIR / "test_data"
@@ -39,6 +39,6 @@ def test_tilesets_integration(tileset_dir):
     raw_tileset_path = tileset_dir / "tileset.json"
 
     with open(raw_tileset_path) as raw_tileset:
-        tileset_ = tileset.cast(json.loads(raw_tileset.read()), 1)
+        tileset_ = parse(json.loads(raw_tileset.read()), 1)
 
     assert tileset_ == expected.EXPECTED
