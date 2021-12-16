@@ -13,7 +13,7 @@ PyTiled Parser is not tied to any particular graphics library or game engine.
 
 from .common_types import OrderedPair, Size
 from .layer import ImageLayer, Layer, LayerGroup, ObjectLayer, TileLayer
-from .parser import parse_map
+from .parser import parse_map, parse_tmx
 from .properties import Properties
 from .tiled_map import TiledMap
 from .tileset import Tile, Tileset
