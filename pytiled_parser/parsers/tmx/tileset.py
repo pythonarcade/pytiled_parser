@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from pytiled_parser.common_types import OrderedPair
+from pytiled_parser.parsers.tmx.layer import parse as parse_layer
 from pytiled_parser.parsers.tmx.properties import parse as parse_properties
 from pytiled_parser.parsers.tmx.wang_set import parse as parse_wangset
 from pytiled_parser.tileset import Frame, Grid, Tile, Tileset, Transformations
@@ -82,6 +83,10 @@ def _parse_tile(raw_tile: etree.Element, external_path: Optional[Path] = None) -
         tile.animation = []
         for raw_frame in animation_element.findall("./frame"):
             tile.animation.append(_parse_frame(raw_frame))
+
+    object_element = raw_tile.find("./objectgroup")
+    if object_element:
+        tile.objects = parse_layer(object_element)
 
     properties_element = raw_tile.find("./properties")
     if properties_element:

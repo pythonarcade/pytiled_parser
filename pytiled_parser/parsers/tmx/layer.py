@@ -1,13 +1,135 @@
 """Layer parsing for the TMX Map Format.
 """
+import base64
+import gzip
+import importlib.util
 import xml.etree.ElementTree as etree
+import zlib
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 from pytiled_parser.common_types import OrderedPair, Size
-from pytiled_parser.layer import ImageLayer, Layer
+from pytiled_parser.layer import (
+    Chunk,
+    ImageLayer,
+    Layer,
+    LayerGroup,
+    ObjectLayer,
+    TileLayer,
+)
 from pytiled_parser.parsers.tmx.properties import parse as parse_properties
+from pytiled_parser.parsers.tmx.tiled_object import parse as parse_object
 from pytiled_parser.util import parse_color
+
+zstd_spec = importlib.util.find_spec("zstd")
+if zstd_spec:
+    import zstd
+else:
+    zstd = None
+
+
+def _convert_raw_tile_layer_data(data: List[int], layer_width: int) -> List[List[int]]:
+    """Convert raw layer data into a nested lit based on the layer width
+
+    Args:
+        data: The data to convert
+        layer_width: Width of the layer
+
+    Returns:
+        List[List[int]]: A nested list containing the converted data
+    """
+    tile_grid: List[List[int]] = [[]]
+
+    column_count = 0
+    row_count = 0
+    for item in data:
+        column_count += 1
+        tile_grid[row_count].append(item)
+        if not column_count % layer_width and column_count < len(data):
+            row_count += 1
+            tile_grid.append([])
+
+    return tile_grid
+
+
+def _decode_tile_layer_data(
+    data: str, compression: str, layer_width: int
+) -> List[List[int]]:
+    """Decode Base64 Encoded tile data. Optionally supports gzip and zlib compression.
+
+    Args:
+        data: The base64 encoded data
+        compression: Either zlib, gzip, or empty. If empty no decompression is done.
+
+    Returns:
+        List[List[int]]: A nested list containing the decoded data
+
+    Raises:
+        ValueError: For an unsupported compression type.
+    """
+    unencoded_data = base64.b64decode(data)
+    if compression == "zlib":
+        unzipped_data = zlib.decompress(unencoded_data)
+    elif compression == "gzip":
+        unzipped_data = gzip.decompress(unencoded_data)
+    elif compression == "zstd" and zstd is None:
+        raise ValueError(
+            "zstd compression support is not installed."
+            "To install use 'pip install pytiled-parser[zstd]'"
+        )
+    elif compression == "zstd":
+        unzipped_data = zstd.decompress(unencoded_data)
+    else:
+        unzipped_data = unencoded_data
+
+    tile_grid: List[int] = []
+
+    byte_count = 0
+    int_count = 0
+    int_value = 0
+    for byte in unzipped_data:
+        int_value += byte << (byte_count * 8)
+        byte_count += 1
+        if not byte_count % 4:
+            byte_count = 0
+            int_count += 1
+            tile_grid.append(int_value)
+            int_value = 0
+
+    return _convert_raw_tile_layer_data(tile_grid, layer_width)
+
+
+def _parse_chunk(
+    raw_chunk: etree.Element,
+    encoding: Optional[str] = None,
+    compression: Optional[str] = None,
+) -> Chunk:
+    """Parse the raw_chunk to a Chunk.
+
+    Args:
+        raw_chunk: XML Element to be parsed to a Chunk
+        encoding: Encoding type. ("base64" or None)
+        compression: Either zlib, gzip, or empty. If empty no decompression is done.
+
+    Returns:
+        Chunk: The Chunk created from the raw_chunk
+    """
+    if encoding == "base64":
+        assert isinstance(compression, str)
+        data = _decode_tile_layer_data(
+            raw_chunk.text, compression, int(raw_chunk.attrib["width"])  # type: ignore
+        )
+    else:
+        data = _convert_raw_tile_layer_data(
+            [int(v.strip) for v in raw_chunk.text],  # type: ignore
+            int(raw_chunk.attrib["width"]),
+        )
+
+    return Chunk(
+        coordinates=OrderedPair(int(raw_chunk.attrib["x"]), int(raw_chunk.attrib["y"])),
+        size=Size(int(raw_chunk.attrib["width"]), int(raw_chunk.attrib["height"])),
+        data=data,
+    )
 
 
 def _parse_common(raw_layer: etree.Element) -> Layer:
@@ -56,6 +178,83 @@ def _parse_common(raw_layer: etree.Element) -> Layer:
     return common
 
 
+def _parse_tile_layer(raw_layer: etree.Element) -> TileLayer:
+    """Parse the raw_layer to a TileLayer.
+
+    Args:
+        raw_layer: XML Element to be parsed to a TileLayer.
+
+    Returns:
+        TileLayer: The TileLayer created from raw_layer
+    """
+    tile_layer = TileLayer(
+        size=Size(int(raw_layer.attrib["width"]), int(raw_layer.attrib["height"])),
+        **_parse_common(raw_layer).__dict__,
+    )
+
+    data_element = raw_layer.find("./data")
+    if data_element:
+        encoding = None
+        if data_element.attrib.get("encoding") is not None:
+            encoding = data_element.attrib["encoding"]
+
+        compression = ""
+        if data_element.attrib.get("compression") is not None:
+            compression = data_element.attrib["compression"]
+
+        raw_chunks = data_element.findall("./chunk")
+
+        if not raw_chunks:
+            if encoding:
+                tile_layer.data = _decode_tile_layer_data(
+                    data=data_element.text,  # type: ignore
+                    compression=compression,
+                    layer_width=int(raw_layer.attrib["width"]),
+                )
+            else:
+                tile_layer.data = _convert_raw_tile_layer_data(
+                    [int(v.strip()) for v in data_element.text],  # type: ignore
+                    int(raw_layer.attrib["width"]),
+                )
+        else:
+            chunks = []
+            for raw_chunk in raw_chunks:
+                chunks.append(
+                    _parse_chunk(
+                        raw_chunk,
+                        encoding,
+                        compression,
+                    )
+                )
+
+            if chunks:
+                tile_layer.chunks = chunks
+
+    return tile_layer
+
+
+def _parse_object_layer(
+    raw_layer: etree.Element, parent_dir: Optional[Path] = None
+) -> ObjectLayer:
+    """Parse the raw_layer to an ObjectLayer.
+
+    Args:
+        raw_layer: XML Element to be parsed to an ObjectLayer.
+
+    Returns:
+        ObjectLayer: The ObjectLayer created from raw_layer
+    """
+    objects = []
+    for object_ in raw_layer.findall("./object"):
+        objects.append(parse_object(object_, parent_dir))
+
+    return ObjectLayer(
+        tiled_objects=objects,
+        draw_order=raw_layer.attrib["draworder"],
+        **_parse_common(raw_layer).__dict__,
+    )
+
+
 def _parse_image_layer(raw_layer: etree.Element) -> ImageLayer:
     """Parse the raw_layer to an ImageLayer.
 
@@ -83,6 +282,26 @@ def _parse_image_layer(raw_layer: etree.Element) -> ImageLayer:
         )
 
     raise RuntimeError("Tried to parse an image layer that doesn't have an image!")
+
+
+def _parse_group_layer(
+    raw_layer: etree.Element, parent_dir: Optional[Path] = None
+) -> LayerGroup:
+    """Parse the raw_layer to a LayerGroup.
+
+    Args:
+        raw_layer: XML Element to be parsed to a LayerGroup.
+
+    Returns:
+        LayerGroup: The LayerGroup created from raw_layer
+    """
+    layers = []
+
+    for layer in raw_layer.iter():
+        if layer.tag in ["layer", "objectgroup", "imagelayer", "group"]:
+            layers.append(parse(layer, parent_dir=parent_dir))
+
+    return LayerGroup(layers=layers, **_parse_common(raw_layer).__dict__)
 
 
 def parse(

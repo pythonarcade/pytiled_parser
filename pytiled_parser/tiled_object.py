@@ -1,6 +1,7 @@
 # pylint: disable=too-few-public-methods
+import xml.etree.ElementTree as etree
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import attr
 
@@ -145,5 +146,5 @@ class Tile(TiledObject):
     """
 
     gid: int
-    new_tileset: Optional[Dict[str, Any]] = None
+    new_tileset: Optional[Union[etree.Element, Dict[str, Any]]] = None
     new_tileset_path: Optional[Path] = None
