@@ -134,8 +134,9 @@ def parse(
     if raw_tileset.attrib.get("backgroundcolor") is not None:
         tileset.background_color = parse_color(raw_tileset.attrib["backgroundcolor"])
 
-    image_element = raw_tileset.find("./image")
-    if image_element:
+    image_element = raw_tileset.find("image")
+    if image_element is not None:
+        print("here")
         if external_path:
             tileset.image = (
                 Path(external_path / image_element.attrib["source"])
@@ -153,7 +154,6 @@ def parse(
             if my_string[0] != "#":
                 my_string = f"#{my_string}"
             tileset.transparent_color = parse_color(my_string)
-    pass
 
     tileoffset_element = raw_tileset.find("./tileoffset")
     if tileoffset_element:

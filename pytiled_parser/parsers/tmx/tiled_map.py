@@ -31,10 +31,10 @@ def parse(file: Path) -> TiledMap:
             # Is an external Tileset
             tileset_path = Path(parent_dir / raw_tileset.attrib["source"])
             with open(tileset_path) as tileset_file:
-                raw_tileset = etree.parse(tileset_file).getroot()
+                raw_tileset_external = etree.parse(tileset_file).getroot()
 
             tilesets[int(raw_tileset.attrib["firstgid"])] = parse_tileset(
-                raw_tileset,
+                raw_tileset_external,
                 int(raw_tileset.attrib["firstgid"]),
                 external_path=tileset_path.parent,
             )
