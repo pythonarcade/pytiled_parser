@@ -32,14 +32,24 @@ def _parse_common(raw_object: etree.Element) -> TiledObject:
         coordinates=OrderedPair(
             float(raw_object.attrib["x"]), float(raw_object.attrib["y"])
         ),
-        visible=bool(int(raw_object.attrib["visible"])),
-        size=Size(
-            float(raw_object.attrib["width"]), float(raw_object.attrib["height"])
-        ),
-        rotation=float(raw_object.attrib["rotation"]),
-        name=raw_object.attrib["name"],
-        type=raw_object.attrib["type"],
     )
+
+    if raw_object.attrib.get("width") is not None:
+        common.size = Size(
+            float(raw_object.attrib["width"]), float(raw_object.attrib["height"])
+        )
+
+    if raw_object.attrib.get("visible") is not None:
+        common.visible = bool(int(raw_object.attrib["visible"]))
+
+    if raw_object.attrib.get("rotation") is not None:
+        common.rotation = float(raw_object.attrib["rotation"])
+
+    if raw_object.attrib.get("name") is not None:
+        common.name = raw_object.attrib["name"]
+
+    if raw_object.attrib.get("type") is not None:
+        common.type = raw_object.attrib["type"]
 
     properties_element = raw_object.find("./properties")
     if properties_element:
@@ -94,9 +104,11 @@ def _parse_polygon(raw_object: etree.Element) -> Polygon:
         Polygon: The Polygon object created from the raw object
     """
     polygon = []
-    for raw_point in raw_object.attrib["points"].split(" "):
-        point = raw_point.split(",")
-        polygon.append(OrderedPair(float(point[0]), float(point[1])))
+    polygon_element = raw_object.find("./polygon")
+    if polygon_element is not None:
+        for raw_point in polygon_element.attrib["points"].split(" "):
+            point = raw_point.split(",")
+            polygon.append(OrderedPair(float(point[0]), float(point[1])))
 
     return Polygon(points=polygon, **_parse_common(raw_object).__dict__)
 
@@ -204,23 +216,19 @@ def _get_parser(raw_object: etree.Element) -> Callable[[etree.Element], TiledObj
     Returns:
         Callable[[Element], Object]: The parser function.
     """
-    if raw_object.find("./ellipse"):
+    if raw_object.find("./ellipse") is not None:
         return _parse_ellipse
 
-    if raw_object.find("./point"):
+    if raw_object.find("./point") is not None:
         return _parse_point
 
-    if raw_object.attrib.get("gid"):
-        # Only tile objects have the `gid` attribute
-        return _parse_tile
-
-    if raw_object.find("./polygon"):
+    if raw_object.find("./polygon") is not None:
         return _parse_polygon
 
-    if raw_object.find("./polyline"):
+    if raw_object.find("./polyline") is not None:
         return _parse_polyline
 
-    if raw_object.find("./text"):
+    if raw_object.find("./text") is not None:
         return _parse_text
 
     # If it's none of the above, rectangle is the only one left.
@@ -263,13 +271,22 @@ def parse(raw_object: etree.Element, parent_dir: Optional[Path] = None) -> Tiled
                     new_tileset_path = tileset_path.parent
 
             new_object = template.find("./object")
-            if raw_object.attrib.get("id") and new_object:
-                new_object.attrib["id"] = raw_object.attrib["id"]
+            if new_object is not None:
+                if raw_object.attrib.get("id") is not None:
+                    new_object.attrib["id"] = raw_object.attrib["id"]
 
-            if new_object:
+                if raw_object.attrib.get("x") is not None:
+                    new_object.attrib["x"] = raw_object.attrib["x"]
+
+                if raw_object.attrib.get("y") is not None:
+                    new_object.attrib["y"] = raw_object.attrib["y"]
+
                 raw_object = new_object
 
+            if raw_object.attrib.get("gid"):
+                return _parse_tile(raw_object, new_tileset, new_tileset_path)
+
     if raw_object.attrib.get("gid"):
-        return _parse_tile(raw_object, new_tileset, new_tileset_path)
+        return _parse_tile(raw_object)
 
     return _get_parser(raw_object)(raw_object)

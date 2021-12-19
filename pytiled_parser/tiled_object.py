@@ -35,10 +35,9 @@ class TiledObject:
     coordinates: OrderedPair
     size: Size = Size(0, 0)
     rotation: float = 0
-    visible: bool
-
-    name: Optional[str] = None
-    type: Optional[str] = None
+    visible: bool = True
+    name: str = ""
+    type: str = ""
 
     properties: properties_.Properties = {}
 

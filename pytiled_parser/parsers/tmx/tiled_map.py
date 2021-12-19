@@ -18,6 +18,7 @@ def parse(file: Path) -> TiledMap:
     Returns:
         TiledMap: A parsed TiledMap.
     """
+    print(file)
     with open(file) as map_file:
         raw_map = etree.parse(map_file).getroot()
 
@@ -71,10 +72,10 @@ def parse(file: Path) -> TiledMap:
     for my_layer in layers:
         for tiled_object in my_layer.tiled_objects:
             if hasattr(tiled_object, "new_tileset"):
-                if tiled_object.new_tileset:
+                if tiled_object.new_tileset is not None:
                     already_loaded = None
                     for val in map_.tilesets.values():
-                        if val.name == tiled_object.new_tileset["name"]:
+                        if val.name == tiled_object.new_tileset.attrib["name"]:
                             already_loaded = val
                             break
 

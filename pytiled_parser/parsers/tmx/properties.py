@@ -11,8 +11,9 @@ def parse(raw_properties: etree.Element) -> Properties:
     final: Properties = {}
     value: Property
 
-    for raw_property in raw_properties.findall("./property"):
-        type_ = raw_property.attrib["type"]
+    for raw_property in raw_properties.findall("property"):
+
+        type_ = raw_property.attrib.get("type")
         value_ = raw_property.attrib["value"]
         if type_ == "file":
             value = Path(value_)

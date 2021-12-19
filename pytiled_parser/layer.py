@@ -38,8 +38,8 @@ class Layer:
     """
 
     name: str
-    opacity: float
-    visible: bool
+    opacity: float = 1
+    visible: bool = True
 
     coordinates: OrderedPair = OrderedPair(0, 0)
     parallax_factor: OrderedPair = OrderedPair(1, 1)

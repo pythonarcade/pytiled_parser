@@ -79,21 +79,21 @@ def _parse_tile(raw_tile: etree.Element, external_path: Optional[Path] = None) -
         tile.type = raw_tile.attrib["type"]
 
     animation_element = raw_tile.find("./animation")
-    if animation_element:
+    if animation_element is not None:
         tile.animation = []
         for raw_frame in animation_element.findall("./frame"):
             tile.animation.append(_parse_frame(raw_frame))
 
     object_element = raw_tile.find("./objectgroup")
-    if object_element:
+    if object_element is not None:
         tile.objects = parse_layer(object_element)
 
     properties_element = raw_tile.find("./properties")
-    if properties_element:
+    if properties_element is not None:
         tile.properties = parse_properties(properties_element)
 
     image_element = raw_tile.find("./image")
-    if image_element:
+    if image_element is not None:
         if external_path:
             tile.image = (
                 Path(external_path / image_element.attrib["source"])
@@ -120,8 +120,6 @@ def parse(
         tile_width=int(raw_tileset.attrib["tilewidth"]),
         tile_height=int(raw_tileset.attrib["tileheight"]),
         columns=int(raw_tileset.attrib["columns"]),
-        spacing=int(raw_tileset.attrib["spacing"]),
-        margin=int(raw_tileset.attrib["margin"]),
         firstgid=firstgid,
     )
 
@@ -134,9 +132,14 @@ def parse(
     if raw_tileset.attrib.get("backgroundcolor") is not None:
         tileset.background_color = parse_color(raw_tileset.attrib["backgroundcolor"])
 
+    if raw_tileset.attrib.get("spacing") is not None:
+        tileset.spacing = int(raw_tileset.attrib["spacing"])
+
+    if raw_tileset.attrib.get("margin") is not None:
+        tileset.margin = int(raw_tileset.attrib["margin"])
+
     image_element = raw_tileset.find("image")
     if image_element is not None:
-        print("here")
         if external_path:
             tileset.image = (
                 Path(external_path / image_element.attrib["source"])
@@ -156,21 +159,21 @@ def parse(
             tileset.transparent_color = parse_color(my_string)
 
     tileoffset_element = raw_tileset.find("./tileoffset")
-    if tileoffset_element:
+    if tileoffset_element is not None:
         tileset.tile_offset = OrderedPair(
             int(tileoffset_element.attrib["x"]), int(tileoffset_element.attrib["y"])
         )
 
     grid_element = raw_tileset.find("./grid")
-    if grid_element:
+    if grid_element is not None:
         tileset.grid = _parse_grid(grid_element)
 
     properties_element = raw_tileset.find("./properties")
-    if properties_element:
+    if properties_element is not None:
         tileset.properties = parse_properties(properties_element)
 
     tiles = {}
-    for tile_element in raw_tileset.findall("./tiles"):
+    for tile_element in raw_tileset.findall("./tile"):
         tiles[int(tile_element.attrib["id"])] = _parse_tile(
             tile_element, external_path=external_path
         )
@@ -178,14 +181,14 @@ def parse(
         tileset.tiles = tiles
 
     wangsets_element = raw_tileset.find("./wangsets")
-    if wangsets_element:
+    if wangsets_element is not None:
         wangsets = []
         for raw_wangset in wangsets_element.findall("./wangset"):
             wangsets.append(parse_wangset(raw_wangset))
         tileset.wang_sets = wangsets
 
     transformations_element = raw_tileset.find("./transformations")
-    if transformations_element:
+    if transformations_element is not None:
         tileset.transformations = _parse_transformations(transformations_element)
 
     return tileset

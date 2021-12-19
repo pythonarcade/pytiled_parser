@@ -144,11 +144,18 @@ def _parse_common(raw_layer: etree.Element) -> Layer:
     Returns:
         Layer: The attributes in common of all layer types
     """
+    if raw_layer.attrib.get("name") is None:
+        raw_layer.attrib["name"] = ""
+
     common = Layer(
         name=raw_layer.attrib["name"],
-        opacity=float(raw_layer.attrib["opacity"]),
-        visible=bool(int(raw_layer.attrib["visible"])),
     )
+
+    if raw_layer.attrib.get("opacity") is not None:
+        common.opacity = float(raw_layer.attrib["opacity"])
+
+    if raw_layer.attrib.get("visible") is not None:
+        common.visible = bool(int(raw_layer.attrib["visible"]))
 
     if raw_layer.attrib.get("id") is not None:
         common.id = int(raw_layer.attrib["id"])
@@ -159,7 +166,7 @@ def _parse_common(raw_layer: etree.Element) -> Layer:
         )
 
     properties_element = raw_layer.find("./properties")
-    if properties_element:
+    if properties_element is not None:
         common.properties = parse_properties(properties_element)
 
     parallax = [1.0, 1.0]
@@ -187,13 +194,15 @@ def _parse_tile_layer(raw_layer: etree.Element) -> TileLayer:
     Returns:
         TileLayer: The TileLayer created from raw_layer
     """
+    common = _parse_common(raw_layer).__dict__
+    del common["size"]
     tile_layer = TileLayer(
         size=Size(int(raw_layer.attrib["width"]), int(raw_layer.attrib["height"])),
-        **_parse_common(raw_layer).__dict__,
+        **common,
     )
 
-    data_element = raw_layer.find("./data")
-    if data_element:
+    data_element = raw_layer.find("data")
+    if data_element is not None:
         encoding = None
         if data_element.attrib.get("encoding") is not None:
             encoding = data_element.attrib["encoding"]
@@ -202,10 +211,9 @@ def _parse_tile_layer(raw_layer: etree.Element) -> TileLayer:
         if data_element.attrib.get("compression") is not None:
             compression = data_element.attrib["compression"]
 
-        raw_chunks = data_element.findall("./chunk")
-
+        raw_chunks = data_element.findall("chunk")
         if not raw_chunks:
-            if encoding:
+            if encoding and encoding != "csv":
                 tile_layer.data = _decode_tile_layer_data(
                     data=data_element.text,  # type: ignore
                     compression=compression,
@@ -213,7 +221,7 @@ def _parse_tile_layer(raw_layer: etree.Element) -> TileLayer:
                 )
             else:
                 tile_layer.data = _convert_raw_tile_layer_data(
-                    [int(v.strip()) for v in data_element.text],  # type: ignore
+                    [int(v.strip()) for v in data_element.text.split(",")],  # type: ignore
                     int(raw_layer.attrib["width"]),
                 )
         else:
@@ -248,11 +256,15 @@ def _parse_object_layer(
     for object_ in raw_layer.findall("./object"):
         objects.append(parse_object(object_, parent_dir))
 
-    return ObjectLayer(
+    object_layer = ObjectLayer(
         tiled_objects=objects,
-        draw_order=raw_layer.attrib["draworder"],
         **_parse_common(raw_layer).__dict__,
     )
+
+    if raw_layer.attrib.get("draworder") is not None:
+        object_layer.draw_order = raw_layer.attrib["draworder"]
+
+    return object_layer
 
 
 def _parse_image_layer(raw_layer: etree.Element) -> ImageLayer:
@@ -274,6 +286,8 @@ def _parse_image_layer(raw_layer: etree.Element) -> ImageLayer:
         if image_element.attrib.get("trans") is not None:
             transparent_color = parse_color(image_element.attrib["trans"])
 
+        common = _parse_common(raw_layer).__dict__
+        del common["size"]
         return ImageLayer(
             image=source,
             size=Size(width, height),
