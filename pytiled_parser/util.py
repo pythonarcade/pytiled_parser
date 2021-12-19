@@ -1,4 +1,5 @@
 """Utility Functions for PyTiled"""
+from pathlib import Path
 
 from pytiled_parser.common_types import Color
 
@@ -27,3 +28,12 @@ def parse_color(color: str) -> Color:
         )
 
     raise ValueError("Improperly formatted color passed to parse_color")
+
+
+def check_format(file_path: Path) -> str:
+    with open(file_path) as file:
+        line = file.readline().rstrip().strip()
+        if line[0] == "<":
+            return "tmx"
+        else:
+            return "json"
