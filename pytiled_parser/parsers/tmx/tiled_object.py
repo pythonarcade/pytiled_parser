@@ -123,9 +123,11 @@ def _parse_polyline(raw_object: etree.Element) -> Polyline:
         Polyline: The Polyline object created from the raw object
     """
     polyline = []
-    for raw_point in raw_object.attrib["polyline"].split(" "):
-        point = raw_point.split(",")
-        polyline.append(OrderedPair(float(point[0]), float(point[1])))
+    polyline_element = raw_object.find("./polyline")
+    if polyline_element is not None:
+        for raw_point in polyline_element.attrib["points"].split(" "):
+            point = raw_point.split(",")
+            polyline.append(OrderedPair(float(point[0]), float(point[1])))
 
     return Polyline(points=polyline, **_parse_common(raw_object).__dict__)
 
@@ -161,46 +163,50 @@ def _parse_text(raw_object: etree.Element) -> Text:
         Text: The Text object created from the raw object
     """
     # required attributes
-    text = raw_object.text
+    text_element = raw_object.find("./text")
 
-    if not text:
-        text = ""
-    # create base Text object
-    text_object = Text(text=text, **_parse_common(raw_object).__dict__)
+    if text_element is not None:
+        text = text_element.text
 
-    # optional attributes
-    if raw_object.attrib.get("color") is not None:
-        text_object.color = parse_color(raw_object.attrib["color"])
+        if not text:
+            text = ""
+        # create base Text object
+        text_object = Text(text=text, **_parse_common(raw_object).__dict__)
 
-    if raw_object.attrib.get("fontfamily") is not None:
-        text_object.font_family = raw_object.attrib["fontfamily"]
+        # optional attributes
 
-    if raw_object.attrib.get("pixelsize") is not None:
-        text_object.font_size = float(raw_object.attrib["pixelsize"])
+        if text_element.attrib.get("color") is not None:
+            text_object.color = parse_color(text_element.attrib["color"])
 
-    if raw_object.attrib.get("bold") is not None:
-        text_object.bold = bool(int(raw_object.attrib["bold"]))
+        if text_element.attrib.get("fontfamily") is not None:
+            text_object.font_family = text_element.attrib["fontfamily"]
 
-    if raw_object.attrib.get("italic") is not None:
-        text_object.italic = bool(int(raw_object.attrib["italic"]))
+        if text_element.attrib.get("pixelsize") is not None:
+            text_object.font_size = float(text_element.attrib["pixelsize"])
 
-    if raw_object.attrib.get("kerning") is not None:
-        text_object.kerning = bool(int(raw_object.attrib["kerning"]))
+        if text_element.attrib.get("bold") is not None:
+            text_object.bold = bool(int(text_element.attrib["bold"]))
 
-    if raw_object.attrib.get("strikeout") is not None:
-        text_object.strike_out = bool(int(raw_object.attrib["strikeout"]))
+        if text_element.attrib.get("italic") is not None:
+            text_object.italic = bool(int(text_element.attrib["italic"]))
 
-    if raw_object.attrib.get("underline") is not None:
-        text_object.underline = bool(int(raw_object.attrib["underline"]))
+        if text_element.attrib.get("kerning") is not None:
+            text_object.kerning = bool(int(text_element.attrib["kerning"]))
 
-    if raw_object.attrib.get("halign") is not None:
-        text_object.horizontal_align = raw_object.attrib["halign"]
+        if text_element.attrib.get("strikeout") is not None:
+            text_object.strike_out = bool(int(text_element.attrib["strikeout"]))
 
-    if raw_object.attrib.get("valign") is not None:
-        text_object.vertical_align = raw_object.attrib["valign"]
+        if text_element.attrib.get("underline") is not None:
+            text_object.underline = bool(int(text_element.attrib["underline"]))
 
-    if raw_object.attrib.get("wrap") is not None:
-        text_object.wrap = bool(int(raw_object.attrib["wrap"]))
+        if text_element.attrib.get("halign") is not None:
+            text_object.horizontal_align = text_element.attrib["halign"]
+
+        if text_element.attrib.get("valign") is not None:
+            text_object.vertical_align = text_element.attrib["valign"]
+
+        if text_element.attrib.get("wrap") is not None:
+            text_object.wrap = bool(int(text_element.attrib["wrap"]))
 
     return text_object
 
