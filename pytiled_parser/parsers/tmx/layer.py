@@ -121,7 +121,7 @@ def _parse_chunk(
         )
     else:
         data = _convert_raw_tile_layer_data(
-            [int(v.strip) for v in raw_chunk.text],  # type: ignore
+            [int(v.strip()) for v in raw_chunk.text.split(",")],  # type: ignore
             int(raw_chunk.attrib["width"]),
         )
 
@@ -277,23 +277,20 @@ def _parse_image_layer(raw_layer: etree.Element) -> ImageLayer:
         ImageLayer: The ImageLayer created from raw_layer
     """
     image_element = raw_layer.find("./image")
-    if image_element:
+    if image_element is not None:
         source = Path(image_element.attrib["source"])
-        width = int(image_element.attrib["width"])
-        height = int(image_element.attrib["height"])
 
         transparent_color = None
         if image_element.attrib.get("trans") is not None:
             transparent_color = parse_color(image_element.attrib["trans"])
 
-        common = _parse_common(raw_layer).__dict__
-        del common["size"]
-        return ImageLayer(
+        image_layer = ImageLayer(
             image=source,
-            size=Size(width, height),
             transparent_color=transparent_color,
             **_parse_common(raw_layer).__dict__,
         )
+        print(image_layer.size)
+        return image_layer
 
     raise RuntimeError("Tried to parse an image layer that doesn't have an image!")
 
@@ -309,11 +306,24 @@ def _parse_group_layer(
     Returns:
         LayerGroup: The LayerGroup created from raw_layer
     """
-    layers = []
+    layers: List[Layer] = []
+    for layer in raw_layer.findall("./layer"):
+        layers.append(_parse_tile_layer(layer))
 
-    for layer in raw_layer.iter():
-        if layer.tag in ["layer", "objectgroup", "imagelayer", "group"]:
-            layers.append(parse(layer, parent_dir=parent_dir))
+    for layer in raw_layer.findall("./objectgroup"):
+        layers.append(_parse_object_layer(layer, parent_dir))
+
+    for layer in raw_layer.findall("./imagelayer"):
+        layers.append(_parse_image_layer(layer))
+
+    for layer in raw_layer.findall("./group"):
+        layers.append(_parse_group_layer(layer, parent_dir))
+    # layers = []
+    # layers = [
+    #    parse(child_layer, parent_dir=parent_dir)
+    #    for child_layer in raw_layer.iter()
+    #    if child_layer.tag in ["layer", "objectgroup", "imagelayer", "group"]
+    # ]
 
     return LayerGroup(layers=layers, **_parse_common(raw_layer).__dict__)
 
