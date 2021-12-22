@@ -1,3 +1,4 @@
+import json
 import xml.etree.ElementTree as etree
 from pathlib import Path
 from typing import Callable, Optional
@@ -14,7 +15,7 @@ from pytiled_parser.tiled_object import (
     Tile,
     TiledObject,
 )
-from pytiled_parser.util import parse_color
+from pytiled_parser.util import load_object_template, parse_color
 
 
 def _parse_common(raw_object: etree.Element) -> TiledObject:
@@ -264,18 +265,9 @@ def parse(raw_object: etree.Element, parent_dir: Optional[Path] = None) -> Tiled
                 "A parent directory must be specified when using object templates."
             )
         template_path = Path(parent_dir / raw_object.attrib["template"])
-        with open(template_path) as template_file:
-            template = etree.parse(template_file).getroot()
+        template, new_tileset, new_tileset_path = load_object_template(template_path)
 
-            tileset_element = template.find("./tileset")
-            if tileset_element:
-                tileset_path = Path(
-                    template_path.parent / tileset_element.attrib["source"]
-                )
-                with open(tileset_path) as tileset_file:
-                    new_tileset = etree.parse(tileset_file).getroot()
-                    new_tileset_path = tileset_path.parent
-
+        if isinstance(template, etree.Element):
             new_object = template.find("./object")
             if new_object is not None:
                 if raw_object.attrib.get("id") is not None:
@@ -288,11 +280,14 @@ def parse(raw_object: etree.Element, parent_dir: Optional[Path] = None) -> Tiled
                     new_object.attrib["y"] = raw_object.attrib["y"]
 
                 raw_object = new_object
-
-            if raw_object.attrib.get("gid"):
-                return _parse_tile(raw_object, new_tileset, new_tileset_path)
+        elif isinstance(template, dict):
+            # load the JSON object into the XML object
+            raise NotImplementedError(
+                "Loading JSON object templates inside a TMX map is currently not supported, "
+                "but will be in a future release."
+            )
 
     if raw_object.attrib.get("gid"):
-        return _parse_tile(raw_object)
+        return _parse_tile(raw_object, new_tileset, new_tileset_path)
 
     return _get_parser(raw_object)(raw_object)

@@ -1,6 +1,7 @@
 """Object parsing for the JSON Map Format.
 """
 import json
+import xml.etree.ElementTree as etree
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
@@ -19,7 +20,7 @@ from pytiled_parser.tiled_object import (
     Tile,
     TiledObject,
 )
-from pytiled_parser.util import parse_color
+from pytiled_parser.util import load_object_template, parse_color
 
 
 class RawText(TypedDict):
@@ -300,20 +301,19 @@ def parse(
                 "A parent directory must be specified when using object templates."
             )
         template_path = Path(parent_dir / raw_object["template"])
-        with open(template_path) as raw_template_file:
-            template = json.load(raw_template_file)
-            if "tileset" in template:
-                tileset_path = Path(
-                    template_path.parent / template["tileset"]["source"]
-                )
-                with open(tileset_path) as raw_tileset_file:
-                    new_tileset = json.load(raw_tileset_file)
-                    new_tileset_path = tileset_path.parent
+        template, new_tileset, new_tileset_path = load_object_template(template_path)
 
+        if isinstance(template, dict):
             loaded_template = template["object"]
             for key in loaded_template:
                 if key != "id":
                     raw_object[key] = loaded_template[key]  # type: ignore
+        elif isinstance(template, etree.Element):
+            # load the XML object into the JSON object
+            raise NotImplementedError(
+                "Loading TMX object templates inside a JSON map is currently not supported, "
+                "but will be in a future release."
+            )
 
     if raw_object.get("gid"):
         return _parse_tile(raw_object, new_tileset, new_tileset_path)

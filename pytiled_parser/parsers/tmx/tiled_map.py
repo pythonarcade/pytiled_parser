@@ -94,6 +94,7 @@ def parse(file: Path) -> TiledMap:
                             break
 
                     if not already_loaded:
+                        print("here")
                         highest_firstgid = max(map_.tilesets.keys())
                         last_tileset_count = map_.tilesets[highest_firstgid].tile_count
                         new_firstgid = highest_firstgid + last_tileset_count

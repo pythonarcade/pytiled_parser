@@ -1,5 +1,8 @@
 """Utility Functions for PyTiled"""
+import json
+import xml.etree.ElementTree as etree
 from pathlib import Path
+from typing import Any
 
 from pytiled_parser.common_types import Color
 
@@ -37,3 +40,43 @@ def check_format(file_path: Path) -> str:
             return "tmx"
         else:
             return "json"
+
+
+def load_object_template(file_path: Path) -> Any:
+    template_format = check_format(file_path)
+
+    new_tileset = None
+    new_tileset_path = None
+
+    if template_format == "tmx":
+        with open(file_path) as template_file:
+            template = etree.parse(template_file).getroot()
+
+            tileset_element = template.find("./tileset")
+            if tileset_element is not None:
+                tileset_path = Path(file_path.parent / tileset_element.attrib["source"])
+                new_tileset = load_object_tileset(tileset_path)
+                new_tileset_path = tileset_path.parent
+    elif template_format == "json":
+        with open(file_path) as template_file:
+            template = json.load(template_file)
+            if "tileset" in template:
+                tileset_path = Path(file_path.parent / template["tileset"]["source"])  # type: ignore
+                new_tileset = load_object_tileset(tileset_path)
+                new_tileset_path = tileset_path.parent
+
+    return (template, new_tileset, new_tileset_path)
+
+
+def load_object_tileset(file_path: Path) -> Any:
+    tileset_format = check_format(file_path)
+
+    new_tileset = None
+
+    with open(file_path) as tileset_file:
+        if tileset_format == "tmx":
+            new_tileset = etree.parse(tileset_file).getroot()
+        elif tileset_format == "json":
+            new_tileset = json.load(tileset_file)
+
+    return new_tileset
