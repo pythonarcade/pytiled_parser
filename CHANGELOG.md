@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.0.1] - 2021-12-21
+
+Someone, not naming any names, forgot to put `__init__.py` files in some packages, and caused imports to break when installed via a `.whl` and not an editable source install. This just fixes that problem.
+
 ## [2.0.0] - 2021-12-21
 
 Welcome to pytiled-parser 2.0! A lot has changed under the hood with this release that has enabled a slew of new features and abilities. Most of the changes here are under the hood, and there is only really one major API change to be aware of. However the under the hood changes and the new features they've enabled are significant enough to call this a major release.
