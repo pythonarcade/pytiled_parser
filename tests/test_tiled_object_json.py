@@ -5,7 +5,17 @@ from pathlib import Path
 
 import pytest
 
-from pytiled_parser import common_types, tiled_object
+from pytiled_parser import common_types
+from pytiled_parser.parsers.json.tiled_object import parse
+from pytiled_parser.tiled_object import (
+    Ellipse,
+    Point,
+    Polygon,
+    Polyline,
+    Rectangle,
+    Text,
+    Tile,
+)
 
 ELLIPSES = [
     (
@@ -23,7 +33,7 @@ ELLIPSES = [
         "y":81.1913152210981
         }
         """,
-        tiled_object.Ellipse(
+        Ellipse(
             id=6,
             size=common_types.Size(57.4013868364215, 18.5517790155735),
             name="name: ellipse",
@@ -48,7 +58,7 @@ ELLIPSES = [
         "y":53.9092872570194
         }
         """,
-        tiled_object.Ellipse(
+        Ellipse(
             id=7,
             size=common_types.Size(6.32943048766625, 31.4288962146186),
             name="name: ellipse - invisible",
@@ -73,7 +83,7 @@ ELLIPSES = [
         "y":120.040923041946
         }
         """,
-        tiled_object.Ellipse(
+        Ellipse(
             id=8,
             size=common_types.Size(29.6828464249176, 24.2264408321018),
             name="name: ellipse - rotated",
@@ -98,7 +108,7 @@ ELLIPSES = [
                  "y":127.679890871888
         }
         """,
-        tiled_object.Ellipse(
+        Ellipse(
             id=29,
             name="name: ellipse - no width or height",
             rotation=0,
@@ -124,7 +134,7 @@ RECTANGLES = [
         "y":23.571672160964
         }
         """,
-        tiled_object.Rectangle(
+        Rectangle(
             id=1,
             size=common_types.Size(45.3972945322269, 41.4686825053996),
             name="name: rectangle",
@@ -148,7 +158,7 @@ RECTANGLES = [
         "y":91.0128452881664
         }
         """,
-        tiled_object.Rectangle(
+        Rectangle(
             id=4,
             size=common_types.Size(30.9923837671934, 32.7384335568944),
             name="name:  rectangle - invisible",
@@ -172,7 +182,7 @@ RECTANGLES = [
         "y":23.3534159372513
         }
         """,
-        tiled_object.Rectangle(
+        Rectangle(
             id=5,
             size=common_types.Size(10, 22),
             name="name:  rectangle - rotated",
@@ -196,7 +206,7 @@ RECTANGLES = [
         "y":53.4727748095942
         }
         """,
-        tiled_object.Rectangle(
+        Rectangle(
             id=28,
             size=common_types.Size(0, 0),
             name="name: rectangle - no width or height",
@@ -251,7 +261,7 @@ RECTANGLES = [
          "y":131.826759122428
         }
         """,
-        tiled_object.Rectangle(
+        Rectangle(
             id=30,
             size=common_types.Size(21.170853700125, 13.7501420938956),
             name="name: rectangle - properties",
@@ -287,7 +297,7 @@ POINTS = [
                  "y":82.9373650107991
         }
         """,
-        tiled_object.Point(
+        Point(
             id=2,
             name="name:  point",
             rotation=0,
@@ -311,7 +321,7 @@ POINTS = [
                  "y":95.8144822098443
         }
         """,
-        tiled_object.Point(
+        Point(
             id=3,
             name="name:  point invisible",
             rotation=0,
@@ -338,7 +348,7 @@ TILES = [
          "y":48.3019211094691
         }
         """,
-        tiled_object.Tile(
+        Tile(
             id=13,
             size=common_types.Size(32, 32),
             name="name: tile",
@@ -364,7 +374,7 @@ TILES = [
          "y":168.779356598841
         }
         """,
-        tiled_object.Tile(
+        Tile(
             id=14,
             size=common_types.Size(32, 32),
             name="name: tile - invisible",
@@ -390,7 +400,7 @@ TILES = [
          "y":59.8695009662385
         }
         """,
-        tiled_object.Tile(
+        Tile(
             id=15,
             size=common_types.Size(32, 32),
             name="name: tile - horizontal flipped",
@@ -416,7 +426,7 @@ TILES = [
          "y":60.742525861089
         }
         """,
-        tiled_object.Tile(
+        Tile(
             id=16,
             size=common_types.Size(32, 32),
             name="name: tile - vertical flipped",
@@ -442,7 +452,7 @@ TILES = [
          "y":95.6635216551097
         }
         """,
-        tiled_object.Tile(
+        Tile(
             id=17,
             size=common_types.Size(32, 32),
             name="name: tile - both flipped",
@@ -468,7 +478,7 @@ TILES = [
          "y":142.62
         }
         """,
-        tiled_object.Tile(
+        Tile(
             id=18,
             size=common_types.Size(32, 32),
             name="name: tile - rotated",
@@ -517,7 +527,7 @@ POLYGONS = [
                  "y":38.6313515971354
         }
         """,
-        tiled_object.Polygon(
+        Polygon(
             id=9,
             name="name: polygon",
             points=[
@@ -560,7 +570,7 @@ POLYGONS = [
                  "y":24.4446970558145
         }
         """,
-        tiled_object.Polygon(
+        Polygon(
             id=10,
             name="name: polygon - invisible",
             points=[
@@ -613,7 +623,7 @@ POLYGONS = [
                  "y":19.8613163578493
         }
         """,
-        tiled_object.Polygon(
+        Polygon(
             id=11,
             name="name: polygon - rotated",
             points=[
@@ -660,7 +670,7 @@ POLYLINES = [
                  "y":90.1398203933159
         }
         """,
-        tiled_object.Polyline(
+        Polyline(
             id=12,
             name="name: polyline",
             points=[
@@ -701,7 +711,7 @@ POLYLINES = [
                  "y":163.333333333333
         }
         """,
-        tiled_object.Polyline(
+        Polyline(
             id=31,
             name="name: polyline - invisible",
             points=[
@@ -742,7 +752,7 @@ POLYLINES = [
                  "y":128.666666666667
         }
         """,
-        tiled_object.Polyline(
+        Polyline(
             id=32,
             name="name: polyline - rotated",
             points=[
@@ -778,7 +788,7 @@ TEXTS = [
                  "y":93.2986813686484
         }
         """,
-        tiled_object.Text(
+        Text(
             id=19,
             name="name: text",
             text="Hello World",
@@ -809,7 +819,7 @@ TEXTS = [
                  "y":112.068716607935
         }
         """,
-        tiled_object.Text(
+        Text(
             id=20,
             name="name: text - invisible",
             text="Hello World",
@@ -840,7 +850,7 @@ TEXTS = [
                  "y":78.4572581561896
         }
         """,
-        tiled_object.Text(
+        Text(
             id=21,
             name="name: text - rotated",
             text="Hello World",
@@ -874,7 +884,7 @@ TEXTS = [
                  "y":101.592417869728
         }
         """,
-        tiled_object.Text(
+        Text(
             id=22,
             name="name: text - different font",
             text="Hello World",
@@ -907,7 +917,7 @@ TEXTS = [
                  "y":154.192167784472
         }
         """,
-        tiled_object.Text(
+        Text(
             id=23,
             name="name: text - no word wrap",
             text="Hello World",
@@ -939,7 +949,7 @@ TEXTS = [
                  "y":1.19455496191883
         }
         """,
-        tiled_object.Text(
+        Text(
             id=24,
             name="name: text - right bottom align",
             text="Hello World",
@@ -973,7 +983,7 @@ TEXTS = [
           "y": 3.81362964647039
         }
         """,
-        tiled_object.Text(
+        Text(
             id=25,
             name="text: center center align",
             rotation=0,
@@ -1006,7 +1016,7 @@ TEXTS = [
           "y": 60.7785040354666
         }
         """,
-        tiled_object.Text(
+        Text(
             id=26,
             name="name: text - justified",
             rotation=0,
@@ -1038,7 +1048,7 @@ TEXTS = [
           "y": 130.620495623508
         }
         """,
-        tiled_object.Text(
+        Text(
             id=27,
             name="name: text - red",
             rotation=0,
@@ -1075,7 +1085,7 @@ TEXTS = [
          "y":22
         }
         """,
-        tiled_object.Text(
+        Text(
             id=31,
             name="name: text - font options",
             rotation=0,
@@ -1100,7 +1110,7 @@ OBJECTS = ELLIPSES + RECTANGLES + POINTS + TILES + POLYGONS + POLYLINES + TEXTS
 @pytest.mark.parametrize("raw_object_json,expected", OBJECTS)
 def test_parse_layer(raw_object_json, expected):
     raw_object = json.loads(raw_object_json)
-    result = tiled_object.cast(raw_object)
+    result = parse(raw_object)
 
     assert result == expected
 
@@ -1118,4 +1128,4 @@ def test_parse_no_parent_dir():
 
     json_object = json.loads(raw_object)
     with pytest.raises(RuntimeError):
-        tiled_object.cast(json_object)
+        parse(json_object)

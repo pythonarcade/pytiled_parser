@@ -8,8 +8,9 @@ from typing import List
 import attr
 from typing_extensions import TypedDict
 
-from .common_types import OrderedPair, Size
-from .tiled_map import TiledMap, parse_map
+from pytiled_parser.common_types import OrderedPair, Size
+from pytiled_parser.parser import parse_map
+from pytiled_parser.tiled_map import TiledMap
 
 
 @attr.s(auto_attribs=True)
@@ -55,7 +56,7 @@ class RawWorld(TypedDict):
     onlyShowAdjacentMaps: bool
 
 
-def _cast_world_map(raw_world_map: RawWorldMap, map_file: Path) -> WorldMap:
+def _parse_world_map(raw_world_map: RawWorldMap, map_file: Path) -> WorldMap:
     """Parse the RawWorldMap into a WorldMap.
 
     Args:
@@ -94,7 +95,7 @@ def parse_world(file: Path) -> World:
     if raw_world.get("maps"):
         for raw_map in raw_world["maps"]:
             map_path = Path(parent_dir / raw_map["fileName"])
-            maps.append(_cast_world_map(raw_map, map_path))
+            maps.append(_parse_world_map(raw_map, map_path))
 
     if raw_world.get("patterns"):
         for raw_pattern in raw_world["patterns"]:
@@ -131,7 +132,7 @@ def parse_world(file: Path) -> World:
                     }
 
                     map_path = Path(parent_dir / map_file)
-                    maps.append(_cast_world_map(raw_world_map, map_path))
+                    maps.append(_parse_world_map(raw_world_map, map_path))
 
     world = World(maps=maps)
 
