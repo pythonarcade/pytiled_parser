@@ -4,7 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [Unreleased]
+## [2.0.0] - 2021-12-21
+
+Welcome to pytiled-parser 2.0! A lot has changed under the hood with this release that has enabled a slew of new features and abilities. Most of the changes here are under the hood, and there is only really one major API change to be aware of. However the under the hood changes and the new features they've enabled are significant enough to call this a major release.
+
+The entire pytiled-parser API has been abstracted to a common interface, and the parsing functionality completely
+seperated from it. This means that we are able to implement parsers for different formats, and enable cross-loading between formats.
+
+With the release of 2.0, we have added full support for the TMX spec. Meaning you can once again load TMX maps, TSX tilesets, and TX templates with pytiled-parser, just like the pre 1.0 days, except now we have 100% coverage of the spec, and it's behind the same 1.0 API interface you've come to know and love.
+
+If you're already using pytiled-parser, chances are you don't need to do anything other than upgrade to enable TMX support. The `parse_map` function still works exactly the same, but will now auto-analyze the file given to it and determine what format it is, and choose the parser accordingly. The same will happen for any tilesets that get loaded during this. Meaning you can load JSON tilesets in a TMX map, and TSX tilesets in a JSON map, with no extra configuration.
+
+The only thing that can't currently be cross-loaded between formats is object templates, if you're using a JSON object template, it will need to be within a JSON map, same for TMX. A `NotImplementedError` will be raised with an appropriate message if you try to cross-load these. Support is planned for this in likely 2.1.0.
+
+The only API change to be worried about here is related to World file loading. Previously in pytiled-parser if you loaded a World file, it would also parse all maps associated with the world. This is not great behavior, as the intention of worlds is to be able to load and unload maps on the fly. With the previous setup, if you had a large world, then every single map would be loaded into memory at startup and is generally not the behavior you'd want if using world files.
+
+To remedy this, the `WorldMap.map_file` attribute has been added to store a `pathlib.Path` to the map file. The previous API had a `WorldMap.tiled_map` attribute which was the fully parsed `pytiled_parser.TiledMap` map object.
 
 ## [1.5.4] - 2021-10-12
 
