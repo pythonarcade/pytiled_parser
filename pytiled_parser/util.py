@@ -9,6 +9,9 @@ from pytiled_parser.common_types import Color
 
 def parse_color(color: str) -> Color:
     """Convert Tiled color format into PyTiled's.
+
+    Tiled's color format is #AARRGGBB and PyTiled's is an RGBA tuple.
+
     Args:
         color (str): Tiled formatted color string.
     Returns:

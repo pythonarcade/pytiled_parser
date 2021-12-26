@@ -1,3 +1,7 @@
+"""The tiled_map module contains the primary TiledMap class which represents a single
+map from Tiled.
+"""
+
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -13,9 +17,15 @@ TilesetDict = Dict[int, Tileset]
 
 @attr.s(auto_attribs=True)
 class TiledMap:
-    """Object for storing a TMX with all associated layers and properties.
+    """Object for storing a Tiled map with all associated objects.
 
-    See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#map
+    This object is the top level object for a map. It contains all layers within a map,
+    as well as all Tiesets used by the map. When creating an implementation, this will
+    be the primary class to work with to pull all data relating to a map.
+
+    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#map)
+
+    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#map)
 
     Attributes:
         infinite: If the map is infinite or not.

@@ -1,3 +1,14 @@
+"""This module provides an implementation for World files from Tiled.
+
+See [Tiled's docs for Worlds](https://doc.mapeditor.org/en/stable/manual/worlds/)
+for more info about worlds and how to use them.
+
+The functionality within PyTiled Parser is to load the world and outline the size
+and position of each map, and provide the path to the map file. Loading a world
+does not automatically load each map within the world, this is so that the game
+or engine implementation can decide how to handle map loading.
+"""
+
 import json
 import re
 from os import listdir
@@ -9,28 +20,49 @@ import attr
 from typing_extensions import TypedDict
 
 from pytiled_parser.common_types import OrderedPair, Size
-from pytiled_parser.parser import parse_map
-from pytiled_parser.tiled_map import TiledMap
 
 
 @attr.s(auto_attribs=True)
 class WorldMap:
+    """Represents a map within a world.
 
-    tiled_map: TiledMap
+    This object can be accessed to load in a map after loading the world.
+
+    This class translates to each object within the `maps` list of a
+    World file
+
+    Attributes:
+        map_file: A Path object to the map file, can be passed to
+            [parse_map][pytiled_parser.parser.parse_map]
+        size: The size of the map in pixels
+        coordinates: The position of the map within the world in pixels
+    """
+
+    map_file: Path
     size: Size
     coordinates: OrderedPair
 
 
 @attr.s(auto_attribs=True)
 class World:
+    """Represents a world file.
+
+    Attributes:
+        maps: The list of maps within the world. These are not fully parsed
+            [TiledMap][pytiled_parser.tiled_map.TiledMap] objects, but rather
+            [WorldMap][pytiled_parser.world.WorldMap] objects which can be used
+            to later parse each individual map.
+        only_show_adjacent: Largely only used by the Tiled editor to determine
+            if only maps adjacent to the active one should be displayed. This
+            could be used to determine implementation behavior as well though
+            to toggle auto-loading of adjacent maps or something of the sort.
+    """
 
     maps: List[WorldMap]
     only_show_adjacent: bool = False
 
 
 class RawPattern(TypedDict):
-    """The keys and their types that appear in a Pattern JSON Object."""
-
     regexp: str
     multiplierX: float
     multiplierY: float
@@ -39,8 +71,6 @@ class RawPattern(TypedDict):
 
 
 class RawWorldMap(TypedDict):
-    """The keys and their types that appear in a WorldMap JSON Object."""
-
     fileName: str
     height: float
     width: float
@@ -49,8 +79,6 @@ class RawWorldMap(TypedDict):
 
 
 class RawWorld(TypedDict):
-    """The keys and their types that appear in a World JSON Object."""
-
     maps: List[RawWorldMap]
     patterns: List[RawPattern]
     onlyShowAdjacentMaps: bool
@@ -66,10 +94,8 @@ def _parse_world_map(raw_world_map: RawWorldMap, map_file: Path) -> WorldMap:
     Returns:
         WorldMap: The parsed WorldMap object
     """
-    tiled_map = parse_map(map_file)
-
     return WorldMap(
-        tiled_map=tiled_map,
+        map_file=map_file,
         size=Size(raw_world_map["width"], raw_world_map["height"]),
         coordinates=OrderedPair(raw_world_map["x"], raw_world_map["y"]),
     )
@@ -82,7 +108,7 @@ def parse_world(file: Path) -> World:
         file: Path to the world's file
 
     Returns:
-        World: A properly parsed World
+        World: A properly parsed [World][pytiled_parser.world.World]
     """
 
     with open(file) as world_file:
