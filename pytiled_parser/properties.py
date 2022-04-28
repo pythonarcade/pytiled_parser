@@ -13,6 +13,11 @@ from typing import Dict, Union
 
 from .common_types import Color
 
-Property = Union[float, Path, str, bool, Color]
+class ClassProperty(dict):
+	def __init__(self, propertytype:str, *args, **kwargs):
+		self.propertytype = propertytype or ''
+		dict.__init__(self, *args, **kwargs)
+
+Property = Union[float, Path, str, bool, Color, ClassProperty]
 
 Properties = Dict[str, Property]

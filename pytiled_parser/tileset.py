@@ -150,3 +150,4 @@ class Tileset:
     properties: Optional[properties_.Properties] = None
     tiles: Optional[Dict[int, Tile]] = None
     wang_sets: Optional[List[WangSet]] = None
+    alignment: Optional[str] = None
