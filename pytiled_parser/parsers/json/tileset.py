@@ -178,10 +178,14 @@ def _parse_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile
         else:
             tile.image = Path(raw_tile["image"])
 
-    if raw_tile.get("imagewidth") is not None:
+    # These are ignored from coverage because there does not exist a scenario where
+    # image is set, but these aren't, so the branches will never fully be hit.
+    # However, leaving these checks in place is nice to prevent fatal errors on 
+    # a manually edited map that has an "incorrect" but not "unusable" structure
+    if raw_tile.get("imagewidth") is not None: # pragma: no cover
         tile.image_width = raw_tile["imagewidth"]
 
-    if raw_tile.get("imageheight") is not None:
+    if raw_tile.get("imageheight") is not None: # pragma: no cover
         tile.image_height = raw_tile["imageheight"]
 
     if raw_tile.get("type") is not None:
@@ -218,7 +222,11 @@ def parse(
     )
 
     if raw_tileset.get("version") is not None:
-        if isinstance(raw_tileset["version"], float):
+        # This is here to support old versions of Tiled Maps. It's a pain
+        # to keep old versions in the test data and not update them with the
+        # rest so I'm excluding this from coverage. In reality it's probably
+        # not needed. Tiled hasn't been using floats for the version for a long time
+        if isinstance(raw_tileset["version"], float): # pragma: no cover
             tileset.version = str(raw_tileset["version"])
         else:
             tileset.version = raw_tileset["version"]
@@ -234,10 +242,12 @@ def parse(
         else:
             tileset.image = Path(raw_tileset["image"])
 
-    if raw_tileset.get("imagewidth") is not None:
+    # See above note about imagewidth and imageheight on parse_tile function
+    # for an explanation on why these are ignored
+    if raw_tileset.get("imagewidth") is not None: # pragma: no cover
         tileset.image_width = raw_tileset["imagewidth"]
 
-    if raw_tileset.get("imageheight") is not None:
+    if raw_tileset.get("imageheight") is not None: # pragma: no cover
         tileset.image_height = raw_tileset["imageheight"]
 
     if raw_tileset.get("objectalignment") is not None:

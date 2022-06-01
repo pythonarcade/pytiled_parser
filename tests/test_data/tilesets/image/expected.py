@@ -12,9 +12,10 @@ EXPECTED = tileset.Tileset(
     spacing=1,
     name="tile_set_image",
     tile_count=48,
-    tiled_version="1.6.0",
+    tiled_version="1.8.5",
     tile_height=32,
     tile_width=32,
-    version="1.6",
+    version="1.8",
     type="tileset",
+    alignment="topleft"
 )

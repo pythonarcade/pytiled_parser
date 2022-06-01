@@ -75,13 +75,7 @@ def parse(file: Path) -> TiledMap:
             tileset_path = Path(parent_dir / raw_tileset["source"])
             parser = check_format(tileset_path)
             with open(tileset_path) as raw_tileset_file:
-                if parser == "json":
-                    tilesets[raw_tileset["firstgid"]] = parse_json_tileset(
-                        json.load(raw_tileset_file),
-                        raw_tileset["firstgid"],
-                        external_path=tileset_path.parent,
-                    )
-                elif parser == "tmx":
+                if parser == "tmx":
                     raw_tileset_external = etree.parse(raw_tileset_file).getroot()
                     tilesets[raw_tileset["firstgid"]] = parse_tmx_tileset(
                         raw_tileset_external,
@@ -89,10 +83,17 @@ def parse(file: Path) -> TiledMap:
                         external_path=tileset_path.parent,
                     )
                 else:
-                    raise UnknownFormat(
-                        "Unkown Tileset format, please use either the TSX or JSON format."
-                    )
-
+                    try:
+                        tilesets[raw_tileset["firstgid"]] = parse_json_tileset(
+                            json.load(raw_tileset_file),
+                            raw_tileset["firstgid"],
+                            external_path=tileset_path.parent,
+                        )
+                    except ValueError:
+                        raise UnknownFormat(
+                            "Unknown Tileset Format, please use either the TSX or JSON format. "
+                            "This message could also mean your tileset file is invalid or corrupted."
+                        )
         else:
             # Is an embedded Tileset
             raw_tileset = cast(RawTileSet, raw_tileset)
@@ -100,7 +101,7 @@ def parse(file: Path) -> TiledMap:
                 raw_tileset, raw_tileset["firstgid"]
             )
 
-    if isinstance(raw_tiled_map["version"], float):
+    if isinstance(raw_tiled_map["version"], float): # pragma: no cover
         version = str(raw_tiled_map["version"])
     else:
         version = raw_tiled_map["version"]
