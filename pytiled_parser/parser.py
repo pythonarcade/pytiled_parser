@@ -21,9 +21,11 @@ def parse_map(file: Path) -> TiledMap:
     # The type ignores are because mypy for some reason thinks those functions return Any
     if parser == "tmx":
         return tmx_map_parse(file)  # type: ignore
-    elif parser == "json":
-        return json_map_parse(file)  # type: ignore
     else:
-        raise UnknownFormat(
-            "Unknown Map Format, please use either the TMX or JSON format."
-        )
+        try:
+            return json_map_parse(file)  # type: ignore
+        except ValueError:
+            raise UnknownFormat(
+                "Unknown Map Format, please use either the TMX or JSON format. "
+                "This message could also mean your map file is invalid or corrupted."
+            )
