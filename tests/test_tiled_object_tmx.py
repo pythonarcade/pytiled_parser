@@ -125,7 +125,7 @@ RECTANGLES = [
          <properties>
           <property name="bool property" type="bool" value="false"/>
           <property name="color property" type="color" value="#ffaa0000"/>
-          <property name="file property" type="file" value="..\/..\/..\/..\/..\/..\/dev\/null"/>
+          <property name="file property" type="file" value="../../../../../../dev/null"/>
           <property name="float property" type="float" value="42.1"/>
           <property name="int property" type="int" value="8675309"/>
           <property name="string property" value="pytiled_parser rulez!1!!"/>

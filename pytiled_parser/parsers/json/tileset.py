@@ -72,6 +72,7 @@ class RawTileSet(TypedDict):
     margin: int
     name: str
     properties: List[RawProperty]
+    objectalignment: str
     source: str
     spacing: int
     tilecount: int
@@ -238,6 +239,9 @@ def parse(
 
     if raw_tileset.get("imageheight") is not None:
         tileset.image_height = raw_tileset["imageheight"]
+
+    if raw_tileset.get("objectalignment") is not None:
+        tileset.alignment = raw_tileset["objectalignment"]
 
     if raw_tileset.get("backgroundcolor") is not None:
         tileset.background_color = parse_color(raw_tileset["backgroundcolor"])

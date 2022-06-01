@@ -121,7 +121,6 @@ def parse(
         tile_height=int(raw_tileset.attrib["tileheight"]),
         columns=int(raw_tileset.attrib["columns"]),
         firstgid=firstgid,
-        alignment=raw_tileset.attrib.get("objectalignment", "bottomleft"),
     )
 
     if raw_tileset.attrib.get("version") is not None:
@@ -138,6 +137,9 @@ def parse(
 
     if raw_tileset.attrib.get("margin") is not None:
         tileset.margin = int(raw_tileset.attrib["margin"])
+
+    if raw_tileset.attrib.get("objectalignment") is not None:
+        tileset.alignment = raw_tileset.attrib["objectalignment"]
 
     image_element = raw_tileset.find("image")
     if image_element is not None:

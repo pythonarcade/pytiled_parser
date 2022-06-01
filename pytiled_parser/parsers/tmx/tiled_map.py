@@ -22,8 +22,7 @@ def parse(file: Path) -> TiledMap:
         TiledMap: A parsed TiledMap.
     """
     with open(file) as map_file:
-        tree = etree.parse(map_file)
-        raw_map = tree.getroot()
+        raw_map = etree.parse(map_file).getroot()
 
     parent_dir = file.parent
 
@@ -61,7 +60,7 @@ def parse(file: Path) -> TiledMap:
             )
 
     layers = []
-    for element in raw_map.getchildren():
+    for element in raw_map.iter():
         if element.tag in ["layer", "objectgroup", "imagelayer", "group"]:
             layers.append(parse_layer(element, parent_dir))
 
