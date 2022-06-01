@@ -60,7 +60,7 @@ def load_object_template(file_path: Path) -> Any:
                 tileset_path = Path(file_path.parent / tileset_element.attrib["source"])
                 new_tileset = load_object_tileset(tileset_path)
                 new_tileset_path = tileset_path.parent
-    elif template_format == "json":
+    else:
         with open(file_path) as template_file:
             template = json.load(template_file)
             if "tileset" in template:
@@ -79,7 +79,7 @@ def load_object_tileset(file_path: Path) -> Any:
     with open(file_path) as tileset_file:
         if tileset_format == "tmx":
             new_tileset = etree.parse(tileset_file).getroot()
-        elif tileset_format == "json":
+        else:
             new_tileset = json.load(tileset_file)
 
     return new_tileset

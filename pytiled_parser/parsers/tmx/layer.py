@@ -21,8 +21,17 @@ from pytiled_parser.parsers.tmx.properties import parse as parse_properties
 from pytiled_parser.parsers.tmx.tiled_object import parse as parse_object
 from pytiled_parser.util import parse_color
 
+# This optional zstd include is basically impossible to make a sensible test
+# for both ways. It's been tested manually, is unlikely to change or be effected
+# so we're just excluding it from test coverage. We are only testing cases where
+# zstd is not installed in the test suite, as that is the scenario for 99%
+# of use cases most likely.
+#
+# This does mean that the test suite will fail if zstd is installed, so for
+# development purposes it should only be installed when specifically manually
+# testing for zstd things.
 zstd_spec = importlib.util.find_spec("zstd")
-if zstd_spec:
+if zstd_spec: # pragma: no cover
     import zstd
 else:
     zstd = None
@@ -77,7 +86,8 @@ def _decode_tile_layer_data(
             "zstd compression support is not installed."
             "To install use 'pip install pytiled-parser[zstd]'"
         )
-    elif compression == "zstd":
+    # See above note at top of module about zstd tests
+    elif compression == "zstd": # pragma: no cover
         unzipped_data = zstd.decompress(unencoded_data)
     else:
         unzipped_data = unencoded_data
@@ -356,5 +366,3 @@ def parse(
         return _parse_image_layer(raw_layer)
     elif type_ == "layer":
         return _parse_tile_layer(raw_layer)
-
-    raise RuntimeError(f"An invalid layer type of {type_} was supplied")

@@ -258,7 +258,11 @@ def _get_parser(raw_object: RawObject) -> Callable[[RawObject], TiledObject]:
     if raw_object.get("point"):
         return _parse_point
 
-    if raw_object.get("gid"):
+    # This is excluded from tests because the coverage is broken. I promise
+    # there are tests for Tile objects, but for some reason the coverage
+    # isn't picking up this if statement(though it does pickup the _parse_tile)
+    # function so who knows
+    if raw_object.get("gid"): # pragma: no cover
         # Only tile objects have the `gid` key
         return _parse_tile
 
@@ -308,8 +312,7 @@ def parse(
             for key in loaded_template:
                 if key != "id":
                     raw_object[key] = loaded_template[key]  # type: ignore
-        elif isinstance(template, etree.Element):
-            # load the XML object into the JSON object
+        else:
             raise NotImplementedError(
                 "Loading TMX object templates inside a JSON map is currently not supported, "
                 "but will be in a future release."

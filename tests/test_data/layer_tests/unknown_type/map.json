@@ -3,14 +3,14 @@
  "infinite":false,
  "layers":[
         {
-         "compression":"zstd",
-         "data":"KLUv\/SDAZQIAAgwSDBCw3gwwDFcLT4p0Cv\/c884531zzzDG\/3PLKKZ9c8sghf9zxxhlfXPHEET\/c8MIJH1zwwAH\/7r079+3as2O\/br069enSo0MBAA==",
+         "compression":"",
+         "data":"AQAAAAIAAAADAAAABAAAAAUAAAAGAAAABwAAAAgAAAAJAAAACgAAAAsAAAAMAAAADQAAAA4AAAAPAAAAEAAAABEAAAASAAAAEwAAABQAAAAVAAAAFgAAABcAAAAYAAAAGQAAABoAAAAbAAAAHAAAAB0AAAAeAAAAHwAAACAAAAAhAAAAIgAAACMAAAAkAAAAJQAAACYAAAAnAAAAKAAAACkAAAAqAAAAKwAAACwAAAAtAAAALgAAAC8AAAAwAAAA",
          "encoding":"base64",
          "height":6,
          "id":1,
          "name":"Tile Layer 1",
          "opacity":1,
-         "type":"tilelayer",
+         "type":"faketype",
          "visible":true,
          "width":8,
          "x":0,
@@ -50,7 +50,7 @@
         }, 
         {
          "id":3,
-         "image":"..\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/layer_tests\/tests\/test_data\/images\/tile_04.png",
+         "image":"..\/..\/images\/tile_04.png",
          "name":"Image Layer 1",
          "opacity":1,
          "transparentcolor":"#000000",
@@ -63,7 +63,7 @@
  "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.8.5",
+ "tiledversion":"1.6.0",
  "tileheight":32,
  "tilesets":[
         {
@@ -72,6 +72,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":"1.8",
+ "version":"1.6",
  "width":8
 }
