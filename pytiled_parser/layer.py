@@ -1,9 +1,10 @@
-"""This module handles parsing all types of layers.
+"""This module provides classes for all layer types
 
-See:
-    - https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
-    - https://doc.mapeditor.org/en/stable/manual/layers/
-    - https://doc.mapeditor.org/en/stable/manual/editing-tile-layers/
+There is the base Layer class, which TileLayer, ObjectLayer, ImageLayer, 
+and LayerGroup all derive from. The base Layer class is never directly used,
+and serves only as an abstract base for common elements between all types.
+
+For more information about Layers, see [Tiled's Manual](https://doc.mapeditor.org/en/stable/manual/layers/)
 """
 
 # pylint: disable=too-few-public-methods
@@ -20,9 +21,12 @@ from pytiled_parser.tiled_object import TiledObject
 
 @attr.s(auto_attribs=True, kw_only=True)
 class Layer:
-    """Class that all layers inherit from.
+    """Base class that all layer types inherit from. Includes common attributes between
+    the various types of layers.
 
-    See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
+    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#layer)
+
+    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer)
 
     Attributes:
         name: The name of the layer object.
@@ -35,6 +39,7 @@ class Layer:
         size: Ordered pair of size of map in tiles.
         offset: Rendering offset of the layer object in pixels.
         properties: Properties for the layer.
+        tint_color: Tint color that is multiplied with any graphics in this layer.
     """
 
     name: str
@@ -56,9 +61,14 @@ TileLayerGrid = List[List[int]]
 
 @attr.s(auto_attribs=True)
 class Chunk:
-    """Chunk object for infinite maps.
+    """Chunk object for infinite maps. Stores `data` like you would have in a normal
+    TileLayer but only for the area specified by `coordinates` and `size`.
 
-    See: https://doc.mapeditor.org/en/stable/reference/json-map-format/#chunk
+    [Infinite Maps Docs](https://doc.mapeditor.org/en/stable/manual/using-infinite-maps/)
+
+    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#chunk)
+
+    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#chunk)
 
     Attributes:
         coordinates: Location of chunk in tiles.
@@ -80,15 +90,18 @@ LayerData = Union[TileLayerGrid, List[Chunk]]
 
 @attr.s(auto_attribs=True, kw_only=True)
 class TileLayer(Layer):
-    """Tile map layer containing tiles.
+    """The base type of layer which stores tile data for an area of a map.
 
-    See:
-        https://doc.mapeditor.org/en/stable/reference/json-map-format/#tile-layer-example
+    [Tiled Docs](https://doc.mapeditor.org/en/stable/manual/layers/#tile-layers)
+
+    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#layer)
+
+    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#tile-layer-example)
 
     Attributes:
-        chunks: list of chunks (infinite maps)
-        data: Either an 2 dimensional array of integers representing the global tile
-            IDs for the map layer, or a list of chunks for an infinite map.
+        chunks: List of chunks (only populated for infinite maps)
+        data: A 2 dimensional array of integers representing the global tile
+            IDs for the map layer (only populated for non-infinite maps)
     """
 
     chunks: Optional[List[Chunk]] = None
@@ -97,13 +110,13 @@ class TileLayer(Layer):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class ObjectLayer(Layer):
-    """TiledObject Group Object.
+    """A Layer type which stores a list of Tiled Objects
 
-    The object group is in fact a map layer, and is hence called "object layer" in
-        Tiled.
+    [Tiled Docs](https://doc.mapeditor.org/en/stable/manual/layers/#object-layers)
 
-    See:
-        https://doc.mapeditor.org/en/stable/reference/json-map-format/#object-layer-example
+    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#objectgroup)
+
+    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#object-layer-example)
 
     Attributes:
         tiled_objects: List of tiled_objects in the layer.
@@ -121,9 +134,13 @@ class ObjectLayer(Layer):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class ImageLayer(Layer):
-    """Map layer containing images.
+    """Map layer containing a single image
 
-    See: https://doc.mapeditor.org/en/stable/manual/layers/#image-layers
+    [Tiled Docs](https://doc.mapeditor.org/en/stable/manual/layers/#image-layers)
+
+    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#imagelayer)
+
+    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer)
 
     Attributes:
         image: The image used by this layer.
@@ -136,13 +153,17 @@ class ImageLayer(Layer):
 
 @attr.s(auto_attribs=True, kw_only=True)
 class LayerGroup(Layer):
-    """A layer that contains layers (potentially including other LayerGroups).
+    """A layer that contains layers (potentially including other LayerGroups, nested infinitely).
 
-    Offset and opacity recursively affect child layers.
+    In Tiled, offset and opacity recursively affect child layers, however that is not enforced during
+    parsing by pytiled_parser, and is up to the implementation how to handle recursive effects of
+    LayerGroups
 
-    See:
-        - https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
-        - https://doc.mapeditor.org/en/stable/manual/layers/#group-layers
+    [Tiled Docs](https://doc.mapeditor.org/en/stable/manual/layers/#group-layers)
+
+    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#group)
+
+    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer)
 
     Attributes:
         Layers: list of layers contained in the group.

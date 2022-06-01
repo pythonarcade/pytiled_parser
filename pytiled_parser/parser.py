@@ -14,11 +14,11 @@ def parse_map(file: Path) -> TiledMap:
         file: Path to the map file
 
     Returns:
-        Tiledmap: a properly typed TiledMap
+        TiledMap: a properly typed TiledMap
     """
     parser = check_format(file)
 
-    # The type ignores are because mypy for some reaosn thinks those functions return Any
+    # The type ignores are because mypy for some reason thinks those functions return Any
     if parser == "tmx":
         return tmx_map_parse(file)  # type: ignore
     elif parser == "json":
