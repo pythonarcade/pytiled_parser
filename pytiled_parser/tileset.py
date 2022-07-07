@@ -22,9 +22,9 @@ class Grid(NamedTuple):
     This element is only used in case of isometric orientation, and determines how tile
     overlays for terrain and collision information are rendered.
 
-    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tmx-grid)
+    `TMX Reference <https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tmx-grid>`_
 
-    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#grid)
+    `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#grid>`_
 
     Attributes:
         orientation: Orientation of the grid for the tiles in this tileset (orthogonal
@@ -45,9 +45,9 @@ class Frame(NamedTuple):
     to a tile within the tileset, and gives a duration. Meaning that tile would be
     displayed for the given duration.
 
-    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tmx-frame)
+    `TMX Reference <https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tmx-frame>`_
 
-    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#json-frame)
+    `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#json-frame>`_
 
     Attributes:
         tile_id: The local ID of a tile within the parent tile set object.
@@ -68,9 +68,9 @@ class Transformations:
     the terrain system, however, could be used for any means a game/engine
     wants to really.
 
-    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#transformations)
+    `TMX Reference <https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#transformations>`_
 
-    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#transformations)
+    `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#transformations>`_
 
     Attributes:
         hflip: Allow horizontal flip?
@@ -92,9 +92,9 @@ class Tile:
     This class more closely resembles the JSON format than TMX. A number of values
     within this class in the TMX format are pulled into other sub-tags such as <image>.
 
-    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tile)
+    `TMX Reference <https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tile>`_
 
-    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#tile-definition)
+    `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#tile-definition>`_
 
     Attributes:
         id: The local tile ID within it's tileset.
@@ -135,11 +135,11 @@ class Tile:
 class Tileset:
     """A Tileset is a collection of tiles.
 
-    As with the Tile class, this one more closely resembles the JSON format than TMX.
+    This class much more closely resembles the JSON format than TMX.
 
-    [TMX Reference](https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tileset)
+    `TMX Reference <https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#tileset>`_
 
-    [JSON Reference](https://doc.mapeditor.org/en/stable/reference/json-map-format/#tileset)
+    `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#tileset>`_
 
     Attributes:
         name: The name of this tileset.
@@ -148,30 +148,38 @@ class Tileset:
         tile_count: The number of tiles in this tileset.
         columns: The number of tile columns in the tileset. For image collection
             tilesets it is editable and is used when displaying the tileset.
-        spacing: The spacing in pixels between the tiles in this tileset (applies to
-            the tileset image).
         firstgid: The global ID to give to the first Tile in this tileset. Global IDs
             for the rest of the tiles will increment from this number.
+        spacing: The spacing in pixels between the tiles in this tileset (applies to
+            the tileset image).
         type: Will always be `tileset`. Is statically included as a way to determine the
             type of a JSON file since Tiled does not have different extesnsions for map
-            and tileset JSON files(as opposed to TMX/TSX files)
-        spacing: Spacing between adjacent tiles in the image in pixels.
-        margin: Buffer between the image edge and the first tile in the image in pixels.
-        image: Used for spritesheet tile sets.
-        image_width: The width of the `image` in pixels.
-        image_height: The height of the `image` in pixels.
-        transformations: What types of transformations are allowed on tiles within this
-            Tileset
-        background_color: The background color of the tileset.
+            and tileset JSON files(as opposed to TMX/TSX files). This value will typically not be used.
+        spacing: Spacing between adjacent tiles in the image in pixels. Defaults to 0.
+        margin: Buffer between the image edge and the first tile in the image in pixels. Defaults to 0.
+        tiled_version: The version of Tiled this tileset was saved with
+        version: The version of the JSON or TSX format this tileset was saved with.
+            This will typically be the same as the tiled_version parameter, but they are tracked separately
+            mostly for futureproofing.
+        image: The image file to be used for spritesheet tile sets.
+        image_width: The width of the `image` in pixels. Only set if the image parameter is.
+            This value is taken from whatever Tiled outputs, the image size is not calculated by pytiled-parser.
+        image_height: The height of the `image` in pixels. Only set if the image parameter is.
+            This value is taken from whatever Tiled outputs, the image size is not calculated by pytiled-parser.
+        transformations: What types of transformations are allowed on tiles within
+            this Tileset
+        background_color: The background color of the tileset. This will typically only be
+            used by the editor, but could be useful for displaying a TileSet if you had the need to do that.
         tileoffset: Used to specify an offset in pixels when drawing a tile from the
             tileset. When not present, no offset is applied.
-        transparent_color: A color that acts as transparent on any tiles within the
-            tileset.
+        transparent_color: A color that should act as transparent on any tiles within the
+            tileset. This would need to be taken into account by an implementation when loading the tile images.
         grid: Only used in case of isometric orientation, and determines how tile
             overlays for terrain and collision information are rendered.
         properties: The properties for this Tileset.
-        tiles: Dict of Tile objects by Tile.id.
-        wang_sets: List of WangSets used by the terrain system
+        tiles: Dict of Tile objects with the Tile.id value as the key.
+        wang_sets: List of WangSets, this is used by the terrain system in Tiled. It is unlikely an
+            implementation in a game engine would need to use these values.
         alignment: Which alignment to use for tile objects from this tileset.
     """
 

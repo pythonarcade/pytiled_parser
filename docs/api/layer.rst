@@ -11,38 +11,38 @@ and serves only as an abstract base for common elements between all types.
 For more information about Layers, see `Tiled's Manual <https://doc.mapeditor.org/en/stable/manual/layers/>`_
 
 
-pytiled_parser.Layer
-^^^^^^^^^^^^^^^^^^^^
+Layer
+^^^^^
 
-.. autoclass:: pytiled_parser.Layer
+.. autoclass:: pytiled_parser.layer.Layer
     :members:
 
-pytiled_parser.TileLayer
-^^^^^^^^^^^^^^^^^^^^^^^^
+TileLayer
+^^^^^^^^^
 
-.. autoclass:: pytiled_parser.TileLayer
+.. autoclass:: pytiled_parser.layer.TileLayer
     :members:
 
-pytiled_parser.Chunk
-^^^^^^^^^^^^^^^^^^^^
+Chunk
+^^^^^
 
-.. autoclass:: pytiled_parser.Chunk
+.. autoclass:: pytiled_parser.layer.Chunk
     :members:
 
-pytiled_parser.ObjectLayer
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+ObjectLayer
+^^^^^^^^^^^
 
-.. autoclass:: pytiled_parser.ObjectLayer
+.. autoclass:: pytiled_parser.layer.ObjectLayer
     :members:
 
-pytiled_parser.ImageLayer
-^^^^^^^^^^^^^^^^^^^^^^^^^
+ImageLayer
+^^^^^^^^^^
 
-.. autoclass:: pytiled_parser.ImageLayer
+.. autoclass:: pytiled_parser.layer.ImageLayer
     :members:
 
-pytiled_parser.LayerGroup
-^^^^^^^^^^^^^^^^^^^^^^^^^
+LayerGroup
+^^^^^^^^^^
 
-.. autoclass:: pytiled_parser.LayerGroup
+.. autoclass:: pytiled_parser.layer.LayerGroup
     :members:

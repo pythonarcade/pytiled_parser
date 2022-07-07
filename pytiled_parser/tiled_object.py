@@ -65,7 +65,7 @@ class Polygon(TiledObject):
     See: https://doc.mapeditor.org/en/stable/reference/tmx-map-format/#polygon
 
     Attributes:
-        points: FIXME
+        points: List of coordinates relative to the location of the object.
     """
 
     points: List[OrderedPair]
@@ -103,18 +103,19 @@ class Text(TiledObject):
         and https://doc.mapeditor.org/en/stable/manual/objects/#insert-text
 
     Attributes:
+        text: The text to display
+        color: Color of the text. (default: (255, 255, 255, 255))
         font_family: The font family used (default: "sans-serif")
         font_size: The size of the font in pixels. (default: 16)
-        wrap: Whether word wrapping is enabled. (default: False)
-        color: Color of the text. (default: #000000)
         bold: Whether the font is bold. (default: False)
         italic: Whether the font is italic. (default: False)
-        underline: Whether the text is underlined. (default: False)
-        strike_out: Whether the text is striked-out. (default: False)
         kerning: Whether kerning should be used while rendering the text. (default:
             False)
+        strike_out: Whether the text is striked-out. (default: False)
+        underline: Whether the text is underlined. (default: False)
         horizontal_align: Horizontal alignment of the text (default: "left")
         vertical_align: Vertical alignment of the text (defalt: "top")
+        wrap: Whether word wrapping is enabled. (default: False)
     """
 
     text: str

@@ -33,7 +33,7 @@ class WorldMap:
 
     Attributes:
         map_file: A Path object to the map file, can be passed to
-            [parse_map][pytiled_parser.parser.parse_map]
+            the pytiled_parser.parse_map function later.
         size: The size of the map in pixels
         coordinates: The position of the map within the world in pixels
     """
@@ -49,8 +49,7 @@ class World:
 
     Attributes:
         maps: The list of maps within the world. These are not fully parsed
-            [TiledMap][pytiled_parser.tiled_map.TiledMap] objects, but rather
-            [WorldMap][pytiled_parser.world.WorldMap] objects which can be used
+            TiledMap objects, but rather WorldMap objects which can be used
             to later parse each individual map.
         only_show_adjacent: Largely only used by the Tiled editor to determine
             if only maps adjacent to the active one should be displayed. This

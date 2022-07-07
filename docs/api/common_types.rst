@@ -8,17 +8,17 @@ to get the same values, or you can reference them by name. The values shown here
 will be in the final tuple.
 
 
-pytiled_parser.Color
-^^^^^^^^^^^^^^^^^^^^
+Color
+^^^^^
 
-.. autoclass:: pytiled_parser.Color
+.. autoclass:: pytiled_parser.common_types.Color
 
-pytiled_parser.OrderedPair
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+OrderedPair
+^^^^^^^^^^^
 
-.. autoclass:: pytiled_parser.OrderedPair
+.. autoclass:: pytiled_parser.common_types.OrderedPair
 
-pytiled_parser.Size
-^^^^^^^^^^^^^^^^^^^
+Size
+^^^^
 
-.. autoclass:: pytiled_parser.Size
+.. autoclass:: pytiled_parser.common_types.Size

@@ -29,19 +29,20 @@ class Layer:
 
     `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer>`_
 
-    :param str name: The name of the layer object.
-    :param float opacity: Decimal value between 0 and 1 to determine opacity. 1 is completely
-        opaque, 0 is completely transparent. Defaults to 1.
-    :param bool visible: If the layer is visible in the Tiled Editor. Defaults to True
-    :param OrderedPair coordinates: Where layer content starts in tiles. Only used by infinite maps.
-        Defaults to (0, 0).
-    :param OrderedPair parallax_factor: Used to determine parallaxing speed of a layer. Defaults to (1, 1).
-    :param OrderedPair offset: Rendering offset of the layer object in pixels. Defaults to (0, 0).
-    :param Optional[int] id: Unique ID of the layer. Each layer that is added to a map gets a unique id.
-        Even if a layer is deleted, no layer ever gets the same ID.
-    :param Optional[Size] size: Ordered pair of size of map in tiles.
-    :param Optional[Properties] properties: Properties for the layer.
-    :param Optional[Color] tint_color: Tint color that is multiplied with any graphics in this layer.
+    Attributes:
+        name: The name of the layer object.
+        opacity: Decimal value between 0 and 1 to determine opacity. 1 is completely
+            opaque, 0 is completely transparent. Defaults to 1.
+        visible: If the layer is visible in the Tiled Editor. Defaults to True
+        coordinates: Where layer content starts in tiles. Only used by infinite maps.
+            Defaults to (0, 0).
+        parallax_factor: Used to determine parallaxing speed of a layer. Defaults to (1, 1).
+        offset: Rendering offset of the layer object in pixels. Defaults to (0, 0).
+        id: Unique ID of the layer. Each layer that is added to a map gets a unique id.
+            Even if a layer is deleted, no layer ever gets the same ID.
+        size: Ordered pair of size of map in tiles.
+        properties: Properties for the layer.
+        tint_color: Tint color that is multiplied with any graphics in this layer.
     """
 
     name: str
@@ -72,9 +73,10 @@ class Chunk:
 
     `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#chunk>`_
 
-    :param OrderedPair coordinates: Location of chunk in tiles.
-    :param Size size: The size of the chunk in tiles.
-    :param List[List[int]] data: The global tile IDs in the chunk. A row-first two dimensional array.
+    Attributes:
+        coordinates: Location of chunk in tiles.
+        size: The size of the chunk in tiles.
+        data: The global tile IDs in the chunk. A row-first two dimensional array.
     """
 
     coordinates: OrderedPair
@@ -99,8 +101,9 @@ class TileLayer(Layer):
 
     `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#tile-layer-example>`_
 
-    :param Optional[List[Chunk]] chunks: List of chunks (only populated for infinite maps)
-    :param Optional[List[List[int]] data: A two dimensional array of integers representing the global
+    Attributes:
+        chunks: List of chunks (only populated for infinite maps)
+        data: A two dimensional array of integers representing the global
         tile IDs for the layer (only populaed for non-infinite maps)
     """
 
@@ -118,12 +121,13 @@ class ObjectLayer(Layer):
 
     `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#object-layer-example>`_
 
-    :param List[TiledOjbect] tiled_objects: List of tiled_objects in the layer.
-    :param Optional[str] draworder: Whether the objects are drawn according to the order of the object
-        elements in the object group element ('manual'), or sorted by their
-        y-coordinate ('topdown'). Defaults to 'topdown'. See:
-        https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
-        for more info.
+    Attributes:
+        tiled_objects: List of tiled_objects in the layer.
+        draworder: Whether the objects are drawn according to the order of the object
+            elements in the object group element ('manual'), or sorted by their
+            y-coordinate ('topdown'). Defaults to 'topdown'. See:
+            https://doc.mapeditor.org/en/stable/manual/objects/#changing-stacking-order
+            for more info.
     """
 
     tiled_objects: List[TiledObject]
@@ -141,8 +145,9 @@ class ImageLayer(Layer):
 
     `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer>`_
 
-    :param Path image: The image used by this layer.
-    :param Optional[Color] transparent_color: Color that is to be made transparent on this layer.
+    Attributes:
+        image: The image used by this layer.
+        transparent_color: Color that is to be made transparent on this layer.
     """
 
     image: Path
@@ -163,7 +168,8 @@ class LayerGroup(Layer):
 
     `JSON Reference <https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer>`_
 
-    :param Optional[List[Layer]] layers: list of layers contained in the group.
+    Attributes:
+        layers: list of layers contained in the group.
     """
 
     layers: Optional[List[Layer]]

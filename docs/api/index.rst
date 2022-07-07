@@ -15,6 +15,12 @@ cover some of the concepts surrounding that module and it's usage within Tiled.
     :maxdepth: 1
     :caption: PyTiled Parser
 
+    parser
     common_types
     properties
+    tileset
     layer
+    objects
+    map
+    wang_set
+    world
