@@ -114,11 +114,12 @@ class Tile:
         flipped_horizontally: Should this Tile be flipped horizontally?
         flipped_diagonally: Should this Tile be flipped diagonally?
         flipped_vertically: Should this Tile be flipped vertically?
+        class_: The Tiled class of this Tile.
     """
 
     id: int
     opacity: int = 1
-    type: Optional[str] = None
+    class_: Optional[str] = None
     animation: Optional[List[Frame]] = None
     objects: Optional[layer.Layer] = None
     image: Optional[Path] = None
@@ -181,6 +182,7 @@ class Tileset:
         wang_sets: List of WangSets, this is used by the terrain system in Tiled. It is unlikely an
             implementation in a game engine would need to use these values.
         alignment: Which alignment to use for tile objects from this tileset.
+        class_: The Tiled class of this TileSet.
     """
 
     name: str
@@ -206,6 +208,7 @@ class Tileset:
 
     transformations: Optional[Transformations] = None
 
+    class_: Optional[str] = None
     background_color: Optional[Color] = None
     tile_offset: Optional[OrderedPair] = None
     transparent_color: Optional[Color] = None

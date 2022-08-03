@@ -17,39 +17,40 @@ from pytiled_parser.parsers.tmx.tileset import parse as parse_tmx_tileset
 from pytiled_parser.tiled_map import TiledMap, TilesetDict
 from pytiled_parser.util import check_format, parse_color
 
+RawTilesetMapping = TypedDict("RawTilesetMapping", {
+    "firstgid": int,
+    "source": str
+})
 
-class RawTilesetMapping(TypedDict):
 
-    firstgid: int
-    source: str
-
-
-class RawTiledMap(TypedDict):
-    """The keys and their types that appear in a Tiled JSON Map Object.
+RawTiledMap = TypedDict("RawTiledMap", {
+    "backgroundcolor": str,
+    "compressionlevel": int,
+    "height": int,
+    "hexsidelength": int,
+    "infinite": bool,
+    "layers": List[RawLayer],
+    "nextlayerid": int,
+    "nextobjectid": int,
+    "orientation": str,
+    "properties": List[RawProperty],
+    "renderorder": str,
+    "staggeraxis": str,
+    "staggerindex": str,
+    "tiledversion": str,
+    "tileheight": int,
+    "tilesets": List[RawTilesetMapping],
+    "tilewidth": int,
+    "class": str,
+    "type": str,
+    "version": Union[str, float],
+    "width": int
+})
+RawTiledMap.__doc__ = """
+    The keys and their types that appear in a Tiled JSON Map Object.
 
     Tiled Docs: https://doc.mapeditor.org/en/stable/reference/json-map-format/#map
-    """
-
-    backgroundcolor: str
-    compressionlevel: int
-    height: int
-    hexsidelength: int
-    infinite: bool
-    layers: List[RawLayer]
-    nextlayerid: int
-    nextobjectid: int
-    orientation: str
-    properties: List[RawProperty]
-    renderorder: str
-    staggeraxis: str
-    staggerindex: str
-    tiledversion: str
-    tileheight: int
-    tilesets: List[RawTilesetMapping]
-    tilewidth: int
-    type: str
-    version: Union[str, float]
-    width: int
+"""
 
 
 def parse(file: Path) -> TiledMap:
@@ -151,6 +152,9 @@ def parse(file: Path) -> TiledMap:
 
                 tiled_object.new_tileset = None
                 tiled_object.new_tileset_path = None
+
+    if raw_tiled_map.get("class") is not None:
+        map_.class_ = raw_tiled_map["class"]
 
     if raw_tiled_map.get("backgroundcolor") is not None:
         map_.background_color = parse_color(raw_tiled_map["backgroundcolor"])

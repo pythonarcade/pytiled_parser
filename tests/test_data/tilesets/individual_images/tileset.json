@@ -9,7 +9,7 @@
  "name":"tileset",
  "spacing":0,
  "tilecount":4,
- "tiledversion":"1.6.0",
+ "tiledversion":"1.9.0",
  "tileheight":32,
  "tiles":[
         {
@@ -30,6 +30,7 @@
                  "duration":100,
                  "tileid":3
                 }],
+         "class":"tile",
          "id":0,
          "image":"..\/..\/images\/tile_01.png",
          "imageheight":32,
@@ -39,10 +40,10 @@
                  "name":"float property",
                  "type":"float",
                  "value":2.2
-                }],
-         "type":"tile"
+                }]
         }, 
         {
+         "class":"tile",
          "id":1,
          "image":"..\/..\/images\/tile_02.png",
          "imageheight":32,
@@ -53,23 +54,23 @@
              "name":"",
              "objects":[
                     {
+                     "class":"",
                      "height":13.7196924896511,
                      "id":2,
                      "name":"",
                      "rotation":0,
-                     "type":"",
                      "visible":true,
                      "width":14.4766410408043,
                      "x":13.4358367829687,
                      "y":13.5304553518628
                     }, 
                     {
+                     "class":"",
                      "ellipse":true,
                      "height":11.070372560615,
                      "id":3,
                      "name":"",
                      "rotation":0,
-                     "type":"",
                      "visible":true,
                      "width":14.287403903016,
                      "x":13.8143110585452,
@@ -86,10 +87,10 @@
                  "name":"string property",
                  "type":"string",
                  "value":"testing"
-                }],
-         "type":"tile"
+                }]
         }, 
         {
+         "class":"tile",
          "id":2,
          "image":"..\/..\/images\/tile_03.png",
          "imageheight":32,
@@ -99,17 +100,16 @@
                  "name":"bool property",
                  "type":"bool",
                  "value":true
-                }],
-         "type":"tile"
+                }]
         }, 
         {
+         "class":"tile",
          "id":3,
          "image":"..\/..\/images\/tile_04.png",
          "imageheight":32,
-         "imagewidth":32,
-         "type":"tile"
+         "imagewidth":32
         }],
  "tilewidth":32,
  "type":"tileset",
- "version":"1.6"
+ "version":"1.8"
 }

@@ -40,51 +40,55 @@ else:
     zstd = None
 
 
-class RawChunk(TypedDict):
-    """The keys and their types that appear in a Tiled JSON Chunk Object.
+RawChunk = TypedDict("RawChunk", {
+    "data": Union[List[int], str],
+    "height": int,
+    "width": int,
+    "x": int,
+    "y": int
+})
+RawChunk.__doc__ = """
+    The keys and their types that appear in a Tiled JSON Chunk Object.
 
     Tiled Doc: https://doc.mapeditor.org/en/stable/reference/json-map-format/#chunk
-    """
-
-    data: Union[List[int], str]
-    height: int
-    width: int
-    x: int
-    y: int
+"""
 
 
-class RawLayer(TypedDict):
-    """The keys and their types that appear in a Tiled JSON Layer Object.
+
+RawLayer = TypedDict("RawLayer", {
+    "chunks": List[RawChunk],
+    "compression": str,
+    "data": Union[List[int], str],
+    "draworder": str,
+    "encoding": str,
+    "height": int,
+    "id": int,
+    "image": str,
+    "layers": List[Any],
+    "name": str,
+    "objects": List[RawObject],
+    "offsetx": float,
+    "offsety": float,
+    "parallaxx": float,
+    "parallaxy": float,
+    "opacity": float,
+    "properties": List[RawProperty],
+    "startx": int,
+    "starty": int,
+    "tintcolor": str,
+    "transparentcolor": str,
+    "class": str,
+    "type": str,
+    "visible": bool,
+    "width": int,
+    "x": int,
+    "y": int
+})
+RawLayer.__doc__ = """
+    The keys and their types that appear in a Tiled JSON Layer Object.
 
     Tiled Doc: https://doc.mapeditor.org/en/stable/reference/json-map-format/#layer
-    """
-
-    chunks: List[RawChunk]
-    compression: str
-    data: Union[List[int], str]
-    draworder: str
-    encoding: str
-    height: int
-    id: int
-    image: str
-    layers: List[Any]
-    name: str
-    objects: List[RawObject]
-    offsetx: float
-    offsety: float
-    parallaxx: float
-    parallaxy: float
-    opacity: float
-    properties: List[RawProperty]
-    startx: int
-    starty: int
-    tintcolor: str
-    transparentcolor: str
-    type: str
-    visible: bool
-    width: int
-    x: int
-    y: int
+"""
 
 
 def _convert_raw_tile_layer_data(data: List[int], layer_width: int) -> List[List[int]]:
@@ -228,6 +232,9 @@ def _parse_common(raw_layer: RawLayer) -> Layer:
 
     if raw_layer.get("properties") is not None:
         common.properties = parse_properties(raw_layer["properties"])
+
+    if raw_layer.get("class") is not None:
+        common.class_ = raw_layer["class"]
 
     parallax = [1.0, 1.0]
 

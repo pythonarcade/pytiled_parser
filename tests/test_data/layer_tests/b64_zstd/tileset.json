@@ -6,7 +6,7 @@
  "name":"tile_set_image",
  "spacing":1,
  "tilecount":48,
- "tiledversion":"1.8.5",
+ "tiledversion":"1.9.0",
  "tileheight":32,
  "tilewidth":32,
  "type":"tileset",

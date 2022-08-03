@@ -76,7 +76,10 @@ def _parse_tile(raw_tile: etree.Element, external_path: Optional[Path] = None) -
     tile = Tile(id=int(raw_tile.attrib["id"]))
 
     if raw_tile.attrib.get("type") is not None:
-        tile.type = raw_tile.attrib["type"]
+        tile.class_ = raw_tile.attrib["type"]
+
+    if raw_tile.attrib.get("class") is not None:
+        tile.class_ = raw_tile.attrib["class"]
 
     animation_element = raw_tile.find("./animation")
     if animation_element is not None:
@@ -140,6 +143,9 @@ def parse(
 
     if raw_tileset.attrib.get("objectalignment") is not None:
         tileset.alignment = raw_tileset.attrib["objectalignment"]
+
+    if raw_tileset.attrib.get("class") is not None:
+        tileset.class_ = raw_tileset.attrib["class"]
 
     image_element = raw_tileset.find("image")
     if image_element is not None:

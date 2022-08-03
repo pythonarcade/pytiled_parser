@@ -26,7 +26,7 @@ class TiledObject:
         rotation: The rotation of the tiled object in degrees clockwise (default: 0).
         opacity: The opacity of the tiled object. (default: 1)
         name: The name of the tiled object.
-        type: The type of the tiled object.
+        class_: The Tiled class of the tiled object.
         properties: The properties of the TiledObject.
     """
 
@@ -37,10 +37,9 @@ class TiledObject:
     rotation: float = 0
     visible: bool = True
     name: str = ""
-    type: str = ""
+    class_: str = ""
 
     properties: properties_.Properties = {}
-
 
 @attr.s()
 class Ellipse(TiledObject):

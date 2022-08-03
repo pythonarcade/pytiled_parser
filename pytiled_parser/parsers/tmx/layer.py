@@ -192,6 +192,9 @@ def _parse_common(raw_layer: etree.Element) -> Layer:
     if raw_layer.attrib.get("tintcolor") is not None:
         common.tint_color = parse_color(raw_layer.attrib["tintcolor"])
 
+    if raw_layer.attrib.get("class") is not None:
+        common.class_ = raw_layer.attrib["class"]
+
     return common
 
 

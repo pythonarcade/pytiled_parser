@@ -25,11 +25,11 @@
                  "name":"Object Layer 1",
                  "objects":[
                         {
+                         "class":"",
                          "height":52.6666666666667,
                          "id":1,
                          "name":"",
                          "rotation":0,
-                         "type":"",
                          "visible":true,
                          "width":69.3333333333333,
                          "x":46.3333333333333,
@@ -63,7 +63,7 @@
  "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.8.5",
+ "tiledversion":"1.9.0",
  "tileheight":32,
  "tilesets":[
         {
@@ -72,6 +72,6 @@
         }],
  "tilewidth":32,
  "type":"map",
- "version":"1.8",
+ "version":"1.9",
  "width":8
 }

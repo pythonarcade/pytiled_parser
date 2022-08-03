@@ -50,7 +50,10 @@ def _parse_common(raw_object: etree.Element) -> TiledObject:
         common.name = raw_object.attrib["name"]
 
     if raw_object.attrib.get("type") is not None:
-        common.type = raw_object.attrib["type"]
+        common.class_ = raw_object.attrib["type"]
+
+    if raw_object.attrib.get("class") is not None:
+        common.class_ = raw_object.attrib["class"]
 
     properties_element = raw_object.find("./properties")
     if properties_element:

@@ -129,4 +129,7 @@ def parse(file: Path) -> TiledMap:
     if raw_map.attrib.get("staggerindex") is not None:
         map_.stagger_index = raw_map.attrib["staggerindex"]
 
+    if raw_map.attrib.get("class") is not None:
+        map_.class_ = raw_map.attrib["class"]
+
     return map_

@@ -43,6 +43,7 @@ class Layer:
         size: Ordered pair of size of map in tiles.
         properties: Properties for the layer.
         tint_color: Tint color that is multiplied with any graphics in this layer.
+        class_: The Tiled class of this Layer.
     """
 
     name: str
@@ -54,6 +55,7 @@ class Layer:
     offset: OrderedPair = OrderedPair(0, 0)
 
     id: Optional[int] = None
+    class_: Optional[str] = None
     size: Optional[Size] = None
     properties: Optional[Properties] = None
     tint_color: Optional[Color] = None

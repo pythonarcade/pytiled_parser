@@ -22,53 +22,52 @@ from pytiled_parser.tiled_object import (
 )
 from pytiled_parser.util import load_object_template, parse_color
 
-
-class RawText(TypedDict):
-    """The keys and their types that appear in a Tiled JSON Text Object.
+RawText = TypedDict("RawText", {
+    "text": str,
+    "color": str,
+    "fontfamily": str,
+    "pixelsize": float,  # this is `font_size` in Text
+    "bold": bool,
+    "italic": bool,
+    "strikeout": bool,
+    "underline": bool,
+    "kerning": bool,
+    "halign": str,
+    "valign": str,
+    "wrap": bool
+})
+RawText.__doc__ = """
+    The keys and their types that appear in a Tiled JSON Text Object.
 
     Tiled Doc: https://doc.mapeditor.org/en/stable/reference/json-map-format/#text-example
-    """
-
-    text: str
-    color: str
-
-    fontfamily: str
-    pixelsize: float  # this is `font_size` in Text
-
-    bold: bool
-    italic: bool
-    strikeout: bool
-    underline: bool
-    kerning: bool
-
-    halign: str
-    valign: str
-    wrap: bool
+"""
 
 
-class RawObject(TypedDict):
-    """The keys and their types that appear in a Tiled JSON Object.
+RawObject = TypedDict("RawObject", {
+    "id": int,
+    "gid": int,
+    "template": str,
+    "x": float,
+    "y": float,
+    "width": float,
+    "height": float,
+    "rotation": float,
+    "visible": bool,
+    "name": str,
+    "class": str,
+    "type": str,
+    "properties": List[RawProperty],
+    "ellipse": bool,
+    "point": bool,
+    "polygon": List[Dict[str, float]],
+    "polyline": List[Dict[str, float]],
+    "text": RawText
+})
+RawObject.__doc__ = """
+    The keys and their types that appear in a Tiled JSON Object.
 
     Tiled Doc: https://doc.mapeditor.org/en/stable/reference/json-map-format/#object
-    """
-
-    id: int
-    gid: int
-    template: str
-    x: float
-    y: float
-    width: float
-    height: float
-    rotation: float
-    visible: bool
-    name: str
-    type: str
-    properties: List[RawProperty]
-    ellipse: bool
-    point: bool
-    polygon: List[Dict[str, float]]
-    polyline: List[Dict[str, float]]
-    text: RawText
+"""
 
 
 def _parse_common(raw_object: RawObject) -> TiledObject:
@@ -88,8 +87,13 @@ def _parse_common(raw_object: RawObject) -> TiledObject:
         size=Size(raw_object["width"], raw_object["height"]),
         rotation=raw_object["rotation"],
         name=raw_object["name"],
-        type=raw_object["type"],
     )
+
+    if raw_object.get("type") is not None:
+        common.class_ = raw_object["type"]
+
+    if raw_object.get("class") is not None:
+        common.class_ = raw_object["class"]
 
     if raw_object.get("properties") is not None:
         common.properties = parse_properties(raw_object["properties"])

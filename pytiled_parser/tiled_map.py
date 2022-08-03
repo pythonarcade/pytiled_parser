@@ -51,6 +51,7 @@ class TiledMap:
             "y") is staggered.
         stagger_index: For staggered and hexagonal maps, determines whether the "even"
             or "odd" indexes along the staggered axis are shifted.
+        class_: The Tiled class of this Map.
     """
 
     infinite: bool
@@ -66,6 +67,7 @@ class TiledMap:
     version: str
 
     map_file: Optional[Path] = None
+    class_: Optional[str] = None
     background_color: Optional[Color] = None
     properties: Optional[Properties] = None
     hex_side_length: Optional[int] = None

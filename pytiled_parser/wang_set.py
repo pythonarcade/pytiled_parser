@@ -45,6 +45,7 @@ class WangColor:
         name: The name for this color
         probability: The probability used when randomizing tiles
         properties: The properties for this wang color
+        class_: The Tiled class of this Wang Color
         tile: Tile ID of the tile representing this color
     """
 
@@ -52,6 +53,7 @@ class WangColor:
     name: str
     probability: float
     tile: int
+    class_: Optional[str] = None
     properties: Optional[Properties] = None
 
 
@@ -68,6 +70,7 @@ class WangSet:
     Attributes:
         name: Name of the WangSet
         properties: The properties for this wang set
+        class_: The Tiled class of this Wang Set
         tile: Tile ID of the tile representing this Wang Set
         wang_colors: A list of [WangColors][pytiled_parser.wang_set.WangColor]
         wang_tiles: A list of [WangTiles][pytiled_parser.wang_set.WangTile]
@@ -79,4 +82,5 @@ class WangSet:
     wang_type: str
     wang_tiles: Dict[int, WangTile]
     wang_colors: List[WangColor]
+    class_: Optional[str] = None
     properties: Optional[Properties] = None
