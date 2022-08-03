@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.1.0] - 2022-08-02
+
+This is largely a compatibility update to work with the latest version of Tiled. This version represents the first version of pytiled-parser that is compatible with the formats from Tiled 1.9. Previous versions do not work with maps or tilesets of either JSON or TMX formats from Tiled 1.9 or higher, if you need to use Tiled 1.9+ with an older version of Tiled, you will need to use Tiled's ability to save the map in compatibility mode.
+
+This update does introduce a slight API breaking change, but is unlikely to really cause any problems. The `type` attribute has been removed from the `TiledObject` class as well as the `Tile` class. It has been replaced with the `class_` attribute. This is in keeping with following Tiled's own API as closely as possible. There shouldn't really be any functional difference here, in most cases it has just been re-named. For more information on this change, you can reference the [Tiled JSON format changelog](https://doc.mapeditor.org/en/stable/reference/json-map-format/#changelog).
+
+It is important to note, that this update does not add support for new features introduced in Tiled 1.9(and in fact, we are still missing support for some features from 1.8). This update is primarily to ensure that maps using the base feature set we have had support for will continue to work with the same supported featureset on Tiled 1.9. Support for the new features is something we would like to achieve, but we did not want to hold back general compatibility for it.
+
+Outside of that, all other changes are to the internal parsers and do not effect usage/implementation of pytiled-parser.
+
 ## [2.0.1] - 2021-12-21
 
 Someone, not naming any names, forgot to put `__init__.py` files in some packages, and caused imports to break when installed via a `.whl` and not an editable source install. This just fixes that problem.
