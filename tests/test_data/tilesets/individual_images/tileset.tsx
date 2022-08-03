@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.5" tiledversion="1.7.0" name="tileset" tilewidth="32" tileheight="32" tilecount="4" columns="0">
+<tileset version="1.9" tiledversion="1.9.0" name="tileset" tilewidth="32" tileheight="32" tilecount="4" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
- <tile id="0" type="tile">
+ <tile id="0" class="tile">
   <properties>
    <property name="float property" type="float" value="2.2"/>
   </properties>
@@ -13,7 +13,7 @@
    <frame tileid="3" duration="100"/>
   </animation>
  </tile>
- <tile id="1" type="tile">
+ <tile id="1" class="tile">
   <properties>
    <property name="string property" value="testing"/>
   </properties>
@@ -25,13 +25,13 @@
    </object>
   </objectgroup>
  </tile>
- <tile id="2" type="tile">
+ <tile id="2" class="tile">
   <properties>
    <property name="bool property" type="bool" value="true"/>
   </properties>
   <image width="32" height="32" source="../../images/tile_03.png"/>
  </tile>
- <tile id="3" type="tile">
+ <tile id="3" class="tile">
   <image width="32" height="32" source="../../images/tile_04.png"/>
  </tile>
 </tileset>

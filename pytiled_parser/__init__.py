@@ -11,11 +11,12 @@ PyTiled Parser is not tied to any particular graphics library or game engine.
 
 # pylint: disable=too-few-public-methods
 
-from .common_types import OrderedPair, Size
+from .common_types import Color, OrderedPair, Size
 from .exception import UnknownFormat
-from .layer import ImageLayer, Layer, LayerGroup, ObjectLayer, TileLayer
-from .parser import parse_map
-from .properties import Properties
+from .layer import Chunk, ImageLayer, Layer, LayerGroup, ObjectLayer, TileLayer
+from .parser import parse_map, parse_world
+from .properties import Properties, Property
 from .tiled_map import TiledMap
-from .tileset import Tile, Tileset
+from .tileset import Frame, Grid, Tile, Tileset, Transformations
 from .version import __version__
+from .world import World, WorldMap

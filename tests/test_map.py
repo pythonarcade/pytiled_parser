@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from pytiled_parser import parse_map
+from pytiled_parser import UnknownFormat, parse_map
 from pytiled_parser.common_types import OrderedPair, Size
 
 TESTS_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -19,8 +19,10 @@ ALL_MAP_TESTS = [
     MAP_TESTS / "hexagonal",
     MAP_TESTS / "embedded_tileset",
     MAP_TESTS / "template",
+    MAP_TESTS / "cross_format_tileset",
 ]
 
+JSON_INVALID_TILESET = MAP_TESTS / "json_invalid_tileset"
 
 def fix_object(my_object):
     my_object.coordinates = OrderedPair(
@@ -83,3 +85,9 @@ def test_map_integration(parser_type, map_test):
     fix_map(expected.EXPECTED)
     fix_map(casted_map)
     assert casted_map == expected.EXPECTED
+
+def test_json_invalid_tileset():
+    raw_map_path = JSON_INVALID_TILESET / "map.json"
+
+    with pytest.raises(UnknownFormat):
+        parse_map(raw_map_path)

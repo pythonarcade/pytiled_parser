@@ -4,36 +4,28 @@
 
 from typing import NamedTuple
 
-import attr
-
 
 class Color(NamedTuple):
-    """Color NamedTuple.
+    """Represents an RGBA color value as a four value Tuple.
 
     Attributes:
-        red: Red, between 1 and 255.
-        green: Green, between 1 and 255.
-        blue: Blue, between 1 and 255.
-        alpha: Alpha, between 1 and 255.
+        red: Red value, between 0 and 255.
+        green: Green value, between 0 and 255.
+        blue: Blue value, between 0 and 255.
+        alpha: Alpha value, between 0 and 255.
     """
-
     red: int
     green: int
     blue: int
     alpha: int
 
 
-@attr.s(auto_attribs=True)
-class Template:
-    """FIXME TODO"""
-
-
 class Size(NamedTuple):
-    """Size NamedTuple.
+    """Represents a two dimensional size as a two value Tuple.
 
     Attributes:
-        width: The width of the object in pixels.
-        height: The height of the object in pixels.
+        width: The width of the object. Can be in either pixels or number of tiles.
+        height: The height of the object. Can be in either pixels or number of tiles.
     """
 
     width: float
@@ -41,11 +33,11 @@ class Size(NamedTuple):
 
 
 class OrderedPair(NamedTuple):
-    """OrderedPair NamedTuple.
+    """Represents a two dimensional position as a two value Tuple.
 
     Attributes:
-        x: X coordinate.
-        y: Y coordinate.
+        x: X coordinate. Can be in either pixels or number of tiles.
+        y: Y coordinate. Can be in either pixels or number of tiles.
     """
 
     x: float

@@ -17,39 +17,40 @@ from pytiled_parser.parsers.tmx.tileset import parse as parse_tmx_tileset
 from pytiled_parser.tiled_map import TiledMap, TilesetDict
 from pytiled_parser.util import check_format, parse_color
 
+RawTilesetMapping = TypedDict("RawTilesetMapping", {
+    "firstgid": int,
+    "source": str
+})
 
-class RawTilesetMapping(TypedDict):
 
-    firstgid: int
-    source: str
-
-
-class RawTiledMap(TypedDict):
-    """The keys and their types that appear in a Tiled JSON Map Object.
+RawTiledMap = TypedDict("RawTiledMap", {
+    "backgroundcolor": str,
+    "compressionlevel": int,
+    "height": int,
+    "hexsidelength": int,
+    "infinite": bool,
+    "layers": List[RawLayer],
+    "nextlayerid": int,
+    "nextobjectid": int,
+    "orientation": str,
+    "properties": List[RawProperty],
+    "renderorder": str,
+    "staggeraxis": str,
+    "staggerindex": str,
+    "tiledversion": str,
+    "tileheight": int,
+    "tilesets": List[RawTilesetMapping],
+    "tilewidth": int,
+    "class": str,
+    "type": str,
+    "version": Union[str, float],
+    "width": int
+})
+RawTiledMap.__doc__ = """
+    The keys and their types that appear in a Tiled JSON Map Object.
 
     Tiled Docs: https://doc.mapeditor.org/en/stable/reference/json-map-format/#map
-    """
-
-    backgroundcolor: str
-    compressionlevel: int
-    height: int
-    hexsidelength: int
-    infinite: bool
-    layers: List[RawLayer]
-    nextlayerid: int
-    nextobjectid: int
-    orientation: str
-    properties: List[RawProperty]
-    renderorder: str
-    staggeraxis: str
-    staggerindex: str
-    tiledversion: str
-    tileheight: int
-    tilesets: List[RawTilesetMapping]
-    tilewidth: int
-    type: str
-    version: Union[str, float]
-    width: int
+"""
 
 
 def parse(file: Path) -> TiledMap:
@@ -75,13 +76,7 @@ def parse(file: Path) -> TiledMap:
             tileset_path = Path(parent_dir / raw_tileset["source"])
             parser = check_format(tileset_path)
             with open(tileset_path) as raw_tileset_file:
-                if parser == "json":
-                    tilesets[raw_tileset["firstgid"]] = parse_json_tileset(
-                        json.load(raw_tileset_file),
-                        raw_tileset["firstgid"],
-                        external_path=tileset_path.parent,
-                    )
-                elif parser == "tmx":
+                if parser == "tmx":
                     raw_tileset_external = etree.parse(raw_tileset_file).getroot()
                     tilesets[raw_tileset["firstgid"]] = parse_tmx_tileset(
                         raw_tileset_external,
@@ -89,10 +84,17 @@ def parse(file: Path) -> TiledMap:
                         external_path=tileset_path.parent,
                     )
                 else:
-                    raise UnknownFormat(
-                        "Unkown Tileset format, please use either the TSX or JSON format."
-                    )
-
+                    try:
+                        tilesets[raw_tileset["firstgid"]] = parse_json_tileset(
+                            json.load(raw_tileset_file),
+                            raw_tileset["firstgid"],
+                            external_path=tileset_path.parent,
+                        )
+                    except ValueError:
+                        raise UnknownFormat(
+                            "Unknown Tileset Format, please use either the TSX or JSON format. "
+                            "This message could also mean your tileset file is invalid or corrupted."
+                        )
         else:
             # Is an embedded Tileset
             raw_tileset = cast(RawTileSet, raw_tileset)
@@ -100,7 +102,7 @@ def parse(file: Path) -> TiledMap:
                 raw_tileset, raw_tileset["firstgid"]
             )
 
-    if isinstance(raw_tiled_map["version"], float):
+    if isinstance(raw_tiled_map["version"], float): # pragma: no cover
         version = str(raw_tiled_map["version"])
     else:
         version = raw_tiled_map["version"]
@@ -126,31 +128,33 @@ def parse(file: Path) -> TiledMap:
     for my_layer in layers:
         for tiled_object in my_layer.tiled_objects:  # type: ignore
             if hasattr(tiled_object, "new_tileset"):
-                if tiled_object.new_tileset:
-                    already_loaded = None
-                    for val in map_.tilesets.values():
-                        if val.name == tiled_object.new_tileset["name"]:
-                            already_loaded = val
-                            break
+                already_loaded = None
+                for val in map_.tilesets.values():
+                    if val.name == tiled_object.new_tileset["name"]:
+                        already_loaded = val
+                        break
 
-                    if not already_loaded:
-                        highest_firstgid = max(map_.tilesets.keys())
-                        last_tileset_count = map_.tilesets[highest_firstgid].tile_count
-                        new_firstgid = highest_firstgid + last_tileset_count
-                        map_.tilesets[new_firstgid] = parse_json_tileset(
-                            tiled_object.new_tileset,
-                            new_firstgid,
-                            tiled_object.new_tileset_path,
-                        )
-                        tiled_object.gid = tiled_object.gid + (new_firstgid - 1)
+                if not already_loaded:
+                    highest_firstgid = max(map_.tilesets.keys())
+                    last_tileset_count = map_.tilesets[highest_firstgid].tile_count
+                    new_firstgid = highest_firstgid + last_tileset_count
+                    map_.tilesets[new_firstgid] = parse_json_tileset(
+                        tiled_object.new_tileset,
+                        new_firstgid,
+                        tiled_object.new_tileset_path,
+                    )
+                    tiled_object.gid = tiled_object.gid + (new_firstgid - 1)
 
-                    else:
-                        tiled_object.gid = tiled_object.gid + (
-                            already_loaded.firstgid - 1
-                        )
+                else:
+                    tiled_object.gid = tiled_object.gid + (
+                        already_loaded.firstgid - 1
+                    )
 
-                    tiled_object.new_tileset = None
-                    tiled_object.new_tileset_path = None
+                tiled_object.new_tileset = None
+                tiled_object.new_tileset_path = None
+
+    if raw_tiled_map.get("class") is not None:
+        map_.class_ = raw_tiled_map["class"]
 
     if raw_tiled_map.get("backgroundcolor") is not None:
         map_.background_color = parse_color(raw_tiled_map["backgroundcolor"])

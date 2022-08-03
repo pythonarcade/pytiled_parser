@@ -21,11 +21,13 @@ ALL_LAYER_TESTS = [
     LAYER_TESTS / "b64",
     LAYER_TESTS / "b64_gzip",
     LAYER_TESTS / "b64_zlib",
-    # LAYER_TESTS / "b64_zstd",
     LAYER_TESTS / "no_layers",
     LAYER_TESTS / "infinite_map",
     LAYER_TESTS / "infinite_map_b64",
 ]
+
+ZSTD_LAYER_TEST = LAYER_TESTS / "b64_zstd"
+UNKNOWN_LAYER_TYPE_TEST = LAYER_TESTS / "unknown_type"
 
 
 def fix_object(my_object):
@@ -96,3 +98,41 @@ def test_layer_integration(parser_type, layer_test):
         print(layer.size)
 
     assert layers == expected.EXPECTED
+
+@pytest.mark.parametrize("parser_type", ["json", "tmx"])
+def test_zstd_not_installed(parser_type):
+    if parser_type == "json":
+        raw_layers_path = ZSTD_LAYER_TEST / "map.json"
+        with open(raw_layers_path) as raw_layers_file:
+            raw_layers = json.load(raw_layers_file)["layers"]
+            with pytest.raises(ValueError):
+                layers = [parse_json(raw_layer) for raw_layer in raw_layers]
+    elif parser_type == "tmx":
+        raw_layers_path = ZSTD_LAYER_TEST / "map.tmx"
+        with open(raw_layers_path) as raw_layers_file:
+            with pytest.raises(ValueError):
+                raw_layer = etree.parse(raw_layers_file).getroot()
+                layers = []
+                for layer in raw_layer.findall("./layer"):
+                    layers.append(parse_tmx(layer))
+
+                for layer in raw_layer.findall("./objectgroup"):
+                    layers.append(parse_tmx(layer))
+
+                for layer in raw_layer.findall("./group"):
+                    layers.append(parse_tmx(layer))
+
+                for layer in raw_layer.findall("./imagelayer"):
+                    layers.append(parse_tmx(layer))
+
+def test_unknown_layer_type():
+    # We only test JSON here because due to the nature of the TMX format
+    # there does not exist a scenario where pytiled_parser can attempt to
+    # parse an unknown layer type. In JSON a RuntimeError error will be 
+    # raised if an unknown type is provided. In TMX the layer will just
+    # be ignored.
+    raw_layers_path = UNKNOWN_LAYER_TYPE_TEST / "map.json"
+    with open(raw_layers_path) as raw_layers_file:
+        raw_layers = json.load(raw_layers_file)["layers"]
+        with pytest.raises(RuntimeError):
+            layers = [parse_json(raw_layer) for raw_layer in raw_layers]

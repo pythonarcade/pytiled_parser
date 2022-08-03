@@ -7,35 +7,42 @@ from pytiled_parser.parsers.json.properties import parse as parse_properties
 from pytiled_parser.util import parse_color
 from pytiled_parser.wang_set import WangColor, WangSet, WangTile
 
-
-class RawWangTile(TypedDict):
-    """The keys and their types that appear in a Wang Tile JSON Object."""
-
-    tileid: int
+RawWangTile = TypedDict("RawWangTile", {
+    "tileid": int,
     # Tiled stores these IDs as a list represented like so:
     # [top, top_right, right, bottom_right, bottom, bottom_left, left, top_left]
-    wangid: List[int]
+    "wangid": List[int]
+})
+RawWangTile.__doc__ = """
+    The keys and their types that appear in a Wang Tile JSON Object.
+"""
 
 
-class RawWangColor(TypedDict):
-    """The keys and their types that appear in a Wang Color JSON Object."""
+RawWangColor = TypedDict("RawWangColor", {
+    "color": str,
+    "class": str,
+    "name": str,
+    "probability": float,
+    "tile": int,
+    "properties": List[RawProperty]
+})
+RawWangColor.__doc__ = """
+    The keys and their types that appear in a Wang Color JSON Object.
+"""
 
-    color: str
-    name: str
-    probability: float
-    tile: int
-    properties: List[RawProperty]
 
-
-class RawWangSet(TypedDict):
-    """The keys and their types that appear in a Wang Set JSON Object."""
-
-    colors: List[RawWangColor]
-    name: str
-    properties: List[RawProperty]
-    tile: int
-    type: str
-    wangtiles: List[RawWangTile]
+RawWangSet = TypedDict("RawWangSet", {
+    "colors": List[RawWangColor],
+    "class": str,
+    "name": str,
+    "properties": List[RawProperty],
+    "tile": int,
+    "type": str,
+    "wangtiles": List[RawWangTile]
+})
+RawWangSet.__doc__ = """
+    The keys and their types that appear in a Wang Set JSON Object.
+"""
 
 
 def _parse_wang_tile(raw_wang_tile: RawWangTile) -> WangTile:

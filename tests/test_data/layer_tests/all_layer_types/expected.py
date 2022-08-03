@@ -100,7 +100,7 @@ EXPECTED = [
                         size=common_types.Size(69.3333333333333, 52.6666666666667),
                         coordinates=common_types.OrderedPair(46.3333333333333, 39),
                         visible=True,
-                        type="",
+                        class_="",
                     )
                 ],
             ),

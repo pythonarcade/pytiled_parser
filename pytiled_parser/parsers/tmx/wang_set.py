@@ -34,6 +34,9 @@ def _parse_wang_color(raw_wang_color: etree.Element) -> WangColor:
         probability=float(raw_wang_color.attrib["probability"]),
     )
 
+    if raw_wang_color.attrib.get("class") is not None:
+        wang_color.class_ = raw_wang_color.attrib["class"]
+
     properties = raw_wang_color.find("./properties")
     if properties:
         wang_color.properties = parse_properties(properties)
@@ -66,6 +69,9 @@ def parse(raw_wangset: etree.Element) -> WangSet:
         wang_colors=colors,
         wang_tiles=tiles,
     )
+
+    if raw_wangset.attrib.get("class") is not None:
+        wangset.class_ = raw_wangset.attrib["class"]
 
     properties = raw_wangset.find("./properties")
     if properties:

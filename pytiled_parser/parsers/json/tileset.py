@@ -13,77 +13,91 @@ from pytiled_parser.parsers.json.wang_set import parse as parse_wangset
 from pytiled_parser.tileset import Frame, Grid, Tile, Tileset, Transformations
 from pytiled_parser.util import parse_color
 
-
-class RawFrame(TypedDict):
-    """The keys and their types that appear in a Frame JSON Object."""
-
-    duration: int
-    tileid: int
-
-
-class RawTileOffset(TypedDict):
-    """The keys and their types that appear in a TileOffset JSON Object."""
-
-    x: int
-    y: int
+RawFrame = TypedDict("RawFrame", {
+    "duration": int,
+    "tileid": int
+})
+RawFrame.__doc__ = """
+    The keys and their types that appear in a Frame JSON Object.
+"""
 
 
-class RawTransformations(TypedDict):
-    """The keys and their types that appear in a Transformations JSON Object."""
-
-    hflip: bool
-    vflip: bool
-    rotate: bool
-    preferuntransformed: bool
-
-
-class RawTile(TypedDict):
-    """The keys and their types that appear in a Tile JSON Object."""
-
-    animation: List[RawFrame]
-    id: int
-    image: str
-    imageheight: int
-    imagewidth: int
-    opacity: float
-    properties: List[RawProperty]
-    objectgroup: RawLayer
-    type: str
+RawTileOffset = TypedDict("RawTileOffset", {
+    "x": int,
+    "y": int
+})
+RawTileOffset.__doc__ = """
+    The keys and their types that appear in a TileOffset JSON Object.
+"""
 
 
-class RawGrid(TypedDict):
-    """The keys and their types that appear in a Grid JSON Object."""
+RawTransformations = TypedDict("RawTransformations", {
+    "hflip": bool,
+    "vflip": bool,
+    "rotate": bool,
+    "preferuntransformed": bool
+})
+RawTransformations.__doc__ = """
+    The keys and their types that appear in a Transformations JSON Object.
+"""
 
-    height: int
-    width: int
-    orientation: str
+
+RawTile = TypedDict("RawTile", {
+    "animation": List[RawFrame],
+    "class": str,
+    "id": int,
+    "image": str,
+    "imageheight": int,
+    "imagewidth": int,
+    "opacity": float,
+    "type": str,
+    "properties": List[RawProperty],
+    "objectgroup": RawLayer,
+})
+RawTile.__docs__ = """
+    The keys and their types that appear in a Tile JSON Object.
+"""
 
 
-class RawTileSet(TypedDict):
-    """The keys and their types that appear in a TileSet JSON Object."""
+RawGrid = TypedDict("RawGrid", {
+    "height": int,
+    "width": int,
+    "orientation": str
+})
+RawGrid.__doc__ = """
+    The keys and their types that appear in a Grid JSON Object.
+"""
 
-    backgroundcolor: str
-    columns: int
-    firstgid: int
-    grid: RawGrid
-    image: str
-    imageheight: int
-    imagewidth: int
-    margin: int
-    name: str
-    properties: List[RawProperty]
-    source: str
-    spacing: int
-    tilecount: int
-    tiledversion: str
-    tileheight: int
-    tileoffset: RawTileOffset
-    tiles: List[RawTile]
-    tilewidth: int
-    transparentcolor: str
-    transformations: RawTransformations
-    version: Union[str, float]
-    wangsets: List[RawWangSet]
+
+RawTileSet = TypedDict("RawTileSet", {
+    "backgroundcolor": str,
+    "class": str,
+    "columns": int,
+    "firstgid": int,
+    "grid": RawGrid,
+    "image": str,
+    "imageheight": int,
+    "imagewidth": int,
+    "margin": int,
+    "name": str,
+    "properties": List[RawProperty],
+    "objectalignment": str,
+    "source": str,
+    "spacing": int,
+    "tilecount": int,
+    "tiledversion": str,
+    "tileheight": int,
+    "tileoffset": RawTileOffset,
+    "tiles": List[RawTile],
+    "tilewidth": int,
+    "transparentcolor": str,
+    "transformations": RawTransformations,
+    "version": Union[str, float],
+    "wangsets": List[RawWangSet]
+})
+RawTileSet.__doc__ = """
+    The keys and their types that appear in a TileSet JSON Object.
+"""
 
 
 def _parse_frame(raw_frame: RawFrame) -> Frame:
@@ -177,14 +191,21 @@ def _parse_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile
         else:
             tile.image = Path(raw_tile["image"])
 
-    if raw_tile.get("imagewidth") is not None:
+    # These are ignored from coverage because there does not exist a scenario where
+    # image is set, but these aren't, so the branches will never fully be hit.
+    # However, leaving these checks in place is nice to prevent fatal errors on 
+    # a manually edited map that has an "incorrect" but not "unusable" structure
+    if raw_tile.get("imagewidth") is not None: # pragma: no cover
         tile.image_width = raw_tile["imagewidth"]
 
-    if raw_tile.get("imageheight") is not None:
+    if raw_tile.get("imageheight") is not None: # pragma: no cover
         tile.image_height = raw_tile["imageheight"]
 
     if raw_tile.get("type") is not None:
-        tile.type = raw_tile["type"]
+        tile.class_ = raw_tile["type"]
+
+    if raw_tile.get("class") is not None:
+        tile.class_ = raw_tile["class"]
 
     return tile
 
@@ -217,7 +238,11 @@ def parse(
     )
 
     if raw_tileset.get("version") is not None:
-        if isinstance(raw_tileset["version"], float):
+        # This is here to support old versions of Tiled Maps. It's a pain
+        # to keep old versions in the test data and not update them with the
+        # rest so I'm excluding this from coverage. In reality it's probably
+        # not needed. Tiled hasn't been using floats for the version for a long time
+        if isinstance(raw_tileset["version"], float): # pragma: no cover
             tileset.version = str(raw_tileset["version"])
         else:
             tileset.version = raw_tileset["version"]
@@ -233,11 +258,16 @@ def parse(
         else:
             tileset.image = Path(raw_tileset["image"])
 
-    if raw_tileset.get("imagewidth") is not None:
+    # See above note about imagewidth and imageheight on parse_tile function
+    # for an explanation on why these are ignored
+    if raw_tileset.get("imagewidth") is not None: # pragma: no cover
         tileset.image_width = raw_tileset["imagewidth"]
 
-    if raw_tileset.get("imageheight") is not None:
+    if raw_tileset.get("imageheight") is not None: # pragma: no cover
         tileset.image_height = raw_tileset["imageheight"]
+
+    if raw_tileset.get("objectalignment") is not None:
+        tileset.alignment = raw_tileset["objectalignment"]
 
     if raw_tileset.get("backgroundcolor") is not None:
         tileset.background_color = parse_color(raw_tileset["backgroundcolor"])
@@ -268,5 +298,8 @@ def parse(
 
     if raw_tileset.get("transformations") is not None:
         tileset.transformations = _parse_transformations(raw_tileset["transformations"])
+
+    if raw_tileset.get("class") is not None:
+        tileset.class_ = raw_tileset["class"]
 
     return tileset

@@ -28,7 +28,7 @@ EXPECTED = tileset.Tileset(
             image_height=32,
             image_width=32,
             properties={"float property": 2.2},
-            type="tile",
+            class_="tile",
         ),
         1: tileset.Tile(
             id=1,
@@ -46,7 +46,7 @@ EXPECTED = tileset.Tileset(
                         name="",
                         size=common_types.Size(14.4766410408043, 13.7196924896511),
                         rotation=0,
-                        type="",
+                        class_="",
                         visible=True,
                         coordinates=common_types.OrderedPair(
                             13.4358367829687, 13.5304553518628
@@ -57,7 +57,7 @@ EXPECTED = tileset.Tileset(
                         name="",
                         size=common_types.Size(14.287403903016, 11.070372560615),
                         rotation=0,
-                        type="",
+                        class_="",
                         visible=True,
                         coordinates=common_types.OrderedPair(
                             13.8143110585452, 1.98698994677705
@@ -66,7 +66,7 @@ EXPECTED = tileset.Tileset(
                 ],
             ),
             properties={"string property": "testing"},
-            type="tile",
+            class_="tile",
         ),
         2: tileset.Tile(
             id=2,
@@ -74,14 +74,14 @@ EXPECTED = tileset.Tileset(
             image_height=32,
             image_width=32,
             properties={"bool property": True},
-            type="tile",
+            class_="tile",
         ),
         3: tileset.Tile(
             id=3,
             image=Path("../../images/tile_04.png"),
             image_height=32,
             image_width=32,
-            type="tile",
+            class_="tile",
         ),
     },
 )
