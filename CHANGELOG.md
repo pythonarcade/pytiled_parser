@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.1.1] - 2022-08-10
+
+This version contains just one bug fix. Previously if a map or other object in the TMX format contained a [Class property](https://doc.mapeditor.org/en/stable/manual/custom-properties/#custom-types) which was added in Tiled 1.8, then pytiled-parser would crash.
+
+Classes are not a supported feature in pytiled-parser yet, however the existence of them isn't intended to break the rest of the supported featureset. This fix makes the rest of the map still be able to be successfully parsed and used if one of these exists in it.
+
+See [#60](https://github.com/pythonarcade/pytiled_parser/pull/60) for more info on this bug. Thanks to [laqieer](https://github.com/laqieer) for this PR.
+
 ## [2.1.0] - 2022-08-02
 
 This is largely a compatibility update to work with the latest version of Tiled. This version represents the first version of pytiled-parser that is compatible with the formats from Tiled 1.9. Previous versions do not work with maps or tilesets of either JSON or TMX formats from Tiled 1.9 or higher, if you need to use Tiled 1.9+ with an older version of Tiled, you will need to use Tiled's ability to save the map in compatibility mode.
