@@ -7,15 +7,15 @@ EXPECTED = world.World(
     maps=[
         world.WorldMap(
             size=common_types.Size(160, 160),
-            coordinates=common_types.OrderedPair(0.0, 0.0),
-            map_file=Path(Path(__file__).parent / "map_p0-n0.json")
+            coordinates=common_types.OrderedPair(0.0, 160.0),
+            map_file=Path(Path(__file__).parent / "map_p0-n1.json")
             .absolute()
             .resolve(),
         ),
         world.WorldMap(
             size=common_types.Size(160, 160),
-            coordinates=common_types.OrderedPair(0.0, 160.0),
-            map_file=Path(Path(__file__).parent / "map_p0-n1.json")
+            coordinates=common_types.OrderedPair(0.0, 0.0),
+            map_file=Path(Path(__file__).parent / "map_p0-n0.json")
             .absolute()
             .resolve(),
         ),
