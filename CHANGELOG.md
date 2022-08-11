@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.1.2] - 2022-08-10
+
+This version does not make any changes to the library. The project has moved to using Github Actions to publishing the distribution to PyPI. We have made this release to fully test the system and ensure it is functional for future releases.
+
 ## [2.1.1] - 2022-08-10
 
 This version contains just one bug fix. Previously if a map or other object in the TMX format contained a [Class property](https://doc.mapeditor.org/en/stable/manual/custom-properties/#custom-types) which was added in Tiled 1.8, then pytiled-parser would crash.
