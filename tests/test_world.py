@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from pytiled_parser import world
+from pytiled_parser import OrderedPair, world
 
 TESTS_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 TEST_DATA = TESTS_DIR / "test_data"
@@ -17,6 +17,16 @@ ALL_WORLD_TESTS = [
     WORLD_TESTS / "both",
 ]
 
+
+def fix_world_map(world_map):
+    world_map.coordinates = OrderedPair(
+        round(world_map.coordinates[0], 3), round(world_map.coordinates[1], 3)
+    )
+
+
+def fix_world(world):
+    for world_map in world.maps:
+        fix_world_map(world_map)
 
 @pytest.mark.parametrize("world_test", ALL_WORLD_TESTS)
 def test_world_integration(world_test):
@@ -31,5 +41,6 @@ def test_world_integration(world_test):
     raw_world_path = world_test / "world.world"
 
     casted_world = world.parse_world(raw_world_path)
+    fix_world(casted_world)
 
     assert casted_world == expected.EXPECTED
