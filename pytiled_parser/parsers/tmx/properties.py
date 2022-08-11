@@ -1,6 +1,5 @@
 import xml.etree.ElementTree as etree
 from pathlib import Path
-from typing import List, Union, cast
 
 from pytiled_parser.properties import Properties, Property
 from pytiled_parser.util import parse_color

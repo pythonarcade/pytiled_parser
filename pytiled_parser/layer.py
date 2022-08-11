@@ -1,6 +1,6 @@
 """This module provides classes for all layer types
 
-There is the base Layer class, which TileLayer, ObjectLayer, ImageLayer, 
+There is the base Layer class, which TileLayer, ObjectLayer, ImageLayer,
 and LayerGroup all derive from. The base Layer class is never directly used,
 and serves only as an abstract base for common elements between all types.
 

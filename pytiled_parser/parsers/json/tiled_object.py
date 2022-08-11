@@ -1,7 +1,5 @@
 """Object parsing for the JSON Map Format.
 """
-import json
-import xml.etree.ElementTree as etree
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 

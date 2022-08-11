@@ -1,4 +1,3 @@
-import json
 import xml.etree.ElementTree as etree
 from pathlib import Path
 from typing import Callable, Optional

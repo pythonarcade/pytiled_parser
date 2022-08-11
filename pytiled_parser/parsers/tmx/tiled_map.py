@@ -2,7 +2,7 @@ import json
 import xml.etree.ElementTree as etree
 from pathlib import Path
 
-from pytiled_parser.common_types import OrderedPair, Size
+from pytiled_parser.common_types import Size
 from pytiled_parser.exception import UnknownFormat
 from pytiled_parser.parsers.json.tileset import parse as parse_json_tileset
 from pytiled_parser.parsers.tmx.layer import parse as parse_layer
