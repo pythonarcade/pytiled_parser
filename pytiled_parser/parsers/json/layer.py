@@ -34,19 +34,16 @@ from pytiled_parser.util import parse_color
 # development purposes it should only be installed when specifically manually
 # testing for zstd things.
 zstd_spec = importlib.util.find_spec("zstd")
-if zstd_spec: # pragma: no cover
+if zstd_spec:  # pragma: no cover
     import zstd
 else:
     zstd = None
 
 
-RawChunk = TypedDict("RawChunk", {
-    "data": Union[List[int], str],
-    "height": int,
-    "width": int,
-    "x": int,
-    "y": int
-})
+RawChunk = TypedDict(
+    "RawChunk",
+    {"data": Union[List[int], str], "height": int, "width": int, "x": int, "y": int},
+)
 RawChunk.__doc__ = """
     The keys and their types that appear in a Tiled JSON Chunk Object.
 
@@ -54,36 +51,38 @@ RawChunk.__doc__ = """
 """
 
 
-
-RawLayer = TypedDict("RawLayer", {
-    "chunks": List[RawChunk],
-    "compression": str,
-    "data": Union[List[int], str],
-    "draworder": str,
-    "encoding": str,
-    "height": int,
-    "id": int,
-    "image": str,
-    "layers": List[Any],
-    "name": str,
-    "objects": List[RawObject],
-    "offsetx": float,
-    "offsety": float,
-    "parallaxx": float,
-    "parallaxy": float,
-    "opacity": float,
-    "properties": List[RawProperty],
-    "startx": int,
-    "starty": int,
-    "tintcolor": str,
-    "transparentcolor": str,
-    "class": str,
-    "type": str,
-    "visible": bool,
-    "width": int,
-    "x": int,
-    "y": int
-})
+RawLayer = TypedDict(
+    "RawLayer",
+    {
+        "chunks": List[RawChunk],
+        "compression": str,
+        "data": Union[List[int], str],
+        "draworder": str,
+        "encoding": str,
+        "height": int,
+        "id": int,
+        "image": str,
+        "layers": List[Any],
+        "name": str,
+        "objects": List[RawObject],
+        "offsetx": float,
+        "offsety": float,
+        "parallaxx": float,
+        "parallaxy": float,
+        "opacity": float,
+        "properties": List[RawProperty],
+        "startx": int,
+        "starty": int,
+        "tintcolor": str,
+        "transparentcolor": str,
+        "class": str,
+        "type": str,
+        "visible": bool,
+        "width": int,
+        "x": int,
+        "y": int,
+    },
+)
 RawLayer.__doc__ = """
     The keys and their types that appear in a Tiled JSON Layer Object.
 
@@ -141,7 +140,7 @@ def _decode_tile_layer_data(
             "To install use 'pip install pytiled-parser[zstd]'"
         )
     # See above note at top of module about zstd tests
-    elif compression == "zstd": # pragma: no cover
+    elif compression == "zstd":  # pragma: no cover
         unzipped_data = zstd.decompress(unencoded_data)
     else:
         unzipped_data = unencoded_data

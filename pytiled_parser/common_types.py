@@ -14,6 +14,7 @@ class Color(NamedTuple):
         blue: Blue value, between 0 and 255.
         alpha: Alpha value, between 0 and 255.
     """
+
     red: int
     green: int
     blue: int

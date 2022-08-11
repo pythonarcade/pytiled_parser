@@ -32,12 +32,13 @@ def parse_map(file: Path) -> TiledMap:
                 "This message could also mean your map file is invalid or corrupted."
             )
 
+
 def parse_world(file: Path) -> World:
     """Parse the raw world file into a pytiled_parser type
 
     Args:
         file: Path to the world file
-    
+
     Returns:
         World: A parsed and typed World
     """

@@ -41,6 +41,7 @@ class TiledObject:
 
     properties: properties_.Properties = {}
 
+
 @attr.s()
 class Ellipse(TiledObject):
     """Elipse shape defined by a point, width, height, and rotation.

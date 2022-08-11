@@ -31,7 +31,7 @@ from pytiled_parser.util import parse_color
 # development purposes it should only be installed when specifically manually
 # testing for zstd things.
 zstd_spec = importlib.util.find_spec("zstd")
-if zstd_spec: # pragma: no cover
+if zstd_spec:  # pragma: no cover
     import zstd
 else:
     zstd = None
@@ -87,7 +87,7 @@ def _decode_tile_layer_data(
             "To install use 'pip install pytiled-parser[zstd]'"
         )
     # See above note at top of module about zstd tests
-    elif compression == "zstd": # pragma: no cover
+    elif compression == "zstd":  # pragma: no cover
         unzipped_data = zstd.decompress(unencoded_data)
     else:
         unzipped_data = unencoded_data

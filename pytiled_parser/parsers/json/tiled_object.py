@@ -22,20 +22,23 @@ from pytiled_parser.tiled_object import (
 )
 from pytiled_parser.util import load_object_template, parse_color
 
-RawText = TypedDict("RawText", {
-    "text": str,
-    "color": str,
-    "fontfamily": str,
-    "pixelsize": float,  # this is `font_size` in Text
-    "bold": bool,
-    "italic": bool,
-    "strikeout": bool,
-    "underline": bool,
-    "kerning": bool,
-    "halign": str,
-    "valign": str,
-    "wrap": bool
-})
+RawText = TypedDict(
+    "RawText",
+    {
+        "text": str,
+        "color": str,
+        "fontfamily": str,
+        "pixelsize": float,  # this is `font_size` in Text
+        "bold": bool,
+        "italic": bool,
+        "strikeout": bool,
+        "underline": bool,
+        "kerning": bool,
+        "halign": str,
+        "valign": str,
+        "wrap": bool,
+    },
+)
 RawText.__doc__ = """
     The keys and their types that appear in a Tiled JSON Text Object.
 
@@ -43,26 +46,29 @@ RawText.__doc__ = """
 """
 
 
-RawObject = TypedDict("RawObject", {
-    "id": int,
-    "gid": int,
-    "template": str,
-    "x": float,
-    "y": float,
-    "width": float,
-    "height": float,
-    "rotation": float,
-    "visible": bool,
-    "name": str,
-    "class": str,
-    "type": str,
-    "properties": List[RawProperty],
-    "ellipse": bool,
-    "point": bool,
-    "polygon": List[Dict[str, float]],
-    "polyline": List[Dict[str, float]],
-    "text": RawText
-})
+RawObject = TypedDict(
+    "RawObject",
+    {
+        "id": int,
+        "gid": int,
+        "template": str,
+        "x": float,
+        "y": float,
+        "width": float,
+        "height": float,
+        "rotation": float,
+        "visible": bool,
+        "name": str,
+        "class": str,
+        "type": str,
+        "properties": List[RawProperty],
+        "ellipse": bool,
+        "point": bool,
+        "polygon": List[Dict[str, float]],
+        "polyline": List[Dict[str, float]],
+        "text": RawText,
+    },
+)
 RawObject.__doc__ = """
     The keys and their types that appear in a Tiled JSON Object.
 
@@ -266,7 +272,7 @@ def _get_parser(raw_object: RawObject) -> Callable[[RawObject], TiledObject]:
     # there are tests for Tile objects, but for some reason the coverage
     # isn't picking up this if statement(though it does pickup the _parse_tile)
     # function so who knows
-    if raw_object.get("gid"): # pragma: no cover
+    if raw_object.get("gid"):  # pragma: no cover
         # Only tile objects have the `gid` key
         return _parse_tile
 
