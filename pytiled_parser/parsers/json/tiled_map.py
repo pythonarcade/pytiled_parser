@@ -126,6 +126,19 @@ def parse(file: Path) -> TiledMap:
     layers = [layer for layer in map_.layers if hasattr(layer, "tiled_objects")]
 
     for my_layer in layers:
+        # Mypy extremely hates what is going on in this whole block
+        # For some reason an ignore on this first for loop is causing it
+        # to just not care about any of the problems in here.
+        # However, under normal circumstances, mypy hates just about every
+        # line of this block.
+        #
+        # This is because we are doing some run-time modification of the attributes
+        # on the tiled_object class and making assumptions about things based on that.
+        # This is done to achieve a system where we can load-in tilesets which were
+        # defined in a Tiled Object Template. This is tough because we need to know what
+        # tilesets have been loaded in already, and use them if they have been, but then
+        # be able to dynamically add-in tilesets after having parsed the rest of the map.
+
         for tiled_object in my_layer.tiled_objects:  # type: ignore
             if hasattr(tiled_object, "new_tileset"):
                 if tiled_object.new_tileset is not None:

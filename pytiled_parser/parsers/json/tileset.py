@@ -49,7 +49,7 @@ RawTile = TypedDict(
         "objectgroup": RawLayer,
     },
 )
-RawTile.__docs__ = """
+RawTile.__doc__ = """
     The keys and their types that appear in a Tile JSON Object.
 """
 

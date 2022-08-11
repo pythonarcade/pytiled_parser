@@ -369,3 +369,5 @@ def parse(
         return _parse_image_layer(raw_layer)
     elif type_ == "layer":
         return _parse_tile_layer(raw_layer)
+    else:
+        raise RuntimeError("Unknown layer type in map file!")

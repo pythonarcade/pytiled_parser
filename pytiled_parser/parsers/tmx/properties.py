@@ -13,7 +13,12 @@ def parse(raw_properties: etree.Element) -> Properties:
     for raw_property in raw_properties.findall("property"):
 
         type_ = raw_property.attrib.get("type")
-        value_ = raw_property.attrib.get("value")
+
+        if "value" not in raw_property.attrib:
+            continue
+
+        value_ = raw_property.attrib["value"]
+
         if type_ == "file":
             value = Path(value_)
         elif type_ == "color":
