@@ -119,7 +119,7 @@ def _parse_tile(raw_tile: etree.Element, external_path: Optional[Path] = None) -
 
     if raw_tile.attrib.get("width") is not None:
         tile.width = int(raw_tile.attrib["width"])
-    
+
     if raw_tile.attrib.get("height") is not None:
         tile.height = int(raw_tile.attrib["height"])
 

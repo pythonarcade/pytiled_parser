@@ -50,7 +50,7 @@ RawTile = TypedDict(
         "x": int,
         "y": int,
         "width": int,
-        "height": int
+        "height": int,
     },
 )
 RawTile.__doc__ = """
@@ -215,7 +215,7 @@ def _parse_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile
 
     if raw_tile.get("x") is not None:
         tile.x = raw_tile["x"]
-    
+
     if raw_tile.get("y") is not None:
         tile.y = raw_tile["y"]
 
