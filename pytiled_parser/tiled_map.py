@@ -52,6 +52,7 @@ class TiledMap:
         stagger_index: For staggered and hexagonal maps, determines whether the "even"
             or "odd" indexes along the staggered axis are shifted.
         class_: The Tiled class of this Map.
+        parallax_origin: The point on the map to center the parallax scrolling of layers on.
     """
 
     infinite: bool
