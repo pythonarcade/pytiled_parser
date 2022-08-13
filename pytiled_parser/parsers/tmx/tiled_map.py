@@ -145,8 +145,8 @@ def parse(file: Path) -> TiledMap:
     if raw_map.attrib.get("class") is not None:
         map_.class_ = raw_map.attrib["class"]
 
-    _parallax_origin_x = 0
-    _parallax_origin_y = 0
+    _parallax_origin_x = 0.0
+    _parallax_origin_y = 0.0
 
     if raw_map.attrib.get("parallaxoriginx") is not None:
         _parallax_origin_x = float(raw_map.attrib["parallaxoriginx"])
