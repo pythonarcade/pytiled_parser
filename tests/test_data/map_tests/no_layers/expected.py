@@ -10,10 +10,11 @@ EXPECTED = tiled_map.TiledMap(
     next_object_id=1,
     orientation="orthogonal",
     render_order="right-down",
-    tiled_version="1.6.0",
+    tiled_version="1.9.1",
     tile_size=common_types.Size(32, 32),
-    version="1.6",
+    version="1.9",
     background_color=common_types.Color(255, 0, 4, 255),
+    parallax_origin=common_types.OrderedPair(10, 15),
     tilesets={
         1: tileset.Tileset(
             columns=8,

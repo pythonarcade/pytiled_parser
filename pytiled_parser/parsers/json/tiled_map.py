@@ -5,7 +5,7 @@ from typing import List, Union, cast
 
 from typing_extensions import TypedDict
 
-from pytiled_parser.common_types import Size
+from pytiled_parser.common_types import OrderedPair, Size
 from pytiled_parser.exception import UnknownFormat
 from pytiled_parser.parsers.json.layer import RawLayer
 from pytiled_parser.parsers.json.layer import parse as parse_layer
@@ -44,6 +44,8 @@ RawTiledMap = TypedDict(
         "type": str,
         "version": Union[str, float],
         "width": int,
+        "parallaxoriginx": float,
+        "parallaxoriginy": float,
     },
 )
 RawTiledMap.__doc__ = """
@@ -184,5 +186,16 @@ def parse(file: Path) -> TiledMap:
 
     if raw_tiled_map.get("staggerindex") is not None:
         map_.stagger_index = raw_tiled_map["staggerindex"]
+
+    _parallax_origin_x = 0
+    _parallax_origin_y = 0
+
+    if raw_tiled_map.get("parallaxoriginx") is not None:
+        _parallax_origin_x = raw_tiled_map["parallaxoriginx"]
+
+    if raw_tiled_map.get("parallaxoriginy") is not None:
+        _parallax_origin_y = raw_tiled_map["parallaxoriginy"]
+
+    map_.parallax_origin = OrderedPair(_parallax_origin_x, _parallax_origin_y)
 
     return map_

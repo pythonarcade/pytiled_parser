@@ -2,7 +2,7 @@ import json
 import xml.etree.ElementTree as etree
 from pathlib import Path
 
-from pytiled_parser.common_types import Size
+from pytiled_parser.common_types import OrderedPair, Size
 from pytiled_parser.exception import UnknownFormat
 from pytiled_parser.parsers.json.tileset import parse as parse_json_tileset
 from pytiled_parser.parsers.tmx.layer import parse as parse_layer
@@ -144,5 +144,16 @@ def parse(file: Path) -> TiledMap:
 
     if raw_map.attrib.get("class") is not None:
         map_.class_ = raw_map.attrib["class"]
+
+    _parallax_origin_x = 0
+    _parallax_origin_y = 0
+
+    if raw_map.attrib.get("parallaxoriginx") is not None:
+        _parallax_origin_x = float(raw_map.attrib["parallaxoriginx"])
+
+    if raw_map.get("parallaxoriginy") is not None:
+        _parallax_origin_y = float(raw_map.attrib["parallaxoriginy"])
+
+    map_.parallax_origin = OrderedPair(_parallax_origin_x, _parallax_origin_y)
 
     return map_

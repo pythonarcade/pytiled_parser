@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 
 import attr
 
-from pytiled_parser.common_types import Color, Size
+from pytiled_parser.common_types import Color, OrderedPair, Size
 from pytiled_parser.layer import Layer
 from pytiled_parser.properties import Properties
 from pytiled_parser.tileset import Tileset
@@ -65,6 +65,8 @@ class TiledMap:
     tile_size: Size
     tilesets: TilesetDict
     version: str
+
+    parallax_origin: OrderedPair = OrderedPair(0, 0)
 
     map_file: Optional[Path] = None
     class_: Optional[str] = None
