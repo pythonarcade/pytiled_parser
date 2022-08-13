@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.2.0] - Unreleased
+
+Added support for the following features from Tiled:
+
+- **Tilesets**
+    
+    - `Tileset.tile_render_size` has been added, which reflects the `tilerendersize` attribute from Tiled. This is a string value which can be either "tile" or "grid". This is used to determine the size the tile will render at. This defaults to `tile` and is the only behavior prior to Tiled 1.9, meaning it will use the size specified by the Tile. If this is set to `grid` it will scale the tiles to the size defined the grid in the map.
+    - `Tileset.fill_mode` has been added, which reflects the `fillmode` attribute from Tiled. This is a string value which can be either "stretch" or "preserve-aspect-ratio". This is used to define how the scaling will be done when a tile is not rendered at it's native size(Like when using the `grid` option for `tilerendersize`).
+    - The `Tile` class has four new attributes: `x`, `y`, `width`, and `height`. By default, `x` and `y` will be zero, and `width` and `height` will be the same as `image_width` and `image_height`. These values are only able to changed for tiles which use an individual image rather than a single image file. These values are used to define a sub-rectangle of the image which the Tile should be loaded as. These are all separate attributes rather than using the `OrderedPair` and `Size` classes as this is somewhat of a developing feature in Tiled in an effort to support sprite atlasses, and so for now we are going to just stick as closely to the underlying format as possible for it, to make future changes easier.
+    
+- **Layers**
+
+    - Added `repeat_x` and `repeat_y` attributes. These are derived from the `repeatx` and `repeaty` attributes in Tiled. These are boolean values which are used to determine if a layer should be repeated on a given axis when drawn. As of writing in Tiled these values can only be applied to Image layers, however it is possible other types will support this in the future. To prepare for this, these values are available to all layer types in pytiled_parser, and they will default to `False`.
+
+- **Maps**
+
+    - Added `parallax_origin` attribute. This is an `OrderedPair` object which is derived from the `parallaxoriginx` and `parallaxoriginy` attributes in Tiled. This is used to define a map wide origin point that layers which have parallax scrolling will use.
+
+
 ## [2.1.2] - 2022-08-10
 
 This version does not make any changes to the library. The project has moved to using Github Actions to publishing the distribution to PyPI. We have made this release to fully test the system and ensure it is functional for future releases.
