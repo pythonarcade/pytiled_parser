@@ -47,6 +47,10 @@ RawTile = TypedDict(
         "type": str,
         "properties": List[RawProperty],
         "objectgroup": RawLayer,
+        "x": int,
+        "y": int,
+        "width": int,
+        "height": int
     },
 )
 RawTile.__doc__ = """
@@ -191,17 +195,35 @@ def _parse_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile
     # image is set, but these aren't, so the branches will never fully be hit.
     # However, leaving these checks in place is nice to prevent fatal errors on
     # a manually edited map that has an "incorrect" but not "unusable" structure
+    #
+    # We also set the width and height attributes here as the values for these in
+    # Tiled defaults to the same value as imagewidth and imageheight if no custom value
+    # is set. We then later load in the custom value if it exists.
     if raw_tile.get("imagewidth") is not None:  # pragma: no cover
         tile.image_width = raw_tile["imagewidth"]
+        tile.width = tile.image_width
 
     if raw_tile.get("imageheight") is not None:  # pragma: no cover
         tile.image_height = raw_tile["imageheight"]
+        tile.height = tile.image_height
 
     if raw_tile.get("type") is not None:
         tile.class_ = raw_tile["type"]
 
     if raw_tile.get("class") is not None:
         tile.class_ = raw_tile["class"]
+
+    if raw_tile.get("x") is not None:
+        tile.x = raw_tile["x"]
+    
+    if raw_tile.get("y") is not None:
+        tile.y = raw_tile["y"]
+
+    if raw_tile.get("width") is not None:
+        tile.width = raw_tile["width"]
+
+    if raw_tile.get("height") is not None:
+        tile.height = raw_tile["height"]
 
     return tile
 

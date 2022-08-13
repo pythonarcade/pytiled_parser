@@ -107,7 +107,21 @@ def _parse_tile(raw_tile: etree.Element, external_path: Optional[Path] = None) -
             tile.image = Path(image_element.attrib["source"])
 
         tile.image_width = int(image_element.attrib["width"])
+        tile.width = tile.image_width
         tile.image_height = int(image_element.attrib["height"])
+        tile.height = tile.image_height
+
+    if raw_tile.attrib.get("x") is not None:
+        tile.x = int(raw_tile.attrib["x"])
+
+    if raw_tile.attrib.get("y") is not None:
+        tile.y = int(raw_tile.attrib["y"])
+
+    if raw_tile.attrib.get("width") is not None:
+        tile.width = int(raw_tile.attrib["width"])
+    
+    if raw_tile.attrib.get("height") is not None:
+        tile.height = int(raw_tile.attrib["height"])
 
     return tile
 

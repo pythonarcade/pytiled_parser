@@ -106,6 +106,8 @@ EXPECTED = tiled_map.TiledMap(
                     .resolve(),
                     image_height=32,
                     image_width=32,
+                    width=32,
+                    height=32
                 )
             },
             tile_count=1,

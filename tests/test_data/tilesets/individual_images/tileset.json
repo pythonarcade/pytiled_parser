@@ -8,8 +8,8 @@
  "margin":0,
  "name":"tileset",
  "spacing":0,
- "tilecount":4,
- "tiledversion":"1.9.0",
+ "tilecount":5,
+ "tiledversion":"1.9.1",
  "tileheight":32,
  "tiles":[
         {
@@ -108,8 +108,18 @@
          "image":"..\/..\/images\/tile_04.png",
          "imageheight":32,
          "imagewidth":32
+        }, 
+        {
+         "height":32,
+         "id":4,
+         "image":"..\/..\/images\/tile_05.png",
+         "imageheight":32,
+         "imagewidth":64,
+         "width":32,
+         "x":32,
+         "y":0
         }],
  "tilewidth":32,
  "type":"tileset",
- "version":"1.8"
+ "version":"1.9"
 }
