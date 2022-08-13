@@ -1,4 +1,5 @@
 { "columns":8,
+ "fillmode":"preserve-aspect-fit",
  "image":"..\/..\/images\/tmw_desert_spacing.png",
  "imageheight":199,
  "imagewidth":265,
@@ -7,9 +8,10 @@
  "objectalignment":"topleft",
  "spacing":1,
  "tilecount":48,
- "tiledversion":"1.9.0",
+ "tiledversion":"1.9.1",
  "tileheight":32,
+ "tilerendersize":"grid",
  "tilewidth":32,
  "type":"tileset",
- "version":"1.8"
+ "version":"1.9"
 }

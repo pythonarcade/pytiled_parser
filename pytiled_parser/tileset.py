@@ -183,6 +183,9 @@ class Tileset:
             implementation in a game engine would need to use these values.
         alignment: Which alignment to use for tile objects from this tileset.
         class_: The Tiled class of this TileSet.
+        tile_render_size: The size to use when rendering tiles from this tileset. Can be either "tile" or "grid".
+        fill_mode: The fill mode to use when rendering tiles from this tileset.
+            Can be either "stretch" or "preserve-aspect-fit".
     """
 
     name: str
@@ -195,6 +198,8 @@ class Tileset:
     firstgid: int
 
     type: str = "tileset"
+    tile_render_size: str = "tile"
+    fill_mode: str = "stretch"
 
     spacing: int = 0
     margin: int = 0

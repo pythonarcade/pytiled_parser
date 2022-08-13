@@ -147,6 +147,12 @@ def parse(
     if raw_tileset.attrib.get("class") is not None:
         tileset.class_ = raw_tileset.attrib["class"]
 
+    if raw_tileset.attrib.get("fillmode") is not None:
+        tileset.fill_mode = raw_tileset.attrib["fillmode"]
+
+    if raw_tileset.attrib.get("tilerendersize") is not None:
+        tileset.tile_render_size = raw_tileset.attrib["tilerendersize"]
+
     image_element = raw_tileset.find("image")
     if image_element is not None:
         if external_path:

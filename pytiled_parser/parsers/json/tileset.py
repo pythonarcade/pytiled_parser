@@ -74,6 +74,7 @@ RawTileSet = TypedDict(
         "margin": int,
         "name": str,
         "properties": List[RawProperty],
+        "fillmode": str,
         "objectalignment": str,
         "source": str,
         "spacing": int,
@@ -81,6 +82,7 @@ RawTileSet = TypedDict(
         "tiledversion": str,
         "tileheight": int,
         "tileoffset": RawTileOffset,
+        "tilerendersize": str,
         "tiles": List[RawTile],
         "tilewidth": int,
         "transparentcolor": str,
@@ -295,5 +297,11 @@ def parse(
 
     if raw_tileset.get("class") is not None:
         tileset.class_ = raw_tileset["class"]
+
+    if raw_tileset.get("tilerendersize") is not None:
+        tileset.tile_render_size = raw_tileset["tilerendersize"]
+
+    if raw_tileset.get("fillmode") is not None:
+        tileset.fill_mode = raw_tileset["fillmode"]
 
     return tileset
