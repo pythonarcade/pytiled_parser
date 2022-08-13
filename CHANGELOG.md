@@ -4,15 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
-## [2.2.0] - Unreleased
+## [2.2.0] - 2022-08-13
 
-Added support for the following features from Tiled:
+Added support for the following features from Tiled which were added in either Tiled 1.8 or 1.9. If you would like some more info on some of these items, please refer to the [release notes](https://www.mapeditor.org/news) from Tiled for those versions:
 
 - **Tilesets**
     
     - `Tileset.tile_render_size` has been added, which reflects the `tilerendersize` attribute from Tiled. This is a string value which can be either "tile" or "grid". This is used to determine the size the tile will render at. This defaults to `tile` and is the only behavior prior to Tiled 1.9, meaning it will use the size specified by the Tile. If this is set to `grid` it will scale the tiles to the size defined the grid in the map.
     - `Tileset.fill_mode` has been added, which reflects the `fillmode` attribute from Tiled. This is a string value which can be either "stretch" or "preserve-aspect-ratio". This is used to define how the scaling will be done when a tile is not rendered at it's native size(Like when using the `grid` option for `tilerendersize`).
-    - The `Tile` class has four new attributes: `x`, `y`, `width`, and `height`. By default, `x` and `y` will be zero, and `width` and `height` will be the same as `image_width` and `image_height`. These values are only able to changed for tiles which use an individual image rather than a single image file. These values are used to define a sub-rectangle of the image which the Tile should be loaded as. These are all separate attributes rather than using the `OrderedPair` and `Size` classes as this is somewhat of a developing feature in Tiled in an effort to support sprite atlasses, and so for now we are going to just stick as closely to the underlying format as possible for it, to make future changes easier.
+    - The `Tile` class has four new attributes: `x`, `y`, `width`, and `height`. By default, `x` and `y` will be zero, and `width` and `height` will be the same as `image_width` and `image_height`. These values are only able to changed for tiles which use an individual image rather than a single image file for the whole tileset. These values are used to define a sub-rectangle of the image which the Tile should be loaded as. These are all separate attributes rather than using the `OrderedPair` and `Size` classes as this is somewhat of a developing feature in Tiled in an effort to support sprite atlasses, and so for now we are going to just stick as closely to the underlying format as possible for it, to make future changes easier.
     
 - **Layers**
 
