@@ -115,6 +115,7 @@ EXPECTED = [
         image=Path("../../images/tile_04.png"),
         transparent_color=common_types.Color(0, 0, 0, 255),
         tint_color=common_types.Color(255, 0, 0, 255),
+        repeat_y=True,
     ),
     layer.ImageLayer(
         name="Image Layer 2",
@@ -124,5 +125,6 @@ EXPECTED = [
         id=5,
         parallax_factor=common_types.OrderedPair(1.0, 1.4),
         image=Path("../../images/tile_04.png"),
+        repeat_x=True,
     ),
 ]

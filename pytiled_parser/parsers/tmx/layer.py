@@ -195,6 +195,12 @@ def _parse_common(raw_layer: etree.Element) -> Layer:
     if raw_layer.attrib.get("class") is not None:
         common.class_ = raw_layer.attrib["class"]
 
+    if raw_layer.attrib.get("repeatx") is not None:
+        common.repeat_x = bool(int(raw_layer.attrib["repeatx"]))
+
+    if raw_layer.attrib.get("repeaty") is not None:
+        common.repeat_y = bool(int(raw_layer.attrib["repeaty"]))
+
     return common
 
 
@@ -302,7 +308,7 @@ def _parse_image_layer(raw_layer: etree.Element) -> ImageLayer:
             transparent_color=transparent_color,
             **_parse_common(raw_layer).__dict__,
         )
-        print(image_layer.size)
+
         return image_layer
 
     raise RuntimeError("Tried to parse an image layer that doesn't have an image!")

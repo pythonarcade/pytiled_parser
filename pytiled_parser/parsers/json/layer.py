@@ -81,6 +81,8 @@ RawLayer = TypedDict(
         "width": int,
         "x": int,
         "y": int,
+        "repeatx": bool,
+        "repeaty": bool,
     },
 )
 RawLayer.__doc__ = """
@@ -247,6 +249,12 @@ def _parse_common(raw_layer: RawLayer) -> Layer:
 
     if raw_layer.get("tintcolor") is not None:
         common.tint_color = parse_color(raw_layer["tintcolor"])
+
+    if raw_layer.get("repeatx") is not None:
+        common.repeat_x = raw_layer["repeatx"]
+
+    if raw_layer.get("repeaty") is not None:
+        common.repeat_y = raw_layer["repeaty"]
 
     return common
 

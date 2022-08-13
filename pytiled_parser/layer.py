@@ -44,11 +44,19 @@ class Layer:
         properties: Properties for the layer.
         tint_color: Tint color that is multiplied with any graphics in this layer.
         class_: The Tiled class of this Layer.
+        repeat_x: Repeat drawing on the X Axis(Currently only applies to image layers)
+        repeat_y: Repeat drawing on the Y Axis(Currently only applies to image layers)
     """
 
     name: str
     opacity: float = 1
     visible: bool = True
+
+    # These technically only apply to image layers as of now, however Tiled has indicated
+    # that is only at this time, and there's no reason they couldn't apply to other
+    # types of layers in the future. For this reason they are stored in the common class.
+    repeat_x: bool = False
+    repeat_y: bool = False
 
     coordinates: OrderedPair = OrderedPair(0, 0)
     parallax_factor: OrderedPair = OrderedPair(1, 1)

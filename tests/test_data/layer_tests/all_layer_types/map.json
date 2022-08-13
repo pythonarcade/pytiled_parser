@@ -71,6 +71,7 @@
          "offsetx":1,
          "offsety":4,
          "opacity":1,
+         "repeaty":true,
          "tintcolor":"#ff0000",
          "transparentcolor":"#000000",
          "type":"imagelayer",
@@ -84,6 +85,7 @@
          "name":"Image Layer 2",
          "opacity":1,
          "parallaxy":1.4,
+         "repeatx":true,
          "type":"imagelayer",
          "visible":true,
          "x":0,
@@ -93,7 +95,7 @@
  "nextobjectid":3,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.9.0",
+ "tiledversion":"1.9.1",
  "tileheight":32,
  "tilesets":[
         {
