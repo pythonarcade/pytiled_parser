@@ -12,9 +12,17 @@ EXPECTED = tileset.Tileset(
     spacing=1,
     name="tile_set_image",
     tile_count=48,
-    tiled_version="1.9.1",
+    tiled_version="1.9.2",
     tile_height=32,
     tile_width=32,
+    tiles={
+        0: tileset.Tile(
+            id=0,
+            properties={
+                "Test": "test property"
+            }
+        )
+    },
     version="1.9",
     type="tileset",
     alignment="topleft",

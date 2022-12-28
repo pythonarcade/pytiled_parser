@@ -8,9 +8,19 @@
  "objectalignment":"topleft",
  "spacing":1,
  "tilecount":48,
- "tiledversion":"1.9.1",
+ "tiledversion":"1.9.2",
  "tileheight":32,
  "tilerendersize":"grid",
+ "tiles":[
+        {
+         "id":0,
+         "properties":[
+                {
+                 "name":"Test",
+                 "type":"string",
+                 "value":"test property"
+                }]
+        }],
  "tilewidth":32,
  "type":"tileset",
  "version":"1.9"
