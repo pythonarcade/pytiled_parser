@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.2.1] - 2023-01-16
+
+Added official support for Python 3.11. No changes were actually made to do this, and most all previous versions of pytiled-parser should work fine with 3.11. We are just now including 3.11 in the matrix of Python versions we run tests for.
+
+Improved compatibility for pre-1.0 Tiled JSON formats([#65](https://github.com/pythonarcade/pytiled_parser/pull/65)). This does not necessarily mean we guarantee support with older versions of Tiled, support for older versions will be on a best effort approach.
+
 ## [2.2.0] - 2022-08-13
 
 Added support for the following features from Tiled which were added in either Tiled 1.8 or 1.9. If you would like some more info on some of these items, please refer to the [release notes](https://www.mapeditor.org/news) from Tiled for those versions:
