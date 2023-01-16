@@ -112,14 +112,14 @@ def parse(file: Path) -> TiledMap:
     # `map` is a built-in function
     map_ = TiledMap(
         map_file=file,
-        infinite=raw_tiled_map["infinite"],
+        infinite=raw_tiled_map.get("infinite", False),
         layers=[parse_layer(layer_, parent_dir) for layer_ in raw_tiled_map["layers"]],
         map_size=Size(raw_tiled_map["width"], raw_tiled_map["height"]),
-        next_layer_id=raw_tiled_map["nextlayerid"],
+        next_layer_id=raw_tiled_map.get("nextlayerid"),
         next_object_id=raw_tiled_map["nextobjectid"],
         orientation=raw_tiled_map["orientation"],
         render_order=raw_tiled_map["renderorder"],
-        tiled_version=raw_tiled_map["tiledversion"],
+        tiled_version=raw_tiled_map.get("tiledversion", ""),
         tile_size=Size(raw_tiled_map["tilewidth"], raw_tiled_map["tileheight"]),
         tilesets=tilesets,
         version=version,
