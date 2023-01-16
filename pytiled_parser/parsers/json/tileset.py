@@ -249,7 +249,7 @@ def parse(
         tile_count=raw_tileset["tilecount"],
         tile_width=raw_tileset["tilewidth"],
         tile_height=raw_tileset["tileheight"],
-        columns=raw_tileset["columns"],
+        columns=raw_tileset.get("columns", 1),
         spacing=raw_tileset["spacing"],
         margin=raw_tileset["margin"],
         firstgid=firstgid,
@@ -304,8 +304,18 @@ def parse(
 
     if raw_tileset.get("tiles") is not None:
         tiles = {}
-        for raw_tile in raw_tileset["tiles"]:
-            tiles[raw_tile["id"]] = _parse_tile(raw_tile, external_path=external_path)
+        if isinstance(raw_tileset["tiles"], dict):
+            for raw_tile_id, raw_tile in raw_tileset["tiles"].items():
+                assert raw_tile.get("id") is None
+                raw_tile["id"] = int(raw_tile_id)
+                tiles[raw_tile["id"]] = _parse_tile(
+                    raw_tile, external_path=external_path
+                )
+        else:
+            for raw_tile in raw_tileset["tiles"]:
+                tiles[raw_tile["id"]] = _parse_tile(
+                    raw_tile, external_path=external_path
+                )
         tileset.tiles = tiles
 
     if raw_tileset.get("wangsets") is not None:
