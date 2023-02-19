@@ -64,7 +64,7 @@ build = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["pytiled-parser", "pytiled-parser.*"]
+include = ["pytiled_parser", "pytiled_parser.*"]
 
 [build-system]
 requires = ["setuptools", "wheel"]
