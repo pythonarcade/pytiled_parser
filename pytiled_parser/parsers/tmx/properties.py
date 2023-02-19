@@ -6,12 +6,10 @@ from pytiled_parser.util import parse_color
 
 
 def parse(raw_properties: etree.Element) -> Properties:
-
     final: Properties = {}
     value: Property
 
     for raw_property in raw_properties.findall("property"):
-
         type_ = raw_property.attrib.get("type")
 
         if "value" not in raw_property.attrib:

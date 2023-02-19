@@ -152,7 +152,7 @@ def _parse_tile(
         gid=int(raw_object.attrib["gid"]),
         new_tileset=new_tileset,
         new_tileset_path=new_tileset_path,
-        **_parse_common(raw_object).__dict__
+        **_parse_common(raw_object).__dict__,
     )
 
 

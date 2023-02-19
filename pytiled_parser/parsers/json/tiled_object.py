@@ -192,7 +192,7 @@ def _parse_tile(
         gid=gid,
         new_tileset=new_tileset,
         new_tileset_path=new_tileset_path,
-        **_parse_common(raw_object).__dict__
+        **_parse_common(raw_object).__dict__,
     )
 
 
