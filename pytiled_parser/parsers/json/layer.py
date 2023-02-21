@@ -3,6 +3,7 @@
 import base64
 import gzip
 import importlib.util
+import struct
 import zlib
 from pathlib import Path
 from typing import List, Optional, Union, cast
@@ -146,7 +147,6 @@ def _decode_tile_layer_data(
     Raises:
         ValueError: For an unsupported compression type.
     """
-    print(compression)
     unencoded_data = base64.b64decode(data)
     if compression == "zlib":
         unzipped_data = zlib.decompress(unencoded_data)
@@ -163,19 +163,9 @@ def _decode_tile_layer_data(
     else:
         unzipped_data = unencoded_data
 
-    tile_grid: List[int] = []
-
-    byte_count = 0
-    int_count = 0
-    int_value = 0
-    for byte in unzipped_data:
-        int_value += byte << (byte_count * 8)
-        byte_count += 1
-        if not byte_count % 4:
-            byte_count = 0
-            int_count += 1
-            tile_grid.append(int_value)
-            int_value = 0
+    tile_grid: List[int] = list(
+        struct.unpack("<%dL" % (len(unzipped_data) / 4), unzipped_data)
+    )
 
     return _convert_raw_tile_layer_data(tile_grid, layer_width)
 
@@ -195,7 +185,8 @@ def _encode_tile_layer_data(
     Raises:
         ValueError: For an unsupported compression type
     """
-    data_bytes = bytes([i for sub in data for i in sub])
+    flattened = [i for sub in data for i in sub]
+    data_bytes = struct.pack("<%dL" % len(flattened), *flattened)
 
     if compression == "zlib":
         compressed = zlib.compress(data_bytes)
