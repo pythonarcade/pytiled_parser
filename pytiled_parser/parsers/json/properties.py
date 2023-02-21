@@ -6,8 +6,9 @@ from typing import List, Union, cast
 
 from typing_extensions import TypedDict
 
+from pytiled_parser.common_types import Color
 from pytiled_parser.properties import Properties, Property
-from pytiled_parser.util import parse_color
+from pytiled_parser.util import parse_color, serialize_color
 
 RawValue = Union[float, str, bool]
 
@@ -48,5 +49,31 @@ def parse(raw_properties: List[RawProperty]) -> Properties:
             else:
                 value = raw_property["value"]
             final[raw_property["name"]] = value
+
+    return final
+
+
+def serialize(properties: Properties):
+    final: List[RawProperty] = []
+
+    for name, property in properties.items():
+        type = ""
+        if isinstance(property, Path):
+            type = "file"
+            property = str(property)
+        elif isinstance(property, Color):
+            type = "color"
+            property = serialize_color(property)
+        elif isinstance(property, str):
+            type = "string"
+        elif isinstance(property, float):
+            type = "float"
+        elif isinstance(property, int):
+            type = "int"
+        elif isinstance(property, bool):
+            type = "bool"
+
+        raw: RawProperty = {"name": name, "type": type, "value": property}
+        final.append(raw)
 
     return final

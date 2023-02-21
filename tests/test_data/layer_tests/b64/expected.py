@@ -9,6 +9,7 @@ EXPECTED = [
         visible=True,
         id=1,
         size=common_types.Size(8, 6),
+        encoding="base64",
         data=[
             [
                 1,

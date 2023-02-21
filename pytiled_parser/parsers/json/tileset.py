@@ -109,8 +109,19 @@ def _parse_frame(raw_frame: RawFrame) -> Frame:
     Returns:
         Frame: The Frame created from the raw_frame
     """
-
     return Frame(duration=raw_frame["duration"], tile_id=raw_frame["tileid"])
+
+
+def _serialize_frame(frame: Frame) -> RawFrame:
+    """Serialize the Frame into a RawFrame.
+
+    Args:
+        frame: Frame to be serialized to a RawFrame.
+
+    Returns:
+        RawFrame: The serialized RawFrame dict.
+    """
+    return {"duration": frame.duration, "tileid": frame.tile_id}
 
 
 def _parse_tile_offset(raw_tile_offset: RawTileOffset) -> OrderedPair:
@@ -122,8 +133,19 @@ def _parse_tile_offset(raw_tile_offset: RawTileOffset) -> OrderedPair:
     Returns:
         OrderedPair: The OrderedPair created from the raw_tile_offset
     """
-
     return OrderedPair(raw_tile_offset["x"], raw_tile_offset["y"])
+
+
+def _serialize_tile_offset(tile_offset: OrderedPair) -> RawTileOffset:
+    """Serialize the OrderedPair into a RawTileOffset.
+
+    Args:
+        tile_offset: OrderedPair to be serialized to a RawTileOffset.
+
+    Returns:
+        RawTileOffset. The serialized RawTileOffset dict.
+    """
+    return {"x": int(tile_offset.x), "y": int(tile_offset.y)}
 
 
 def _parse_transformations(raw_transformations: RawTransformations) -> Transformations:
@@ -135,13 +157,29 @@ def _parse_transformations(raw_transformations: RawTransformations) -> Transform
     Returns:
         Transformations: The Transformations created from the raw_transformations
     """
-
     return Transformations(
         hflip=raw_transformations["hflip"],
         vflip=raw_transformations["vflip"],
         rotate=raw_transformations["rotate"],
         prefer_untransformed=raw_transformations["preferuntransformed"],
     )
+
+
+def _serialize_transformations(transformations: Transformations) -> RawTransformations:
+    """Serialize the Transformations into a RawTransformations dict.
+
+    Args:
+        transformations: Transformations to be serialized to a RawTransformations
+
+    Returns:
+        RawTransformations: The serialized RawTransformations dict.
+    """
+    return {
+        "hflip": transformations.hflip,
+        "vflip": transformations.vflip,
+        "rotate": transformations.rotate,
+        "preferuntransformed": transformations.prefer_untransformed,
+    }
 
 
 def _parse_grid(raw_grid: RawGrid) -> Grid:
@@ -153,12 +191,23 @@ def _parse_grid(raw_grid: RawGrid) -> Grid:
     Returns:
         Grid: The Grid created from the raw_grid
     """
-
     return Grid(
         orientation=raw_grid["orientation"],
         width=raw_grid["width"],
         height=raw_grid["height"],
     )
+
+
+def _serialize_grid(grid: Grid) -> RawGrid:
+    """Serialize the Grid into a RawGrid dict.
+
+    Args:
+        grid: Grid to be serialized to a RawGrid.
+
+    Returns:
+        RawGrid: The serialized RawGrid dict.
+    """
+    return {"orientation": grid.orientation, "width": grid.width, "height": grid.height}
 
 
 def _parse_tile(raw_tile: RawTile, external_path: Optional[Path] = None) -> Tile:

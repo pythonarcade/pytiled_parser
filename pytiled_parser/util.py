@@ -36,6 +36,12 @@ def parse_color(color: str) -> Color:
     raise ValueError("Improperly formatted color passed to parse_color")
 
 
+def serialize_color(color: Color) -> str:
+    return "#{:02x}{:02x}{:02x}{:02x}".format(
+        color.alpha, color.red, color.green, color.blue
+    )
+
+
 def check_format(file_path: Path) -> str:
     with open(file_path) as file:
         line = file.readline().rstrip().strip()

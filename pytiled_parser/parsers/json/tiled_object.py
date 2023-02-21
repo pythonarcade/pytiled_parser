@@ -3,11 +3,12 @@
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from typing_extensions import TypedDict
+from typing_extensions import NotRequired, TypedDict
 
-from pytiled_parser.common_types import OrderedPair, Size
+from pytiled_parser.common_types import Color, OrderedPair, Size
 from pytiled_parser.parsers.json.properties import RawProperty
 from pytiled_parser.parsers.json.properties import parse as parse_properties
+from pytiled_parser.parsers.json.properties import serialize as serialize_properties
 from pytiled_parser.tiled_object import (
     Ellipse,
     Point,
@@ -18,23 +19,23 @@ from pytiled_parser.tiled_object import (
     Tile,
     TiledObject,
 )
-from pytiled_parser.util import load_object_template, parse_color
+from pytiled_parser.util import load_object_template, parse_color, serialize_color
 
 RawText = TypedDict(
     "RawText",
     {
         "text": str,
-        "color": str,
-        "fontfamily": str,
-        "pixelsize": float,  # this is `font_size` in Text
-        "bold": bool,
-        "italic": bool,
-        "strikeout": bool,
-        "underline": bool,
-        "kerning": bool,
-        "halign": str,
-        "valign": str,
-        "wrap": bool,
+        "color": NotRequired[str],
+        "fontfamily": NotRequired[str],
+        "pixelsize": NotRequired[float],  # this is `font_size` in Text
+        "bold": NotRequired[bool],
+        "italic": NotRequired[bool],
+        "strikeout": NotRequired[bool],
+        "underline": NotRequired[bool],
+        "kerning": NotRequired[bool],
+        "halign": NotRequired[str],
+        "valign": NotRequired[str],
+        "wrap": NotRequired[bool],
     },
 )
 RawText.__doc__ = """
@@ -48,8 +49,8 @@ RawObject = TypedDict(
     "RawObject",
     {
         "id": int,
-        "gid": int,
-        "template": str,
+        "gid": NotRequired[int],
+        "template": NotRequired[str],
         "x": float,
         "y": float,
         "width": float,
@@ -58,13 +59,13 @@ RawObject = TypedDict(
         "visible": bool,
         "name": str,
         "class": str,
-        "type": str,
-        "properties": List[RawProperty],
-        "ellipse": bool,
-        "point": bool,
-        "polygon": List[Dict[str, float]],
-        "polyline": List[Dict[str, float]],
-        "text": RawText,
+        "type": NotRequired[str],
+        "properties": NotRequired[List[RawProperty]],
+        "ellipse": NotRequired[bool],
+        "point": NotRequired[bool],
+        "polygon": NotRequired[List[Dict[str, float]]],
+        "polyline": NotRequired[List[Dict[str, float]]],
+        "text": NotRequired[RawText],
     },
 )
 RawObject.__doc__ = """
@@ -105,6 +106,25 @@ def _parse_common(raw_object: RawObject) -> TiledObject:
     return common
 
 
+def _serialize_common(object: TiledObject) -> RawObject:
+    common: RawObject = {
+        "id": object.id,
+        "x": object.coordinates.x,
+        "y": object.coordinates.y,
+        "visible": object.visible,
+        "width": object.size.width,
+        "height": object.size.height,
+        "rotation": object.rotation,
+        "name": object.name,
+        "class": object.class_,
+    }
+
+    if object.properties:
+        common["properties"] = serialize_properties(object.properties)
+
+    return common
+
+
 def _parse_ellipse(raw_object: RawObject) -> Ellipse:
     """Parse the raw object into an Ellipse.
 
@@ -115,6 +135,12 @@ def _parse_ellipse(raw_object: RawObject) -> Ellipse:
         Ellipse: The Ellipse object created from the raw object
     """
     return Ellipse(**_parse_common(raw_object).__dict__)
+
+
+def _serialize_ellipse(object: Ellipse) -> RawObject:
+    common = _serialize_common(object)
+    common["ellipse"] = True
+    return common
 
 
 def _parse_rectangle(raw_object: RawObject) -> Rectangle:
@@ -129,6 +155,10 @@ def _parse_rectangle(raw_object: RawObject) -> Rectangle:
     return Rectangle(**_parse_common(raw_object).__dict__)
 
 
+def _serialize_rectangle(object: Rectangle) -> RawObject:
+    return _serialize_common(object)
+
+
 def _parse_point(raw_object: RawObject) -> Point:
     """Parse the raw object into a Point.
 
@@ -139,6 +169,12 @@ def _parse_point(raw_object: RawObject) -> Point:
         Point: The Point object created from the raw object
     """
     return Point(**_parse_common(raw_object).__dict__)
+
+
+def _serialize_point(object: Point) -> RawObject:
+    common = _serialize_common(object)
+    common["point"] = True
+    return common
 
 
 def _parse_polygon(raw_object: RawObject) -> Polygon:
@@ -157,6 +193,17 @@ def _parse_polygon(raw_object: RawObject) -> Polygon:
     return Polygon(points=polygon, **_parse_common(raw_object).__dict__)
 
 
+def _serialize_polygon(object: Polygon) -> RawObject:
+    common = _serialize_common(object)
+
+    points = []
+    for point in object.points:
+        points.append({"x": point.x, "y": point.y})
+    common["polygon"] = points
+
+    return common
+
+
 def _parse_polyline(raw_object: RawObject) -> Polyline:
     """Parse the raw object into a Polyline.
 
@@ -171,6 +218,17 @@ def _parse_polyline(raw_object: RawObject) -> Polyline:
         polyline.append(OrderedPair(point["x"], point["y"]))
 
     return Polyline(points=polyline, **_parse_common(raw_object).__dict__)
+
+
+def _serialize_polyline(object: Polyline) -> RawObject:
+    common = _serialize_common(object)
+
+    points = []
+    for point in object.points:
+        points.append({"x": point.x, "y": point.y})
+    common["polyline"] = points
+
+    return common
 
 
 def _parse_tile(
@@ -194,6 +252,12 @@ def _parse_tile(
         new_tileset_path=new_tileset_path,
         **_parse_common(raw_object).__dict__,
     )
+
+
+def _serialize_tile(object: Tile) -> RawObject:
+    common = _serialize_common(object)
+    common["gid"] = object.gid
+    return common
 
 
 def _parse_text(raw_object: RawObject) -> Text:
@@ -247,6 +311,47 @@ def _parse_text(raw_object: RawObject) -> Text:
         text_object.wrap = raw_text["wrap"]
 
     return text_object
+
+
+def _serialize_text(object: Text) -> RawObject:
+    common = _serialize_common(object)
+
+    text: RawText = {"text": object.text}
+    if object.color != Color(0, 0, 0, 255):
+        text["color"] = serialize_color(object.color)
+
+    if object.font_family != "sans-serif":
+        text["fontfamily"] = object.font_family
+
+    if object.font_size != 16:
+        text["pixelsize"] = object.font_size
+
+    if object.bold:
+        text["bold"] = object.bold
+
+    if object.italic:
+        text["italic"] = object.italic
+
+    if not object.kerning:
+        text["kerning"] = object.kerning
+
+    if object.strike_out:
+        text["strikeout"] = object.strike_out
+
+    if object.underline:
+        text["underline"] = object.underline
+
+    if object.horizontal_align != "left":
+        text["halign"] = object.horizontal_align
+
+    if object.vertical_align != "top":
+        text["valign"] = object.vertical_align
+
+    if object.wrap:
+        text["wrap"] = object.wrap
+
+    common["text"] = text
+    return common
 
 
 def _get_parser(raw_object: RawObject) -> Callable[[RawObject], TiledObject]:
@@ -330,3 +435,22 @@ def parse(
         return _parse_tile(raw_object, new_tileset, new_tileset_path)
 
     return _get_parser(raw_object)(raw_object)
+
+
+def serialize(object: TiledObject) -> RawObject:
+    if isinstance(object, Tile):
+        return _serialize_tile(object)
+    elif isinstance(object, Text):
+        return _serialize_text(object)
+    elif isinstance(object, Rectangle):
+        return _serialize_rectangle(object)
+    elif isinstance(object, Polyline):
+        return _serialize_polyline(object)
+    elif isinstance(object, Polygon):
+        return _serialize_polygon(object)
+    elif isinstance(object, Point):
+        return _serialize_point(object)
+    elif isinstance(object, Ellipse):
+        return _serialize_ellipse(object)
+
+    raise AttributeError("Unknown Object Type passed to tiled_object.serialize")

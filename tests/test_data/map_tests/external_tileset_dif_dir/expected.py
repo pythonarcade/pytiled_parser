@@ -20,6 +20,8 @@ EXPECTED = tiled_map.TiledMap(
             visible=True,
             id=2,
             size=common_types.Size(8, 6),
+            compression="zlib",
+            encoding="base64",
             data=[
                 [4, 3, 2, 1, 0, 0, 0, 0],
                 [

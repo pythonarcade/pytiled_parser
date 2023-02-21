@@ -117,6 +117,9 @@ class TileLayer(Layer):
         tile IDs for the layer (only populaed for non-infinite maps)
     """
 
+    encoding: str = "csv"
+    compression: str = ""
+
     chunks: Optional[List[Chunk]] = None
     data: Optional[List[List[int]]] = None
 
@@ -141,8 +144,7 @@ class ObjectLayer(Layer):
     """
 
     tiled_objects: List[TiledObject]
-
-    draw_order: Optional[str] = "topdown"
+    draw_order: str = "topdown"
 
 
 @attr.s(auto_attribs=True, kw_only=True)
@@ -182,4 +184,4 @@ class LayerGroup(Layer):
         layers: list of layers contained in the group.
     """
 
-    layers: Optional[List[Layer]]
+    layers: List[Layer]

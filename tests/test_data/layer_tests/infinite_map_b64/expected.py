@@ -10,6 +10,7 @@ EXPECTED = [
         id=1,
         size=common_types.Size(16, 16),
         offset=common_types.OrderedPair(1, 3),
+        encoding="base64",
         properties={
             "test": "test property",
         },

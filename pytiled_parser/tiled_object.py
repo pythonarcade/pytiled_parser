@@ -39,7 +39,7 @@ class TiledObject:
     name: str = ""
     class_: str = ""
 
-    properties: properties_.Properties = {}
+    properties: Optional[properties_.Properties] = None
 
 
 @attr.s()
@@ -119,7 +119,7 @@ class Text(TiledObject):
     """
 
     text: str
-    color: Color = Color(255, 255, 255, 255)
+    color: Color = Color(0, 0, 0, 255)
 
     font_family: str = "sans-serif"
     font_size: float = 16

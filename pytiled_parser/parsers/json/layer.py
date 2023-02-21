@@ -5,9 +5,9 @@ import gzip
 import importlib.util
 import zlib
 from pathlib import Path
-from typing import Any, List, Optional, Union, cast
+from typing import List, Optional, Union, cast
 
-from typing_extensions import TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 from pytiled_parser.common_types import OrderedPair, Size
 from pytiled_parser.layer import (
@@ -20,9 +20,11 @@ from pytiled_parser.layer import (
 )
 from pytiled_parser.parsers.json.properties import RawProperty
 from pytiled_parser.parsers.json.properties import parse as parse_properties
+from pytiled_parser.parsers.json.properties import serialize as serialize_properties
 from pytiled_parser.parsers.json.tiled_object import RawObject
 from pytiled_parser.parsers.json.tiled_object import parse as parse_object
-from pytiled_parser.util import parse_color
+from pytiled_parser.parsers.json.tiled_object import serialize as serialize_object
+from pytiled_parser.util import parse_color, serialize_color
 
 # This optional zstd include is basically impossible to make a sensible test
 # for both ways. It's been tested manually, is unlikely to change or be effected
@@ -54,35 +56,35 @@ RawChunk.__doc__ = """
 RawLayer = TypedDict(
     "RawLayer",
     {
-        "chunks": List[RawChunk],
-        "compression": str,
-        "data": Union[List[int], str],
-        "draworder": str,
-        "encoding": str,
-        "height": int,
-        "id": int,
-        "image": str,
-        "layers": List[Any],
+        "chunks": NotRequired[List[RawChunk]],
+        "compression": NotRequired[str],
+        "data": NotRequired[Union[List[int], str]],
+        "draworder": NotRequired[str],
+        "encoding": NotRequired[str],
+        "height": NotRequired[int],
+        "id": NotRequired[int],
+        "image": NotRequired[str],
+        "layers": NotRequired[List["RawLayer"]],
         "name": str,
-        "objects": List[RawObject],
-        "offsetx": float,
-        "offsety": float,
-        "parallaxx": float,
-        "parallaxy": float,
+        "objects": NotRequired[List[RawObject]],
+        "offsetx": NotRequired[float],
+        "offsety": NotRequired[float],
+        "parallaxx": NotRequired[float],
+        "parallaxy": NotRequired[float],
         "opacity": float,
-        "properties": List[RawProperty],
-        "startx": int,
-        "starty": int,
-        "tintcolor": str,
-        "transparentcolor": str,
-        "class": str,
+        "properties": NotRequired[List[RawProperty]],
+        "startx": NotRequired[int],
+        "starty": NotRequired[int],
+        "tintcolor": NotRequired[str],
+        "transparentcolor": NotRequired[str],
+        "class": NotRequired[str],
         "type": str,
         "visible": bool,
-        "width": int,
+        "width": NotRequired[int],
         "x": int,
         "y": int,
-        "repeatx": bool,
-        "repeaty": bool,
+        "repeatx": NotRequired[bool],
+        "repeaty": NotRequired[bool],
     },
 )
 RawLayer.__doc__ = """
@@ -93,7 +95,7 @@ RawLayer.__doc__ = """
 
 
 def _convert_raw_tile_layer_data(data: List[int], layer_width: int) -> List[List[int]]:
-    """Convert raw layer data into a nested lit based on the layer width
+    """Convert raw layer data into a nested list based on the layer width
 
     Args:
         data: The data to convert
@@ -116,6 +118,19 @@ def _convert_raw_tile_layer_data(data: List[int], layer_width: int) -> List[List
     return tile_grid
 
 
+def _convert_tile_layer_data_to_raw(data: List[List[int]]) -> List[int]:
+    """Converts the pytiled-parser data which is a 2 dimensional list of Tile IDs
+    to the raw Tiled format, which is a 1 dimensional list of Tile IDs.
+
+    Args:
+        data: The data to convert
+
+    Returns:
+        List[int]: A 1 dimensional list containing the converted data
+    """
+    return [i for sub in data for i in sub]
+
+
 def _decode_tile_layer_data(
     data: str, compression: str, layer_width: int
 ) -> List[List[int]]:
@@ -131,6 +146,7 @@ def _decode_tile_layer_data(
     Raises:
         ValueError: For an unsupported compression type.
     """
+    print(compression)
     unencoded_data = base64.b64decode(data)
     if compression == "zlib":
         unzipped_data = zlib.decompress(unencoded_data)
@@ -162,6 +178,40 @@ def _decode_tile_layer_data(
             int_value = 0
 
     return _convert_raw_tile_layer_data(tile_grid, layer_width)
+
+
+def _encode_tile_layer_data(
+    data: List[List[int]], compression: Optional[str] = None
+) -> str:
+    """Encode a Base64 string of tile data. Optionally supports gzip, zlib, and zstd compression.
+
+    Args:
+        data: Tile data in the form of a 2 dimensional list of ints
+        compression: Either zlib, gzip, zstd, or empty. If empty no compression is performed.
+
+    Returns:
+        str: The encoded and compressed data
+
+    Raises:
+        ValueError: For an unsupported compression type
+    """
+    data_bytes = bytes([i for sub in data for i in sub])
+
+    if compression == "zlib":
+        compressed = zlib.compress(data_bytes)
+    elif compression == "gzip":
+        compressed = gzip.compress(data_bytes)
+    elif compression == "zstd" and zstd is None:
+        raise ValueError(
+            "zstd compression support is not installed."
+            "To install use 'pip install pytiled-parser[zstd]'"
+        )
+    elif compression == "zstd":  # pragma: no cover
+        compressed = zstd.compress(data_bytes)
+    else:
+        compressed = data_bytes
+
+    return base64.b64encode(compressed).decode("UTF-8")
 
 
 def _parse_chunk(
@@ -197,6 +247,24 @@ def _parse_chunk(
     )
 
     return chunk
+
+
+def _serialize_chunk(
+    chunk: Chunk, encoding: Optional[str] = None, compression: Optional[str] = None
+) -> RawChunk:
+    if encoding == "base64":
+        assert isinstance(compression, str)
+        data = _encode_tile_layer_data(chunk.data, compression)
+    else:
+        data = _convert_tile_layer_data_to_raw(chunk.data)  # type: ignore
+
+    return {
+        "data": data,
+        "width": int(chunk.size.width),
+        "height": int(chunk.size.height),
+        "x": int(chunk.coordinates.x),
+        "y": int(chunk.coordinates.y),
+    }
 
 
 def _parse_common(raw_layer: RawLayer) -> Layer:
@@ -259,6 +327,55 @@ def _parse_common(raw_layer: RawLayer) -> Layer:
     return common
 
 
+def _serialize_common(layer: Layer, type: str) -> RawLayer:
+    serialized: RawLayer = {
+        "name": layer.name,
+        "opacity": layer.opacity,
+        "visible": layer.visible,
+        "x": 0,
+        "y": 0,
+        "type": type,
+    }
+
+    if layer.id:
+        serialized["id"] = layer.id
+
+    if layer.coordinates != OrderedPair(0, 0):
+        serialized["startx"] = int(layer.coordinates.x)
+        serialized["starty"] = int(layer.coordinates.y)
+
+    if layer.size:
+        serialized["width"] = int(layer.size.width)
+        serialized["height"] = int(layer.size.height)
+
+    if layer.offset != OrderedPair(0, 0):
+        serialized["offsetx"] = layer.offset.x
+        serialized["offsety"] = layer.offset.y
+
+    if layer.properties:
+        serialized["properties"] = serialize_properties(layer.properties)
+
+    if layer.class_:
+        serialized["class"] = layer.class_
+
+    if layer.parallax_factor.x != 1.0:
+        serialized["parallaxx"] = layer.parallax_factor.x
+
+    if layer.parallax_factor.y != 1.0:
+        serialized["parallaxy"] = layer.parallax_factor.y
+
+    if layer.tint_color:
+        serialized["tintcolor"] = serialize_color(layer.tint_color)
+
+    if layer.repeat_x:
+        serialized["repeatx"] = layer.repeat_x
+
+    if layer.repeat_y:
+        serialized["repeaty"] = layer.repeat_y
+
+    return serialized
+
+
 def _parse_tile_layer(raw_layer: RawLayer) -> TileLayer:
     """Parse the raw_layer to a TileLayer.
 
@@ -277,6 +394,8 @@ def _parse_tile_layer(raw_layer: RawLayer) -> TileLayer:
                 tile_layer.chunks.append(
                     _parse_chunk(chunk, raw_layer["encoding"], raw_layer["compression"])
                 )
+                tile_layer.encoding = raw_layer["encoding"]
+                tile_layer.compression = raw_layer["compression"]
             else:
                 tile_layer.chunks.append(_parse_chunk(chunk))
 
@@ -287,12 +406,39 @@ def _parse_tile_layer(raw_layer: RawLayer) -> TileLayer:
                 compression=raw_layer["compression"],
                 layer_width=raw_layer["width"],
             )
+            tile_layer.encoding = raw_layer["encoding"]
+            tile_layer.compression = raw_layer["compression"]
         else:
             tile_layer.data = _convert_raw_tile_layer_data(
                 raw_layer["data"], raw_layer["width"]  # type: ignore
             )
 
     return tile_layer
+
+
+def _serialize_tile_layer(layer: TileLayer) -> RawLayer:
+    serialized = _serialize_common(layer, "tilelayer")
+
+    if layer.chunks:
+        raw_chunks: List[RawChunk] = []
+        for chunk in layer.chunks:
+            raw_chunks.append(
+                _serialize_chunk(chunk, layer.encoding, layer.compression)
+            )
+        serialized["chunks"] = raw_chunks
+
+    if layer.data:
+        if layer.encoding == "base64":
+            raw_data = _encode_tile_layer_data(layer.data, layer.compression)
+        else:
+            raw_data = _convert_tile_layer_data_to_raw(layer.data)  # type: ignore
+        serialized["data"] = raw_data
+
+    if layer.encoding != "csv":
+        serialized["encoding"] = layer.encoding
+        serialized["compression"] = layer.compression
+
+    return serialized
 
 
 def _parse_object_layer(
@@ -318,6 +464,18 @@ def _parse_object_layer(
     )
 
 
+def _serialize_object_layer(layer: ObjectLayer) -> RawLayer:
+    serialized = _serialize_common(layer, type="objectgroup")
+
+    objects = []
+    for object in layer.tiled_objects:
+        objects.append(serialize_object(object))
+    serialized["objects"] = objects
+    serialized["draworder"] = layer.draw_order
+
+    return serialized
+
+
 def _parse_image_layer(raw_layer: RawLayer) -> ImageLayer:
     """Parse the raw_layer to an ImageLayer.
 
@@ -337,6 +495,18 @@ def _parse_image_layer(raw_layer: RawLayer) -> ImageLayer:
     return image_layer
 
 
+def _serialize_image_layer(layer: ImageLayer) -> RawLayer:
+    serialized = _serialize_common(layer, "imagelayer")
+
+    # TODO: Fix relative paths, this is currently an absolute
+    serialized["image"] = str(layer.image)
+
+    if layer.transparent_color:
+        serialized["transparentcolor"] = serialize_color(layer.transparent_color)
+
+    return serialized
+
+
 def _parse_group_layer(
     raw_layer: RawLayer, parent_dir: Optional[Path] = None
 ) -> LayerGroup:
@@ -354,6 +524,20 @@ def _parse_group_layer(
         layers.append(parse(layer, parent_dir=parent_dir))
 
     return LayerGroup(layers=layers, **_parse_common(raw_layer).__dict__)
+
+
+def _serialize_group_layer(layer: LayerGroup) -> RawLayer:
+    serialized = _serialize_common(layer, type="group")
+
+    raw_layers: List[RawLayer] = []
+
+    for child_layer in layer.layers:
+        raw_layers.append(serialize(child_layer))
+
+    if raw_layers:
+        serialized["layers"] = raw_layers
+
+    return serialized
 
 
 def parse(
@@ -386,3 +570,18 @@ def parse(
         return _parse_tile_layer(raw_layer)
 
     raise RuntimeError(f"An invalid layer type of {type_} was supplied")
+
+
+def serialize(layer: Layer) -> RawLayer:
+    if isinstance(layer, TileLayer):
+        return _serialize_tile_layer(layer)
+    elif isinstance(layer, ImageLayer):
+        return _serialize_image_layer(layer)
+    elif isinstance(layer, ObjectLayer):
+        return _serialize_object_layer(layer)
+    elif isinstance(layer, LayerGroup):
+        return _serialize_group_layer(layer)
+
+    raise RuntimeError(
+        "Tried to serialize an unknown layer type. Something is very wrong"
+    )
