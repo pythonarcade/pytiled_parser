@@ -9,6 +9,7 @@ import pytest
 
 from pytiled_parser.common_types import OrderedPair, Size
 from pytiled_parser.parsers.json.layer import parse as parse_json
+from pytiled_parser.parsers.json.layer import serialize as serialize_json
 from pytiled_parser.parsers.tmx.layer import parse as parse_tmx
 
 TESTS_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
@@ -95,9 +96,31 @@ def test_layer_integration(parser_type, layer_test):
 
     for layer in expected.EXPECTED:
         fix_layer(layer)
-        print(layer.size)
 
     assert layers == expected.EXPECTED
+
+
+@pytest.mark.parametrize("layer_test", ALL_LAYER_TESTS)
+def test_layer_serialization(layer_test):
+    spec = importlib.util.spec_from_file_location(
+        "expected", layer_test / "expected.py"
+    )
+    expected = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(expected)
+
+    raw_layers = [serialize_json(layer) for layer in expected.EXPECTED]
+    parsed = []
+    for raw_layer in raw_layers:
+        parsed.append(parse_json(raw_layer))
+
+    for layer in parsed:
+        fix_layer(layer)
+
+    for layer in expected.EXPECTED:
+        fix_layer(layer)
+
+    assert parsed == expected.EXPECTED
+
 
 @pytest.mark.parametrize("parser_type", ["json", "tmx"])
 def test_zstd_not_installed(parser_type):
@@ -125,10 +148,11 @@ def test_zstd_not_installed(parser_type):
                 for layer in raw_layer.findall("./imagelayer"):
                     layers.append(parse_tmx(layer))
 
+
 def test_unknown_layer_type():
     # We only test JSON here because due to the nature of the TMX format
     # there does not exist a scenario where pytiled_parser can attempt to
-    # parse an unknown layer type. In JSON a RuntimeError error will be 
+    # parse an unknown layer type. In JSON a RuntimeError error will be
     # raised if an unknown type is provided. In TMX the layer will just
     # be ignored.
     raw_layers_path = UNKNOWN_LAYER_TYPE_TEST / "map.json"
