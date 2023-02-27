@@ -1,5 +1,6 @@
 """Tests for worlds"""
 import importlib.util
+import operator
 import os
 from pathlib import Path
 
@@ -18,6 +19,10 @@ ALL_WORLD_TESTS = [
 ]
 
 
+def fix_world(world):
+    world.maps.sort(key=operator.attrgetter("map_file"))
+
+
 @pytest.mark.parametrize("world_test", ALL_WORLD_TESTS)
 def test_world_integration(world_test):
     # it's a PITA to import like this, don't do it
@@ -31,5 +36,12 @@ def test_world_integration(world_test):
     raw_world_path = world_test / "world.world"
 
     casted_world = world.parse_world(raw_world_path)
+
+    # These fix calls sort the map list in the world by the map_file
+    # attribute because we don't actually care about the order of the list
+    # and it can vary between runs, but pytest will fail if it is
+    # not in the same order.
+    fix_world(casted_world)
+    fix_world(expected.EXPECTED)
 
     assert casted_world == expected.EXPECTED
