@@ -20,6 +20,7 @@ EXPECTED = tiled_map.TiledMap(
                     coordinates=common_types.OrderedPair(
                         98.4987608686521, 46.2385012811358
                     ),
+                    properties={"test": "hello"},
                     visible=True,
                     class_="",
                 ),
@@ -51,9 +52,9 @@ EXPECTED = tiled_map.TiledMap(
     next_object_id=8,
     orientation="orthogonal",
     render_order="right-down",
-    tiled_version="1.7.1",
+    tiled_version="1.9.2",
     tile_size=common_types.Size(32, 32),
-    version="1.6",
+    version="1.9",
     background_color=common_types.Color(255, 0, 4, 255),
     tilesets={
         1: tileset.Tileset(
@@ -107,7 +108,7 @@ EXPECTED = tiled_map.TiledMap(
                     image_height=32,
                     image_width=32,
                     width=32,
-                    height=32
+                    height=32,
                 )
             },
             tile_count=1,

@@ -272,14 +272,14 @@ def parse(raw_object: etree.Element, parent_dir: Optional[Path] = None) -> Tiled
         if isinstance(template, etree.Element):
             new_object = template.find("./object")
             if new_object is not None:
-                if raw_object.attrib.get("id") is not None:
-                    new_object.attrib["id"] = raw_object.attrib["id"]
+                for key, val in raw_object.attrib.items():
+                    if key == "template":
+                        continue
+                    new_object.attrib[key] = val
 
-                if raw_object.attrib.get("x") is not None:
-                    new_object.attrib["x"] = raw_object.attrib["x"]
-
-                if raw_object.attrib.get("y") is not None:
-                    new_object.attrib["y"] = raw_object.attrib["y"]
+                properties_element = raw_object.find("./properties")
+                if properties_element is not None:
+                    new_object.append(properties_element)
 
                 raw_object = new_object
         elif isinstance(template, dict):

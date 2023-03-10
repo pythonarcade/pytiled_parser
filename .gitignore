@@ -107,5 +107,8 @@ venv.bak/
 .mypy_cache/
 .idea/
 
+# ruff
+.ruff_cache
+
 # VS Code Directory
 .vscode

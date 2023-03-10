@@ -10,6 +10,12 @@
          "objects":[
                 {
                  "id":2,
+                 "properties":[
+                        {
+                         "name":"test",
+                         "type":"string",
+                         "value":"hello"
+                        }],
                  "template":"template-rectangle.json",
                  "x":98.4987608686521,
                  "y":46.2385012811358
@@ -67,7 +73,7 @@
          "value":"Hello, World!!"
         }],
  "renderorder":"right-down",
- "tiledversion":"1.9.0",
+ "tiledversion":"1.9.2",
  "tileheight":32,
  "tilesets":[
         {

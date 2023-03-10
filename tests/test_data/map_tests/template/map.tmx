@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.9" tiledversion="1.9.0" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="8" height="6" tilewidth="32" tileheight="32" infinite="0" backgroundcolor="#ff0004" nextlayerid="3" nextobjectid="8">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="8" height="6" tilewidth="32" tileheight="32" infinite="0" backgroundcolor="#ff0004" nextlayerid="3" nextobjectid="8">
  <properties>
   <property name="bool property - true" type="bool" value="true"/>
   <property name="color property" type="color" value="#ff49fcff"/>
@@ -11,7 +11,11 @@
  <tileset firstgid="1" source="tileset.tsx"/>
  <tileset firstgid="49" source="tile_set_image_for_template.tsx"/>
  <objectgroup id="2" name="Object Layer 1">
-  <object id="2" template="template-rectangle.tx" x="98.4988" y="46.2385"/>
+  <object id="2" template="template-rectangle.tx" x="98.4988" y="46.2385">
+   <properties>
+    <property name="test" value="hello"/>
+   </properties>
+  </object>
   <object id="6" template="template-tile-spritesheet.tx" x="46" y="136.667"/>
   <object id="7" template="template-tile-image.tx" x="141.333" y="148"/>
  </objectgroup>
