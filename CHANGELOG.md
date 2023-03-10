@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.2.2] - 2023-03-10
+
+Switched to `pyproject.toml` for project setup. This should have no impact on users unless you are on a very old version of pip. If pip fails to install pytiled-parser, please try updating pip.
+
+Fixed a bug in the TMX format where overriding or adding extra elements/attributes to object templates would not be applied. Only the id and the x, y position would be used. Now any overriden values(including properties) should be applied to the template. This bug did not exist in the JSON format, however there was no test coverage for this scenario in either format, that has since been added.
+
 ## [2.2.1] - 2023-01-16
 
 Added official support for Python 3.11. No changes were actually made to do this, and most all previous versions of pytiled-parser should work fine with 3.11. We are just now including 3.11 in the matrix of Python versions we run tests for.
