@@ -32,7 +32,7 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/pythonarcade/pytile_parser"
+homepage = "https://github.com/pythonarcade/pytiled_parser"
 
 [project.optional-dependencies]
 zstd = [
