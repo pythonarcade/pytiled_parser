@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from pytiled_parser import parse_tileset
 from pytiled_parser.common_types import OrderedPair, Size
 from pytiled_parser.parsers.json.tileset import parse as parse_json
 from pytiled_parser.parsers.tmx.tileset import parse as parse_tmx
@@ -59,12 +60,19 @@ def test_tilesets_integration(parser_type, tileset_dir):
 
     if parser_type == "json":
         raw_tileset_path = tileset_dir / "tileset.json"
-        with open(raw_tileset_path) as raw_tileset:
-            tileset_ = parse_json(json.loads(raw_tileset.read()), 1)
     elif parser_type == "tmx":
         raw_tileset_path = tileset_dir / "tileset.tsx"
-        with open(raw_tileset_path) as raw_tileset:
-            tileset_ = parse_tmx(etree.parse(raw_tileset).getroot(), 1)
+
+    tileset_ = parse_tileset(raw_tileset_path)
+
+    # if parser_type == "json":
+    #     raw_tileset_path = tileset_dir / "tileset.json"
+    #     with open(raw_tileset_path) as raw_tileset:
+    #         tileset_ = parse_json(json.loads(raw_tileset.read()), 1)
+    # elif parser_type == "tmx":
+    #     raw_tileset_path = tileset_dir / "tileset.tsx"
+    #     with open(raw_tileset_path) as raw_tileset:
+    #         tileset_ = parse_tmx(etree.parse(raw_tileset).getroot(), 1)
 
     fix_tileset(tileset_)
     fix_tileset(expected.EXPECTED)
