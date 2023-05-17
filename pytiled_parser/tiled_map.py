@@ -55,6 +55,7 @@ class TiledMap:
         parallax_origin: The point on the map to center the parallax scrolling of layers on.
     """
 
+    map_file: Path
     infinite: bool
     layers: List[Layer]
     map_size: Size
@@ -69,7 +70,6 @@ class TiledMap:
 
     parallax_origin: OrderedPair = OrderedPair(0, 0)
 
-    map_file: Optional[Path] = None
     class_: Optional[str] = None
     background_color: Optional[Color] = None
     properties: Optional[Properties] = None

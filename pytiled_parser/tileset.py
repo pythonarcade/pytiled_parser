@@ -121,8 +121,8 @@ class Tile:
     opacity: int = 1
     x: int = 0
     y: int = 0
-    width: Optional[int] = None
-    height: Optional[int] = None
+    width: int = 0
+    height: int = 0
     class_: Optional[str] = None
     animation: Optional[List[Frame]] = None
     objects: Optional[layer.Layer] = None
