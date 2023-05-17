@@ -47,6 +47,7 @@ def fix_layer(layer):
 
 
 def fix_map(map):
+    map.map_file = None
     map.version = None
     map.tiled_version = None
     for layer in [layer for layer in map.layers if hasattr(layer, "tiled_objects")]:
@@ -82,6 +83,9 @@ def test_map_integration(parser_type, map_test):
     # Yes the values could be set to None in the expected objects
     # directly, but alas, this is just test code that's already stupid fast
     # and I'm lazy because there's too many of them already existing.
+    #
+    # This also adjusts the map_file parameter since that can't be known
+    # in a way that is valid for the tests.
     fix_map(expected.EXPECTED)
     fix_map(casted_map)
     assert casted_map == expected.EXPECTED

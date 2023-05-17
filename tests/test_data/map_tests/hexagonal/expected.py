@@ -3,6 +3,7 @@ from pathlib import Path
 from pytiled_parser import common_types, layer, tiled_map, tileset
 
 EXPECTED = tiled_map.TiledMap(
+    map_file=None,
     hex_side_length=6,
     stagger_axis="y",
     stagger_index="odd",
