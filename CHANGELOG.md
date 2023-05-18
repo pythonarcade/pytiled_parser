@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+## [2.2.3] - 2023-05-17
+
+Exposed tileset parsing more directly. This was possible by accessing the largely internal interfaces within pytiled_parser already, but this provides the same interface for parsing Tilesets as we have for parsing maps. You can parse a tileset by simply passing the filepath to `pytiled_parser.parse_tileset(file)` where `file` is a `pathlib.Path` object.
+
+We have also removed some unnecessary `Optional` typing from some attributes. This does technically mean there are changes to the API, but they shouldn't really effect anything. The `pytiled_parser.Tile.width` and `pytiled_parser.Tile.height` attributes will now default to 0 if they are not set. Under normal circumstances there does not exist a scenario where they can not be set, the only use case that would cause this to happen would be if the map/tileset file does not follow the Tiled specification. The `pytiled_parser.TiledMap.map_file` attribute is also no longer optional, but does not have a default. This does mean if you were using the constructor for this class directly instead of the parsing functions, you would need to fix your usage of it, however it is extremely unlikely that anyone is doing that.
+
 ## [2.2.2] - 2023-03-10
 
 Switched to `pyproject.toml` for project setup. This should have no impact on users unless you are on a very old version of pip. If pip fails to install pytiled-parser, please try updating pip.

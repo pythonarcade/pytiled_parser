@@ -1,6 +1,6 @@
 [project]
 name = "pytiled_parser"
-version = "2.2.2"
+version = "2.2.3"
 description = "A library for parsing Tiled Map Editor maps and tilesets"
 readme = "README.md"
 authors = [
@@ -86,7 +86,7 @@ warn_redundant_casts = true
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
-module = "tests.*"
+module = "pytiled_parser.tests.*"
 ignore_errors = true
 
 [tool.ruff]
