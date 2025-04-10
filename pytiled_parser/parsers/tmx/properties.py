@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as etree
 from pathlib import Path
 
-from pytiled_parser.properties import Properties, Property
+from pytiled_parser.properties import Properties, Property, ClassProperty
 from pytiled_parser.util import parse_color
 
 
@@ -11,6 +11,12 @@ def parse(raw_properties: etree.Element) -> Properties:
 
     for raw_property in raw_properties.findall("property"):
         type_ = raw_property.attrib.get("type")
+        if type_ == "class":
+            children_nodes = raw_property.find("./properties")
+            x = ClassProperty(
+                raw_property.attrib["propertytype"], parse(children_nodes) if children_nodes is not None else {})
+            final[raw_property.attrib["name"]] = x
+            continue
 
         value_ = raw_property.attrib.get("value", raw_property.text)
         if value_ is None:
