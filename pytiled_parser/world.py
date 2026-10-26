@@ -61,12 +61,17 @@ class World:
     only_show_adjacent: bool = False
 
 
-class RawPattern(TypedDict):
+class _RequiredPattern(TypedDict):
     regexp: str
     multiplierX: float
     multiplierY: float
     offsetX: float
     offsetY: float
+
+
+class RawPattern(_RequiredPattern, total=False):
+    mapWidth: float
+    mapHeight: float
 
 
 class RawWorldMap(TypedDict):
@@ -150,8 +155,8 @@ def parse_world(file: Path, encoding: str) -> World:
 
                     raw_world_map: RawWorldMap = {
                         "fileName": map_file,
-                        "width": width,
-                        "height": height,
+                        "width": raw_pattern.get("mapWidth", width),
+                        "height": raw_pattern.get("mapHeight", height),
                         "x": x,
                         "y": y,
                     }
