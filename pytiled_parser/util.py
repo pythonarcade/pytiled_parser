@@ -39,11 +39,11 @@ def parse_color(color: str) -> Color:
 
 def check_format(file_path: Path, encoding: str) -> str:
     with open(file_path, encoding=encoding) as file:
-        line = file.readline().rstrip().strip()
-        if line[0] == "<":
-            return "tmx"
-        else:
-            return "json"
+        for line in file:
+            line = line.strip()
+            if line:
+                return "tmx" if line.startswith("<") else "json"
+    return "json"
 
 
 def load_object_template(file_path: Path, encoding: str) -> Any:
