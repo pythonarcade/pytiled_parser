@@ -7,6 +7,7 @@ from typing_extensions import TypedDict
 
 from pytiled_parser.common_types import OrderedPair, Size
 from pytiled_parser.exception import UnknownFormat
+from pytiled_parser.layer import LayerGroup
 from pytiled_parser.parsers.json.layer import RawLayer
 from pytiled_parser.parsers.json.layer import parse as parse_layer
 from pytiled_parser.parsers.json.properties import RawProperty
@@ -130,9 +131,14 @@ def parse(file: Path, encoding: str) -> TiledMap:
         version=version,
     )
 
-    layers = [layer for layer in map_.layers if hasattr(layer, "tiled_objects")]
+    layers = list(map_.layers)
 
     for my_layer in layers:
+        if isinstance(my_layer, LayerGroup):
+            layers.extend(my_layer.layers or [])
+            continue
+        if not hasattr(my_layer, "tiled_objects"):
+            continue
         # Mypy extremely hates what is going on in this whole block
         # For some reason an ignore on this first for loop is causing it
         # to just not care about any of the problems in here.
@@ -156,9 +162,13 @@ def parse(file: Path, encoding: str) -> TiledMap:
                             break
 
                     if not already_loaded:
-                        highest_firstgid = max(map_.tilesets.keys())
-                        last_tileset_count = map_.tilesets[highest_firstgid].tile_count
-                        new_firstgid = highest_firstgid + last_tileset_count
+                        new_firstgid = 1
+                        if map_.tilesets:
+                            highest_firstgid = max(map_.tilesets.keys())
+                            last_tileset_count = map_.tilesets[
+                                highest_firstgid
+                            ].tile_count
+                            new_firstgid = highest_firstgid + last_tileset_count
                         map_.tilesets[new_firstgid] = parse_json_tileset(
                             tiled_object.new_tileset,
                             new_firstgid,
