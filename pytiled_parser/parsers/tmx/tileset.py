@@ -108,10 +108,12 @@ def _parse_tile(
         else:
             tile.image = Path(image_element.attrib["source"])
 
-        tile.image_width = int(image_element.attrib["width"])
-        tile.width = tile.image_width
-        tile.image_height = int(image_element.attrib["height"])
-        tile.height = tile.image_height
+        if image_element.attrib.get("width") is not None:
+            tile.image_width = int(image_element.attrib["width"])
+            tile.width = tile.image_width
+        if image_element.attrib.get("height") is not None:
+            tile.image_height = int(image_element.attrib["height"])
+            tile.height = tile.image_height
 
     if raw_tile.attrib.get("x") is not None:
         tile.x = int(raw_tile.attrib["x"])
@@ -181,8 +183,10 @@ def parse(
         else:
             tileset.image = Path(image_element.attrib["source"])
 
-        tileset.image_width = int(image_element.attrib["width"])
-        tileset.image_height = int(image_element.attrib["height"])
+        if image_element.attrib.get("width") is not None:
+            tileset.image_width = int(image_element.attrib["width"])
+        if image_element.attrib.get("height") is not None:
+            tileset.image_height = int(image_element.attrib["height"])
 
         if image_element.attrib.get("trans") is not None:
             my_string = image_element.attrib["trans"]
