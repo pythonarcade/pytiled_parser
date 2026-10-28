@@ -229,8 +229,9 @@ def _parse_common(raw_layer: RawLayer) -> Layer:
     if raw_layer.get("width") is not None:
         common.size = Size(raw_layer["width"], raw_layer["height"])
 
-    if raw_layer.get("offsetx") is not None:
-        common.offset = OrderedPair(raw_layer["offsetx"], raw_layer["offsety"])
+    common.offset = OrderedPair(
+        raw_layer.get("offsetx", 0), raw_layer.get("offsety", 0)
+    )
 
     if raw_layer.get("properties") is not None:
         common.properties = parse_properties(raw_layer["properties"])

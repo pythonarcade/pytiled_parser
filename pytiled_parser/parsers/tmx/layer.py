@@ -171,10 +171,10 @@ def _parse_common(raw_layer: etree.Element) -> Layer:
     if raw_layer.attrib.get("id") is not None:
         common.id = int(raw_layer.attrib["id"])
 
-    if raw_layer.attrib.get("offsetx") is not None:
-        common.offset = OrderedPair(
-            float(raw_layer.attrib["offsetx"]), float(raw_layer.attrib["offsety"])
-        )
+    common.offset = OrderedPair(
+        float(raw_layer.attrib.get("offsetx", 0)),
+        float(raw_layer.attrib.get("offsety", 0)),
+    )
 
     properties_element = raw_layer.find("./properties")
     if properties_element is not None:
