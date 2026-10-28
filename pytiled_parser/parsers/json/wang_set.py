@@ -82,6 +82,9 @@ def _parse_wang_color(raw_wang_color: RawWangColor) -> WangColor:
         probability=raw_wang_color["probability"],
     )
 
+    if raw_wang_color.get("class") is not None:
+        wang_color.class_ = raw_wang_color["class"]
+
     if raw_wang_color.get("properties") is not None:
         wang_color.properties = parse_properties(raw_wang_color["properties"])
 
@@ -113,6 +116,9 @@ def parse(raw_wangset: RawWangSet) -> WangSet:
         wang_colors=colors,
         wang_tiles=tiles,
     )
+
+    if raw_wangset.get("class") is not None:
+        wangset.class_ = raw_wangset["class"]
 
     if raw_wangset.get("properties") is not None:
         wangset.properties = parse_properties(raw_wangset["properties"])
