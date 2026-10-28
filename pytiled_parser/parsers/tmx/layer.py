@@ -119,7 +119,7 @@ def _parse_chunk(
 
     Args:
         raw_chunk: XML Element to be parsed to a Chunk
-        encoding: Encoding type. ("base64" or None)
+        encoding: "base64", "csv", or None for XML tile elements.
         compression: Either zlib, gzip, or empty. If empty no decompression is done.
 
     Returns:
@@ -130,9 +130,14 @@ def _parse_chunk(
         data = _decode_tile_layer_data(
             raw_chunk.text, compression, int(raw_chunk.attrib["width"])  # type: ignore
         )
-    else:
+    elif encoding == "csv":
         data = _convert_raw_tile_layer_data(
             [int(v.strip()) for v in raw_chunk.text.split(",")],  # type: ignore
+            int(raw_chunk.attrib["width"]),
+        )
+    else:
+        data = _convert_raw_tile_layer_data(
+            [int(tile.attrib.get("gid", "0")) for tile in raw_chunk.findall("tile")],
             int(raw_chunk.attrib["width"]),
         )
 
@@ -239,9 +244,17 @@ def _parse_tile_layer(raw_layer: etree.Element) -> TileLayer:
                     compression=compression,
                     layer_width=int(raw_layer.attrib["width"]),
                 )
-            else:
+            elif encoding == "csv":
                 tile_layer.data = _convert_raw_tile_layer_data(
                     [int(v.strip()) for v in data_element.text.split(",")],  # type: ignore
+                    int(raw_layer.attrib["width"]),
+                )
+            else:
+                tile_layer.data = _convert_raw_tile_layer_data(
+                    [
+                        int(tile.attrib.get("gid", "0"))
+                        for tile in data_element.findall("tile")
+                    ],
                     int(raw_layer.attrib["width"]),
                 )
         else:
